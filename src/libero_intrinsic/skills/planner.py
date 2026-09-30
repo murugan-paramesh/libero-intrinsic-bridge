@@ -52,6 +52,29 @@ def region_owner_body(env, region: str, spec: TaskSpec) -> str:
     return m.body_id2name(m.site_bodyid[sid])
 
 
+def has_collision_geoms(env, body: str) -> bool:
+    m = env.model
+    bid = m.body_name2id(body)
+    return any(int(m.geom_bodyid[g]) == bid and (int(m.geom_contype[g]) or int(m.geom_conaffinity[g])) for g in range(m.ngeom))
+
+
+def support_body_for(env, owner: str) -> str:
+    """Collision body that physically supports a region site: the site's body if it has collision
+    geometry, else a body whose name extends it (e.g. living_room_table -> living_room_table_col),
+    else the plain kitchen/study 'table' body."""
+    if has_collision_geoms(env, owner):
+        return owner
+    m = env.model
+    names = [m.body_id2name(i) for i in range(m.nbody)]
+    for n in names:
+        if n != owner and n.startswith(owner) and has_collision_geoms(env, n):
+            return n
+    for n in ("table", "study_table", "kitchen_table", "living_room_table_col"):
+        if n in names and has_collision_geoms(env, n):
+            return n
+    raise RuntimeError(f"no support body for {owner}")
+
+
 def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
     skills = []
     manip, artic = [], []
@@ -76,7 +99,7 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
         skills.append(PickSkill(body, params))
         if atom.predicate == "in":
             region = atom.args[1]
-            owner = region_owner_body(env, region, spec)
+            owner = support_body_for(env, region_owner_body(env, region, spec))
             support = [owner]
 
             def target_fn(region=region, owner=owner):
@@ -94,8 +117,8 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
             except Exception:
                 is_site = False
             if is_site:
-                owner = region_owner_body(env, tgt, spec)
-                support = [owner] if owner != "world" else ["living_room_table_col", "kitchen_table_col", "study_table_col"]
+                owner = support_body_for(env, region_owner_body(env, tgt, spec))
+                support = [owner]
 
                 def target_fn(tgt=tgt, owner=owner):
                     c, rot, half = geo.site_box_world(env, tgt)
@@ -120,7 +143,7 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
             drawer_body = f"{cab}_cabinet_{level}"
             joint = f"{cab}_{level}_level"
             skills.append(PushSkill(drawer_body, *drawer_close_geometry(env, drawer_body, joint), label="close_drawer",
-                                    extra_contact_bodies=[f"{cab}_main"]))
+                                    extra_contact_bodies=[f"{cab}_base"]))
         elif atom.predicate == "close" and "microwave" in target:
             door_body = f"{target}_microdoorroot"
             joint = f"{target}_microjoint"

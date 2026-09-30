@@ -55,7 +55,7 @@ class TurnKnobSkill(Skill):
         sync.sync()
         q0 = env.joint_qpos(self.joint)
         axis, anchor = joint_world_axis_and_anchor(env, self.joint)
-        cands = geo.top_down_grasps(env, self.body, height_fraction=0.6, max_depth=0.03)
+        cands = geo.grasp_candidates(env, self.body)
         # after attempt failures, try the other yaw candidates
         cands = cands[i:] + cands[:i]
         if not cands:

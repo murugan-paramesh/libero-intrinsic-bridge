@@ -83,9 +83,7 @@ class PickSkill(Skill):
         env, client, sync = ctx.env, ctx.client, ctx.sync
         ctx.open_gripper(6)
         sync.sync()
-        cands = [c for c in geo.top_down_grasps(env, self.body, self.p.height_fraction, self.p.yaws,
-                                                 z_offset=self.p.z_offset, max_depth=self.p.max_depth)
-                 if c.label not in self._tried]
+        cands = [c for c in geo.grasp_candidates(env, self.body, yaws=self.p.yaws) if c.label not in self._tried]
         if not cands:
             return SkillResult(self.name, False, "no_grasp_candidate")
         rs = env.robot_state()
