@@ -17,11 +17,13 @@ import dataclasses
 from typing import Callable, List, Optional, Sequence, Tuple
 
 import numpy as np
+from scipy.spatial.transform import Rotation as R
 
 from libero_intrinsic.env.executor import ExecutionConfig
 from libero_intrinsic.intrinsic.client import IntrinsicRequestError
 from libero_intrinsic.model import transforms as tf
 from libero_intrinsic.skills import geometry as geo
+from libero_intrinsic.skills import placement
 from libero_intrinsic.skills.base import Skill, SkillContext, SkillResult
 
 
@@ -31,7 +33,7 @@ class PickParams:
     pregrasp_clearance: float = 0.10
     lift_height: float = 0.10
     yaws: Sequence[float] = ()
-    max_candidates: int = 4
+    max_candidates: int = 8
     close_steps: int = 12
     min_finger_gap: float = 0.004      # summed |finger q| after closing must exceed this
     min_pad_contacts: int = 1
@@ -55,10 +57,29 @@ def support_of(env, sync, body: str) -> List[str]:
     return out
 
 
+def nearest_ik(ctx: SkillContext, pos, rot, q_now, cs, n: int = 8):
+    """Intrinsic IK solutions for the pose (collision checked with `cs`), sorted by weighted
+    joint distance to q_now (proximal joints weigh more: less arm reconfiguration, which the
+    OSC controller tracks far better)."""
+    sols, rid, lat = ctx.client.ik(pos, rot, q_now, max_solutions=n, collision_settings=cs)
+    w = np.array([3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.5])
+    sols.sort(key=lambda q: float(np.sum(w * (np.asarray(q) - q_now) ** 2)))
+    return sols, rid, lat
+
+
 def _plan_and_execute(ctx: SkillContext, label: str, q_start, pos, rot, cs, motion_type="ANY",
                       gripper=-1.0, timeout_s=15.0, contact_monitor=None, time_scale=1.0):
-    traj = ctx.client.plan_to_pose(q_start, pos, rot, collision_settings=cs, motion_type=motion_type,
-                                   timeout_s=timeout_s, caller_id=label)
+    if motion_type == "ANY":
+        # free-space motion: plan to the IK solution nearest the current configuration (joint target)
+        sols, rid, lat = nearest_ik(ctx, pos, rot, np.asarray(q_start), cs)
+        ctx.record(event="ik", label=label + "_goal", n_solutions=len(sols), request_id=rid, latency_s=lat)
+        if not sols:
+            raise IntrinsicRequestError("ComputeIk", "NOT_FOUND", f"no collision-free IK for {label}", rid)
+        traj = ctx.client.plan_to_joints(q_start, sols[0], collision_settings=cs, motion_type="ANY",
+                                         timeout_s=timeout_s, caller_id=label)
+    else:
+        traj = ctx.client.plan_to_pose(q_start, pos, rot, collision_settings=cs, motion_type=motion_type,
+                                       timeout_s=timeout_s, caller_id=label)
     ctx.record(event="plan", label=label, trajectory_id=traj.request_id, motion_type=motion_type,
                n_states=int(len(traj.t)), duration_s=traj.duration, latency_s=traj.planning_latency_s,
                target_pos=[float(v) for v in pos])
@@ -123,6 +144,9 @@ class PickSkill(Skill):
             for c in cs:
                 opening = min(geo.GRIPPER_MAX_OPENING, c.width + self.p.open_clearance)
                 ok, blocker = geo.scene_clearance(env, c, opening, others)
+                if ok:  # also at the pre-grasp pose (hand higher up, e.g. above a container rim)
+                    pre = c.pos - c.approach * self.p.pregrasp_clearance
+                    ok, blocker = geo.hand_clearance(env, pre, c.rot, opening, 0.0, others)
                 if ok:
                     out.append(c)
             return out
@@ -181,7 +205,8 @@ class PickSkill(Skill):
         sync.attach(self.body)
         obj_before = env.body_pose(self.body)[0].copy()
         rs = env.robot_state()
-        lift_cs = sync.transport_collision_settings(support_bodies=ctx.params.get("support_bodies", []))
+        # while lifting, the grasped object is still touching whatever it rests on (intentional)
+        lift_cs = sync.transport_collision_settings(support_bodies=support_of(env, sync, self.body))
         traj, res = _plan_and_execute(ctx, "pick_lift", rs.q, rs.tcp_pos + [0, 0, self.p.lift_height], rs.tcp_rot,
                                       lift_cs, "LINEAR", +1.0, self.p.plan_timeout_s)
         obj_after = env.body_pose(self.body)[0]
@@ -217,11 +242,12 @@ class PlaceSkill(Skill):
     max_attempts = 2
 
     def __init__(self, body: str, target_fn: Callable[[], Tuple[np.ndarray, float]], support_bodies: Sequence[str],
-                 params: PlaceParams = PlaceParams(), keep_yaw: bool = True):
+                 params: PlaceParams = PlaceParams(), keep_yaw: bool = True, region: Optional[str] = None):
         self.body = body
-        self.target_fn = target_fn  # returns (target_xy_z_of_object_origin, support_top_z)
+        self.target_fn = target_fn  # returns (target_xy_z_of_object_origin, support_top_z) or a ranked list
         self.support = list(support_bodies)
         self.p = params
+        self.region = region        # region site (used to rotate the object so it fits a container)
         self._released = False
 
     def preconditions(self, ctx):
@@ -245,25 +271,58 @@ class PlaceSkill(Skill):
             # the object was already released by an earlier attempt (only the retreat failed)
             return self._retreat(ctx, SkillResult(self.name, True, "released_earlier"))
         rs = env.robot_state()
-        target_origin, support_z = self.target_fn(rs.tcp_rot[:, 0])
+        targets = self.target_fn(rs.tcp_rot[:, 0])
+        if not isinstance(targets, list):
+            targets = [targets]
         tcp_t_obj_p, tcp_t_obj_R = sync.attached[self.body]
         box = geo.object_box(env, self.body)
         obj_origin_above_bottom = env.body_pose(self.body)[0][2] - box.bottom_z
-        # desired object origin at release: xy = target, z = support + gap + origin offset
-        release_origin = np.array([target_origin[0], target_origin[1], support_z + self.p.release_gap + obj_origin_above_bottom])
-        # keep the current tcp orientation (top-down); tcp position = obj_origin - R_tcp @ tcp_t_obj_p
         R_tcp = rs.tcp_rot
-        tcp_release = release_origin - R_tcp @ tcp_t_obj_p
-        # Container-aware limit: the wide hand body cannot enter a container (basket, drawer,
-        # microwave, caddy). If the support surface lies below the support object's top (rim),
-        # keep the hand above the rim and drop the object from there.
+        container = self.region is not None and placement.is_container_region(env, self.region)
+        if container:
+            # rotate the carried object about world z so that its footprint fits the container slot
+            dyaw = placement.fit_rotation(env, self.region, self.body)
+            if abs(dyaw) > 1e-6:
+                R_tcp = R.from_euler("z", dyaw).as_matrix() @ R_tcp
+                ctx.record(event="place_fit_rotation", yaw_deg=float(np.degrees(dyaw)))
         rim_z = max(geo.object_box(env, b).top_z for b in self.support)
-        if support_z < rim_z - 0.02:
-            tcp_min_z = rim_z + self.p.rim_clearance - self.p.hand_below_tcp
-            if tcp_release[2] < tcp_min_z:
-                ctx.record(event="place_rim_limit", rim_z=float(rim_z), tcp_release_z=float(tcp_release[2]), tcp_min_z=float(tcp_min_z),
-                           drop_height=float(tcp_min_z - tcp_release[2]))
-                tcp_release[2] = tcp_min_z
+        hand_low = geo.hand_lowest_offset(R_tcp)   # lowest hand corner relative to the tcp (rotation aware)
+        others = [b for b in sync.bodies if b != self.body]
+        width = float(2 * max(np.abs((geo.object_point_cloud(env, self.body) - rs.tcp_pos) @ rs.tcp_rot[:, 0]).max(), 0.005))
+        chosen = None
+        for k, (target_origin, support_z) in enumerate(targets):
+            release_origin = np.array([target_origin[0], target_origin[1], support_z + self.p.release_gap + obj_origin_above_bottom])
+            tcp_release = release_origin - R_tcp @ tcp_t_obj_p
+            # Container-aware limit: the wide hand body cannot enter a container (basket, drawer,
+            # microwave, caddy): keep the hand above the rim ...
+            if support_z < rim_z - 0.02:
+                tcp_min_z = rim_z + self.p.rim_clearance - hand_low
+                if tcp_release[2] < tcp_min_z:
+                    ctx.record(event="place_rim_limit", rim_z=float(rim_z), tcp_release_z=float(tcp_release[2]), tcp_min_z=float(tcp_min_z),
+                               drop_height=float(tcp_min_z - tcp_release[2]), candidate=k)
+                    tcp_release[2] = tcp_min_z
+            # ... and raise the release pose until hand AND fingers are clear of every other body
+            # (geometric search, 1 cm steps, at most 15 cm above the nominal height).
+            ok, blocker, raised = False, "", 0.0
+            for raised in np.arange(0.0, 0.151, 0.01):
+                cand = tcp_release + np.array([0, 0, raised])
+                ok, blocker = geo.hand_clearance(env, cand, R_tcp, min(geo.GRIPPER_MAX_OPENING, width + 0.02), width, others)
+                if ok:
+                    break
+            if ok:
+                if raised > 0:
+                    ctx.record(event="place_release_raised", candidate=k, raised_m=float(raised))
+                chosen = (target_origin, support_z, tcp_release + np.array([0, 0, raised]))
+                break
+            ctx.record(event="place_spot_rejected", candidate=k, blocker=blocker, tcp=[float(v) for v in tcp_release])
+        if chosen is None:
+            target_origin, support_z = targets[0]
+            release_origin = np.array([target_origin[0], target_origin[1], support_z + self.p.release_gap + obj_origin_above_bottom])
+            tcp_release = release_origin - R_tcp @ tcp_t_obj_p
+            if support_z < rim_z - 0.02:
+                tcp_release[2] = max(tcp_release[2], rim_z + self.p.rim_clearance - hand_low)
+        else:
+            target_origin, support_z, tcp_release = chosen
         tcp_pre = tcp_release + np.array([0, 0, self.p.preplace_clearance])
         cs_transport = sync.transport_collision_settings(self.support)
         traj, res = _plan_and_execute(ctx, "place_transport", rs.q, tcp_pre, R_tcp, cs_transport, "ANY", +1.0, self.p.plan_timeout_s)

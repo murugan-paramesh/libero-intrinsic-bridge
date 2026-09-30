@@ -129,10 +129,9 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
                 # release above the container floor (bottom of the region box, but never below the owner's bottom)
                 floor = max(c[2] - half[2], ob.bottom_z + 0.005)
                 slot = placement.region_slots(env, region, members, closing_axis)[si]
-                xy, min_bottom = placement.free_spot(env, region, body, slot, all_movable, exclude=[owner])
-                floor = max(floor, min_bottom)
-                return np.array([xy[0], xy[1], floor]), floor
-            skills.append(PlaceSkill(body, target_fn, support))
+                spots = placement.free_spots(env, region, body, slot, all_movable, exclude=[owner])
+                return [(np.array([xy[0], xy[1], max(floor, mb)]), max(floor, mb)) for xy, mb in spots]
+            skills.append(PlaceSkill(body, target_fn, support, region=region))
         elif atom.predicate == "on":
             tgt = atom.args[1]
             if is_site(env, tgt):
@@ -144,16 +143,18 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
                     c, rot, half = geo.site_box_world(env, tgt)
                     top = max(c[2] + half[2], geo.object_box(env, owner).top_z)
                     slot = placement.region_slots(env, tgt, members, closing_axis)[si]
-                    xy, min_bottom = placement.free_spot(env, tgt, body, slot, all_movable, exclude=[owner])
-                    return np.array([xy[0], xy[1], max(top, min_bottom)]), max(top, min_bottom)
+                    spots = placement.free_spots(env, tgt, body, slot, all_movable, exclude=[owner])
+                    return [(np.array([xy[0], xy[1], max(top, mb)]), max(top, mb)) for xy, mb in spots]
+                region_for_place = tgt
             else:
                 owner = root_body(env, tgt)
                 support = [owner]
+                region_for_place = None
 
                 def target_fn(closing_axis, owner=owner):
                     ob = geo.object_box(env, owner)
                     return np.array([ob.pos[0], ob.pos[1], ob.top_z]), ob.top_z
-            skills.append(PlaceSkill(body, target_fn, support))
+            skills.append(PlaceSkill(body, target_fn, support, region=region_for_place))
         support_bodies.update(support)
 
     for atom in closes:

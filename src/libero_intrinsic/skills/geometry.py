@@ -323,6 +323,33 @@ def grasp_candidates(env, body: str, yaws: Sequence[float] = (), heights: Sequen
     return out
 
 
+def hand_clearance(env, tcp_pos, tcp_rot, opening: float, width: float, other_bodies: Sequence[str],
+                   radius: float = 0.3, spacing: float = 0.012) -> Tuple[bool, str]:
+    """Hand/finger zones of the tcp frame at (tcp_pos, tcp_rot) must not contain points of any
+    of `other_bodies` (fingers opened to `opening`, holding an object of `width`)."""
+    half_open = opening / 2.0
+    for b in other_bodies:
+        p = env.body_pose(b)[0]
+        if np.linalg.norm(p[:2] - tcp_pos[:2]) > radius:
+            continue
+        pts = object_point_cloud(env, b, spacing=spacing)
+        local = (pts - tcp_pos) @ tcp_rot
+        x, y, z = local[:, 0], local[:, 1], local[:, 2]
+        finger = (np.abs(x) >= width / 2 - 0.002) & (np.abs(x) <= half_open + 0.027) & (np.abs(y) < FINGER_HALF_Y) & (z > FINGER_Z[0]) & (z < PAD_Z[1])
+        palm = (np.abs(x) < HAND_HALF_X) & (np.abs(y) < HAND_HALF_Y) & (z > HAND_Z[0]) & (z < HAND_Z[1])
+        if finger.any() or palm.any():
+            return False, b
+    return True, ""
+
+
+def hand_lowest_offset(tcp_rot: np.ndarray) -> float:
+    """Height of the lowest hand-body corner relative to the tcp for a given tcp rotation
+    (negative = above the tcp for a top-down grasp)."""
+    corners = np.array([[sx, sy, sz] for sx in (-HAND_HALF_X, HAND_HALF_X) for sy in (-HAND_HALF_Y, HAND_HALF_Y) for sz in (HAND_Z[0], HAND_Z[1])])
+    world = corners @ tcp_rot.T
+    return float(world[:, 2].min())
+
+
 def scene_clearance(env, cand: GraspCandidate, opening: float, other_bodies: Sequence[str], radius: float = 0.25) -> Tuple[bool, str]:
     """Check a grasp candidate against neighbouring objects: with the fingers opened to
     `opening` (total), no point of another object may lie in the finger or hand zones of the
