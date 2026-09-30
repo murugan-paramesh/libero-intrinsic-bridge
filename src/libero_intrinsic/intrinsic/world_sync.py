@@ -36,18 +36,41 @@ class WorldSync:
         self.spec = spec
         self.bodies: List[str] = [b.body for b in spec.exported_bodies]
         self.attached: Dict[str, Tuple[np.ndarray, np.ndarray]] = {}  # body -> tcp_t_obj at grasp
+        self.fingers: Dict[str, str] = dict(spec.finger_objects or {})  # finger body -> object
         client.ensure_tcp_frame(spec.tcp_link, spec.tcp_link_t_tcp_pos, spec.tcp_link_t_tcp_rot)
         # set link_t_tcp explicitly (see scene_to_sdf.py for why the SDF value is not trusted)
         client.set_tcp_frame_offset(spec.tcp_link, spec.tcp_link_t_tcp_pos, spec.tcp_link_t_tcp_rot)
         self._intrinsic_objects = set(client.list_objects())
-        missing = [b for b in self.bodies if b not in self._intrinsic_objects]
+        missing = [b for b in self.bodies + list(self.fingers.values()) if b not in self._intrinsic_objects]
         if missing:
             raise RuntimeError(f"objects missing in Intrinsic world {client.world_id}: {missing}")
+        # fingers ride on the flange frame; their offset follows the finger joints (see sync)
+        for obj in self.fingers.values():
+            client.reparent_to_frame(obj, client.robot, client.tcp_frame)
+        self._sync_fingers()
+
+    def _sync_fingers(self):
+        rs = self.env.robot_state()
+        tcp_inv = tf.inv_T(tf.make_T(rs.tcp_pos, rs.tcp_rot))
+        for fbody, obj in self.fingers.items():
+            rel = tcp_inv @ tf.make_T(*self.env.body_pose(fbody))
+            self.client.set_frame_relative_pose(self.client.robot, self.client.tcp_frame, obj, rel[:3, 3], rel[:3, :3])
+
+    def _base_pairs(self):
+        """Contacts that are always intentional: fingers vs the robot (they are part of it),
+        fingers vs each other, and fingers/robot vs an attached (grasped) object."""
+        r = self.client.robot
+        f = list(self.fingers.values())
+        pairs = [(r, x) for x in f] + [(f[0], f[1])] if len(f) == 2 else [(r, x) for x in f]
+        for b in self.attached:
+            pairs += [(r, b)] + [(x, b) for x in f]
+        return pairs
 
     # ------------------------------------------------------------------ pose push
     def sync(self, verify: bool = False) -> SyncReport:
         rs = self.env.robot_state()
         self.client.update_robot_joints(rs.q)
+        self._sync_fingers()
         errs, rerrs = [], []
         for body in self.bodies:
             if body in self.attached:
@@ -90,15 +113,16 @@ class WorldSync:
         object about to be grasped is intentional; everything else is checked. While an
         object is attached, contact between it and the robot is intentional too (the fingers
         squeeze it), and contact between it and its support surface at release is intentional."""
-        pairs = [(self.client.robot, target_body)] + [(self.client.robot, b) for b in self.attached] + list(extra_pairs)
+        f = list(self.fingers.values())
+        pairs = self._base_pairs() + [(self.client.robot, target_body)] + [(x, target_body) for x in f] + list(extra_pairs)
         return collision_settings(pairs, minimum_margin=margin, resolver=self.client.oref)
 
     def transport_collision_settings(self, support_bodies: Sequence[str] = (), margin: Optional[float] = None):
-        pairs = [(self.client.robot, b) for b in self.attached]
+        pairs = self._base_pairs()
         for b in self.attached:
             for s in support_bodies:
                 pairs.append((b, s))
         return collision_settings(pairs, minimum_margin=margin, resolver=self.client.oref)
 
     def free_collision_settings(self, margin: Optional[float] = None):
-        return collision_settings([(self.client.robot, b) for b in self.attached], minimum_margin=margin, resolver=self.client.oref)
+        return collision_settings(self._base_pairs(), minimum_margin=margin, resolver=self.client.oref)

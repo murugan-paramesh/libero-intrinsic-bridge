@@ -162,6 +162,8 @@ class PlaceParams:
     retreat_height: float = 0.10
     plan_timeout_s: float = 15.0
     settle_steps: int = 6
+    hand_below_tcp: float = 0.031        # PandaGripper: the wide hand body ends 31 mm above the tcp (measured from the collision mesh)
+    rim_clearance: float = 0.012         # the hand must stay this far above a container's rim
 
 
 class PlaceSkill(Skill):
@@ -194,8 +196,8 @@ class PlaceSkill(Skill):
     def attempt(self, ctx, i):
         env, client, sync = ctx.env, ctx.client, ctx.sync
         sync.sync()
-        target_origin, support_z = self.target_fn()
         rs = env.robot_state()
+        target_origin, support_z = self.target_fn(rs.tcp_rot[:, 0])
         tcp_t_obj_p, tcp_t_obj_R = sync.attached[self.body]
         box = geo.object_box(env, self.body)
         obj_origin_above_bottom = env.body_pose(self.body)[0][2] - box.bottom_z
@@ -204,6 +206,16 @@ class PlaceSkill(Skill):
         # keep the current tcp orientation (top-down); tcp position = obj_origin - R_tcp @ tcp_t_obj_p
         R_tcp = rs.tcp_rot
         tcp_release = release_origin - R_tcp @ tcp_t_obj_p
+        # Container-aware limit: the wide hand body cannot enter a container (basket, drawer,
+        # microwave, caddy). If the support surface lies below the support object's top (rim),
+        # keep the hand above the rim and drop the object from there.
+        rim_z = max(geo.object_box(env, b).top_z for b in self.support)
+        if support_z < rim_z - 0.02:
+            tcp_min_z = rim_z + self.p.rim_clearance - self.p.hand_below_tcp
+            if tcp_release[2] < tcp_min_z:
+                ctx.record(event="place_rim_limit", rim_z=float(rim_z), tcp_release_z=float(tcp_release[2]), tcp_min_z=float(tcp_min_z),
+                           drop_height=float(tcp_min_z - tcp_release[2]))
+                tcp_release[2] = tcp_min_z
         tcp_pre = tcp_release + np.array([0, 0, self.p.preplace_clearance])
         cs_transport = sync.transport_collision_settings(self.support)
         traj, res = _plan_and_execute(ctx, "place_transport", rs.q, tcp_pre, R_tcp, cs_transport, "ANY", +1.0, self.p.plan_timeout_s)

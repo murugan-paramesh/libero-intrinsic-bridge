@@ -230,7 +230,8 @@ class LiberoEnv:
                 bid = m.body_parentid[bid]
             return bid == root_id
 
-        pads = {m.geom_name2id(n) for n in ["gripper0_finger1_pad_collision", "gripper0_finger2_pad_collision"]}
+        pads = {m.geom_name2id(n) for n in ["gripper0_finger1_pad_collision", "gripper0_finger2_pad_collision",
+                                            "gripper0_finger1_collision", "gripper0_finger2_collision"]}
         n = 0
         for i in range(d.ncon):
             c = d.contact[i]

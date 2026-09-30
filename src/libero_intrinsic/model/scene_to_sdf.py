@@ -106,6 +106,7 @@ class SdfWorldSpec:
     tcp_link: str = "gripper0_eef"           # link entity the tcp frame is attached to
     tcp_link_t_tcp_pos: np.ndarray = None    # site offset in that link (== gripper0_grip_site)
     tcp_link_t_tcp_rot: np.ndarray = None
+    finger_objects: Dict[str, str] = None    # MuJoCo finger body -> Intrinsic object name
 
 
 class MeshExporter:
@@ -153,6 +154,7 @@ class SceneToSdf:
         self.meshes = MeshExporter(self.m, self.asset_dir)
         self.skipped: List[str] = []
         self.exported: List[ExportedBody] = []
+        self.finger_objects: Dict[str, str] = {}  # finger body -> model name
 
     # ------------------------------------------------------------------ helpers
     def _bid(self, name):
@@ -264,8 +266,6 @@ class SceneToSdf:
                 s = self._geom_xml(gi, m.geom_id2name(gi) or f"g{gi}", indent="        ")
                 if s:
                     x += s
-            if body == "gripper0_right_gripper":
-                x += self._finger_geoms_open(body)
             x += "      </link>\n"
             # joint from prev to this
             if prev is not None:
@@ -311,6 +311,40 @@ class SceneToSdf:
         x += "    </model>\n"
         return x, base_pos, base_rot
 
+    # ------------------------------------------------------------------ fingers
+    FINGER_MODELS = {"gripper0_leftfinger": "gripper_finger_left", "gripper0_rightfinger": "gripper_finger_right"}
+
+    def finger_models_xml(self) -> str:
+        """Each finger (finger body + its pad tip body) becomes a separate single-link model at
+        its current world pose. At runtime WorldSync parents both to the robot's flange frame
+        and updates flange_t_finger from the actual finger joint values, so the collision model
+        reflects the true finger opening (open during approach, closed around a grasped object)."""
+        m = self.m
+        x = ""
+        for fbody, model_name in self.FINGER_MODELS.items():
+            fid = self._bid(fbody)
+            wp = np.array(self.d.get_body_xpos(fbody))
+            wr = np.array(self.d.get_body_xmat(fbody)).reshape(3, 3)
+            x += f'    <model name="{model_name}">\n      <static>true</static>\n      <pose>{pose_str(wp, rot_to_rpy(wr))}</pose>\n'
+            x += '      <link name="link">\n        <pose>0 0 0 0 0 0</pose>\n' + self._inertial_xml("        ")
+            n = 0
+            for gi in self._body_geoms(fid):
+                sx = self._geom_xml(gi, m.geom_id2name(gi) or f"g{gi}", indent="        ")
+                if sx:
+                    x += sx; n += 1
+            for tip, parent in FINGER_TIP_BODIES.items():
+                if parent != fbody:
+                    continue
+                tid = self._bid(tip)
+                tp = np.array(m.body_pos[tid]); trot = quat_wxyz_to_mat(m.body_quat[tid])
+                for gi in self._body_geoms(tid):
+                    sx = self._geom_xml(gi, m.geom_id2name(gi) or f"g{gi}", tp, trot, indent="        ")
+                    if sx:
+                        x += sx; n += 1
+            x += "      </link>\n    </model>\n"
+            self.finger_objects[fbody] = model_name
+        return x
+
     # ------------------------------------------------------------------ environment
     def env_models_xml(self) -> str:
         m = self.m
@@ -340,13 +374,14 @@ class SceneToSdf:
     def write(self, name: str = "world") -> SdfWorldSpec:
         os.makedirs(self.out_dir, exist_ok=True)
         robot_xml, bpos, brot = self.robot_model_xml()
+        finger_xml = self.finger_models_xml()
         env_xml = self.env_models_xml()
         sdf = ('<?xml version="1.0"?>\n'
                '<sdf version="1.9" xmlns:intrinsic="https://intrinsic.ai/">\n'
-               '  <world name="default">\n' + robot_xml + env_xml + "  </world>\n</sdf>\n")
+               '  <world name="default">\n' + robot_xml + finger_xml + env_xml + "  </world>\n</sdf>\n")
         path = os.path.join(self.out_dir, f"{name}.sdf")
         with open(path, "w") as f:
             f.write(sdf)
         return SdfWorldSpec(path, self.asset_dir, ROBOT_MODEL_NAME, TCP_FRAME_NAME, list(ARM_JOINTS),
                             self.exported, list(self.skipped), bpos, brot, ARM_LINK_CHAIN[-1],
-                            self.tcp_site_pos, self.tcp_site_rot)
+                            self.tcp_site_pos, self.tcp_site_rot, dict(self.finger_objects))

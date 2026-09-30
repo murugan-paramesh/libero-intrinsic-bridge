@@ -31,7 +31,7 @@ CONTROL_DT = 1.0 / 20.0
 @dataclasses.dataclass
 class ExecutionConfig:
     time_scale: float = 1.0          # >1 slows execution (trajectory time * time_scale)
-    max_tcp_step: float = 0.02       # m per 20 Hz step the OSC controller is asked to follow (auto time scaling)
+    max_tcp_step: float = 0.015      # m per 20 Hz step the OSC controller is asked to follow (auto time scaling)
     max_rot_step_deg: float = 6.0    # deg per step
     pos_gain: float = 1.5            # error gain per step before saturation (tuned: 2 mm mean tcp error)
     rot_gain: float = 1.5

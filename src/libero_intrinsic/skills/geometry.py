@@ -304,7 +304,7 @@ def grasp_candidates(env, body: str, yaws: Sequence[float] = (), heights: Sequen
             if key in seen:
                 continue
             seen.add(key)
-            score = (MAX_WIDTH - w) + 0.0005 * min(n, 60) - 0.01 * abs(np.arctan2(np.sin(yaw), np.cos(yaw))) + 0.05 * (p[2] - box.bottom_z)
+            score = (MAX_WIDTH - w) + 0.0005 * min(n, 60) - 0.01 * abs(np.arctan2(np.sin(yaw), np.cos(yaw))) + 0.3 * (p[2] - box.bottom_z)
             out.append(GraspCandidate(p, R_, np.array([0, 0, -1.0]), w, float(yaw), float(score), f"pinch_z{p[2]:.3f}_yaw{np.degrees(yaw):.0f}"))
     out.sort(key=lambda g: -g.score)
     return out

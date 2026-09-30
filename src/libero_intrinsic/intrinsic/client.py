@@ -14,6 +14,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import os
+import re
 import subprocess
 import time
 import uuid
@@ -349,6 +350,14 @@ class IntrinsicClient:
             view=object_world_updates_pb2.ObjectView.BASIC)
         self._call("ReparentObject", self.world.ReparentObject, req, {"object": name, "parent": f"{parent_obj}/{parent_frame}"})
 
+    def set_frame_relative_pose(self, parent_obj: str, parent_frame: str, name: str, pos, rot):
+        """Set parent_frame_t_object for an object whose parent is that frame."""
+        req = object_world_updates_pb2.UpdateTransformRequest(
+            world_id=self.world_id, node_a=self.nref_frame(parent_obj, parent_frame), node_b=self.nref(name),
+            node_to_update=self.nref(name), a_t_b=tf.pose_to_proto(pos, rot, pose_pb2),
+            view=object_world_updates_pb2.ObjectView.BASIC)
+        self._call("UpdateTransform", self.world.UpdateTransform, req, {"object": name, "relative_to": f"{parent_obj}/{parent_frame}"})
+
     def reparent_to_root(self, name: str):
         req = object_world_updates_pb2.ReparentObjectRequest(
             world_id=self.world_id, object=self.oref(name),
@@ -449,8 +458,30 @@ class IntrinsicClient:
         rec.update({"n_states": int(len(t)), "duration_s": float(t[-1]) if len(t) else 0.0})
         return Trajectory(rid, t, q, qd, qdd, lat)
 
+    _REACHED_RE = re.compile(r"Planner reached final joint configuration \[([^\]]+)\]")
+
     def plan_to_pose(self, q_start, pos, rot, **kw) -> Trajectory:
-        return self.plan_trajectory(q_start, self.pose_target(pos, rot), **kw)
+        """Plan to a Cartesian pose. For LINEAR segments on the redundant Panda, Intrinsic's
+        linear Cartesian planner first picks an IK solution for the pose and then follows the
+        straight line with a path IK from the start configuration; if the two end configurations
+        differ by more than 1e-3 rad (they usually do for a 7-DoF arm, the null-space differs) it
+        returns NOT_FOUND with the configuration it reached and recommends re-planning with that
+        configuration as the target. We follow that recommendation: one re-plan of the same
+        LINEAR segment with the reached joint configuration as target. Both requests are logged."""
+        try:
+            return self.plan_trajectory(q_start, self.pose_target(pos, rot), **kw)
+        except IntrinsicRequestError as e:
+            if kw.get("motion_type") != "LINEAR" or e.code != "NOT_FOUND":
+                raise
+            m = self._REACHED_RE.search(e.details)
+            if not m:
+                raise
+            q_reached = [float(v) for v in m.group(1).split(",")]
+            self.log.record({"id": f"replan-{e.request_id}", "rpc": "note", "world_id": self.world_id, "t_wall": time.time(),
+                             "latency_s": 0.0, "status": "INFO", "error": None,
+                             "note": "LINEAR re-plan with the joint configuration reached by Intrinsic's path IK",
+                             "q_reached": q_reached})
+            return self.plan_trajectory(q_start, self.joint_target(q_reached), **kw)
 
     def plan_to_joints(self, q_start, q_goal, **kw) -> Trajectory:
         return self.plan_trajectory(q_start, self.joint_target(q_goal), **kw)

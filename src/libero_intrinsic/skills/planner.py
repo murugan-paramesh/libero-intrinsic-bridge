@@ -17,6 +17,7 @@ from typing import List
 import numpy as np
 
 from libero_intrinsic.skills import geometry as geo
+from libero_intrinsic.skills import placement
 from libero_intrinsic.skills.articulation import PushSkill, TurnKnobSkill, joint_world_axis_and_anchor
 from libero_intrinsic.skills.manipulation import PickParams, PickSkill, PlaceParams, PlaceSkill
 from libero_intrinsic.skills.task_spec import TaskSpec
@@ -92,6 +93,17 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
         joint = f"{stove}_button"
         skills.append(TurnKnobSkill(knob_body, joint, target_qpos=0.5))
 
+    # slots for several objects going into the same region
+    all_movable = [root_body(env, o) for o in env.object_names()]
+    region_members = {}
+    for atom in manip:
+        if atom.predicate == "in":
+            region_members.setdefault(atom.args[1], []).append(root_body(env, atom.args[0]))
+    slot_index = {}
+    for region, bodies in region_members.items():
+        for i, b in enumerate(bodies):
+            slot_index[(region, b)] = (i, bodies)
+
     for atom in manip:
         obj = atom.args[0]
         body = root_body(env, obj)
@@ -101,13 +113,17 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
             region = atom.args[1]
             owner = support_body_for(env, region_owner_body(env, region, spec))
             support = [owner]
+            si, members = slot_index[(region, body)]
 
-            def target_fn(region=region, owner=owner):
+            def target_fn(closing_axis, region=region, owner=owner, body=body, si=si, members=members):
                 c, rot, half = geo.site_box_world(env, region)
                 ob = geo.object_box(env, owner)
                 # release above the container floor (bottom of the region box, but never below the owner's bottom)
                 floor = max(c[2] - half[2], ob.bottom_z + 0.005)
-                return np.array([c[0], c[1], floor]), floor
+                slot = placement.region_slots(env, region, members, closing_axis)[si]
+                xy, min_bottom = placement.free_spot(env, region, body, slot, all_movable, exclude=[owner])
+                floor = max(floor, min_bottom)
+                return np.array([xy[0], xy[1], floor]), floor
             skills.append(PlaceSkill(body, target_fn, support))
         elif atom.predicate == "on":
             tgt = atom.args[1]
@@ -120,7 +136,7 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
                 owner = support_body_for(env, region_owner_body(env, tgt, spec))
                 support = [owner]
 
-                def target_fn(tgt=tgt, owner=owner):
+                def target_fn(closing_axis, tgt=tgt, owner=owner):
                     c, rot, half = geo.site_box_world(env, tgt)
                     top = c[2] + half[2]
                     return np.array([c[0], c[1], top]), top
@@ -128,7 +144,7 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
                 owner = root_body(env, tgt)
                 support = [owner]
 
-                def target_fn(owner=owner):
+                def target_fn(closing_axis, owner=owner):
                     ob = geo.object_box(env, owner)
                     return np.array([ob.pos[0], ob.pos[1], ob.top_z]), ob.top_z
             skills.append(PlaceSkill(body, target_fn, support))
