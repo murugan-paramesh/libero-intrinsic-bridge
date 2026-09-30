@@ -70,7 +70,7 @@ class SkillContext:
                     rot_err_max_deg=res.rot_err_max_deg, joint_err_max=res.joint_err_max,
                     joint_err_final=res.joint_err_final, final_pos_err=res.final_pos_err,
                     final_rot_err_deg=res.final_rot_err_deg, planned_duration_s=traj.duration,
-                    planning_latency_s=traj.planning_latency_s, n_states=int(len(traj.t)))
+                    planning_latency_s=traj.planning_latency_s, n_states=int(len(traj.t)), time_scale=res.time_scale)
         return res
 
 

@@ -199,7 +199,7 @@ class Trajectory:
 # ----------------------------------------------------------------------------- client
 class IntrinsicClient:
     def __init__(self, addresses: ServerAddresses, world_id: str, log: RequestLog,
-                 robot_name: str = "panda", tcp_frame: str = "tcp", rpc_timeout_s: float = 120.0):
+                 robot_name: str = "panda", tcp_frame: str = "flange", rpc_timeout_s: float = 120.0):
         self.world_id = world_id
         self.robot = robot_name
         self.tcp_frame = tcp_frame
@@ -216,6 +216,80 @@ class IntrinsicClient:
             grpc.channel_ready_future(self._mp_ch).result(timeout=10)
         except grpc.FutureTimeoutError as e:
             raise IntrinsicUnavailableError(f"cannot connect to Intrinsic services at {addresses}") from e
+        # Object names in SDF-loaded worlds are not "global aliases", so by-name references are
+        # rejected by the world service; resolve names to ids once and reference by id.
+        self._ids: Dict[str, str] = {}
+        self._frame_ids: Dict[Tuple[str, str], str] = {}
+        self._refresh_ids()
+
+    def _refresh_ids(self):
+        req = object_world_service_pb2.ListObjectsRequest(world_id=self.world_id, view=object_world_updates_pb2.ObjectView.BASIC)
+        _, resp, _ = self._call("ListObjects", self.world.ListObjects, req, {})
+        self._ids = {o.name: o.id for o in resp.objects}
+        for o in resp.objects:
+            for fr in o.frames:
+                self._frame_ids[(o.name, fr.name)] = fr.id
+        if self.robot in self._ids:
+            full = self.get_object(self.robot)
+            for fr in full.frames:
+                self._frame_ids[(self.robot, fr.name)] = fr.id
+            if not full.name_is_global_alias:
+                # the motion planner service resolves the robot by *name* internally, which
+                # requires the global-alias flag (SDF-loaded objects do not have it)
+                req = object_world_updates_pb2.UpdateObjectNameRequest(
+                    world_id=self.world_id, object=self.oref(self.robot), name=self.robot,
+                    name_is_global_alias=True, view=object_world_updates_pb2.ObjectView.BASIC)
+                self._call("UpdateObjectName", self.world.UpdateObjectName, req, {"object": self.robot, "global_alias": True})
+
+    def set_tcp_frame_offset(self, link_name: str, link_t_tcp_pos, link_t_tcp_rot):
+        """Set link_t_tcp directly: UpdateTransform between the robot's `link_name` entity
+        (selected with node_a_filter) and the tcp frame, updating the frame. Independent of any
+        joint state (fixes the pose WorldFromSdf stored for the frame, see scene_to_sdf.py)."""
+        req = object_world_updates_pb2.UpdateTransformRequest(
+            world_id=self.world_id, node_a=self.nref(self.robot),
+            node_a_filter=object_world_refs_pb2.ObjectEntityFilter(entity_names=[link_name]),
+            node_b=self.nref_frame(self.robot, self.tcp_frame),
+            node_to_update=self.nref_frame(self.robot, self.tcp_frame),
+            a_t_b=tf.pose_to_proto(link_t_tcp_pos, link_t_tcp_rot, pose_pb2),
+            view=object_world_updates_pb2.ObjectView.BASIC)
+        self._call("UpdateTransform", self.world.UpdateTransform, req, {"object": f"{self.robot}/{self.tcp_frame}", "link": link_name})
+
+    def ensure_tcp_frame(self, link_name: str, link_t_tcp_pos, link_t_tcp_rot):
+        """Create the tcp frame on the robot's `link_name` entity if the world does not have it."""
+        if (self.robot, self.tcp_frame) in self._frame_ids:
+            return self._frame_ids[(self.robot, self.tcp_frame)]
+        req = object_world_updates_pb2.CreateFrameRequest(
+            world_id=self.world_id, new_frame_name=self.tcp_frame,
+            parent_object_with_filter=object_world_refs_pb2.ObjectReferenceWithEntityFilter(
+                reference=self.oref(self.robot),
+                entity_filter=object_world_refs_pb2.ObjectEntityFilter(entity_names=[link_name])),
+            parent_t_new_frame=tf.pose_to_proto(link_t_tcp_pos, link_t_tcp_rot, pose_pb2),
+            designate_as_attachment_frame=True)
+        _, resp, _ = self._call("CreateFrame", self.world.CreateFrame, req, {"frame": self.tcp_frame, "link": link_name})
+        self._frame_ids[(self.robot, self.tcp_frame)] = resp.id
+        return resp.id
+
+    def oid(self, name: str) -> str:
+        if name == ROOT_OBJECT:
+            return ROOT_OBJECT
+        if name not in self._ids:
+            self._refresh_ids()
+        return self._ids[name]
+
+    def fid(self, obj: str, frame: str) -> str:
+        return self._frame_ids[(obj, frame)]
+
+    def oref(self, name: str) -> object_world_refs_pb2.ObjectReference:
+        return object_world_refs_pb2.ObjectReference(id=self.oid(name), debug_hint=name)
+
+    def nref(self, name: str) -> object_world_refs_pb2.TransformNodeReference:
+        return object_world_refs_pb2.TransformNodeReference(id=self.oid(name), debug_hint=name)
+
+    def nref_frame(self, obj: str, frame: str) -> object_world_refs_pb2.TransformNodeReference:
+        return object_world_refs_pb2.TransformNodeReference(id=self.fid(obj, frame), debug_hint=f"{obj}/{frame}")
+
+    def fref(self, obj: str, frame: str) -> object_world_refs_pb2.FrameReference:
+        return object_world_refs_pb2.FrameReference(id=self.fid(obj, frame), debug_hint=f"{obj}/{frame}")
 
     # ---------------------------------------------------------------- plumbing
     def _call(self, rpc: str, stub_method, request, summary: dict, dump=False):
@@ -247,7 +321,7 @@ class IntrinsicClient:
         return [o.name for o in resp.objects]
 
     def get_object(self, name: str):
-        req = object_world_service_pb2.GetObjectRequest(world_id=self.world_id, object=obj_ref(name),
+        req = object_world_service_pb2.GetObjectRequest(world_id=self.world_id, object=self.oref(name),
                                                         view=object_world_updates_pb2.ObjectView.FULL)
         _, resp, _ = self._call("GetObject", self.world.GetObject, req, {"object": name})
         return resp
@@ -255,8 +329,8 @@ class IntrinsicClient:
     def get_transform(self, a_obj: str, b_obj: str, a_frame: Optional[str] = None, b_frame: Optional[str] = None):
         req = object_world_service_pb2.GetTransformRequest(
             world_id=self.world_id,
-            node_a=node_ref_frame(a_obj, a_frame) if a_frame else node_ref_object(a_obj),
-            node_b=node_ref_frame(b_obj, b_frame) if b_frame else node_ref_object(b_obj))
+            node_a=self.nref_frame(a_obj, a_frame) if a_frame else self.nref(a_obj),
+            node_b=self.nref_frame(b_obj, b_frame) if b_frame else self.nref(b_obj))
         _, resp, _ = self._call("GetTransform", self.world.GetTransform, req, {"a": a_obj, "b": b_obj})
         return tf.proto_to_pose(resp.a_t_b)
 
@@ -264,22 +338,22 @@ class IntrinsicClient:
         """Set root_t_object for an object parented to root (UpdateTransform updates the child's
         parent_t_this so that root_t_object == the given pose)."""
         req = object_world_updates_pb2.UpdateTransformRequest(
-            world_id=self.world_id, node_a=node_ref_object(ROOT_OBJECT), node_b=node_ref_object(name),
-            node_to_update=node_ref_object(name), a_t_b=tf.pose_to_proto(pos, rot, pose_pb2),
+            world_id=self.world_id, node_a=self.nref(ROOT_OBJECT), node_b=self.nref(name),
+            node_to_update=self.nref(name), a_t_b=tf.pose_to_proto(pos, rot, pose_pb2),
             view=object_world_updates_pb2.ObjectView.BASIC)
         self._call("UpdateTransform", self.world.UpdateTransform, req, {"object": name})
 
     def reparent_to_frame(self, name: str, parent_obj: str, parent_frame: str):
         req = object_world_updates_pb2.ReparentObjectRequest(
-            world_id=self.world_id, object=obj_ref(name), parent_frame=frame_ref(parent_obj, parent_frame),
+            world_id=self.world_id, object=self.oref(name), parent_frame=self.fref(parent_obj, parent_frame),
             view=object_world_updates_pb2.ObjectView.BASIC)
         self._call("ReparentObject", self.world.ReparentObject, req, {"object": name, "parent": f"{parent_obj}/{parent_frame}"})
 
     def reparent_to_root(self, name: str):
         req = object_world_updates_pb2.ReparentObjectRequest(
-            world_id=self.world_id, object=obj_ref(name),
+            world_id=self.world_id, object=self.oref(name),
             parent_object=object_world_refs_pb2.ObjectReferenceWithEntityFilter(
-                reference=obj_ref(ROOT_OBJECT),
+                reference=self.oref(ROOT_OBJECT),
                 entity_filter=object_world_refs_pb2.ObjectEntityFilter(include_base_entity=True)),
             view=object_world_updates_pb2.ObjectView.BASIC)
         self._call("ReparentObject", self.world.ReparentObject, req, {"object": name, "parent": ROOT_OBJECT})
@@ -287,7 +361,7 @@ class IntrinsicClient:
     def update_robot_joints(self, q: Sequence[float]):
         """Store the current robot configuration in the world (used as the default start)."""
         req = object_world_updates_pb2.UpdateObjectJointsRequest(
-            world_id=self.world_id, object=obj_ref(self.robot), joint_positions=[float(v) for v in q],
+            world_id=self.world_id, object=self.oref(self.robot), joint_positions=[float(v) for v in q],
             view=object_world_updates_pb2.ObjectView.BASIC)
         self._call("UpdateObjectJoints", self.world.UpdateObjectJoints, req, {"object": self.robot})
 
@@ -295,18 +369,18 @@ class IntrinsicClient:
     def fk(self, q: Sequence[float]) -> Tuple[np.ndarray, np.ndarray]:
         """root_t_tcp for joint vector q, computed by Intrinsic (ComputeFk)."""
         req = motion_planner_service_pb2.FkRequest(world_id=self.world_id)
-        req.robot_reference.object_id.CopyFrom(obj_ref(self.robot))
+        req.robot_reference.object_id.CopyFrom(self.oref(self.robot))
         req.joints.joints.extend([float(v) for v in q])
-        req.reference.CopyFrom(node_ref_object(ROOT_OBJECT))
-        req.target.CopyFrom(node_ref_frame(self.robot, self.tcp_frame))
+        req.reference.CopyFrom(self.nref(ROOT_OBJECT))
+        req.target.CopyFrom(self.nref_frame(self.robot, self.tcp_frame))
         _, resp, _ = self._call("ComputeFk", self.planner.ComputeFk, req, {"n_joints": len(q)})
         return tf.proto_to_pose(resp.reference_t_target)
 
     def pose_target(self, pos, rot) -> geometric_constraints_pb2.GeometricConstraint:
         """GeometricConstraint: tcp frame == root_t_target (PoseEquality)."""
         c = geometric_constraints_pb2.GeometricConstraint()
-        c.cartesian_pose.moving_frame.CopyFrom(node_ref_frame(self.robot, self.tcp_frame))
-        c.cartesian_pose.target_frame.CopyFrom(node_ref_object(ROOT_OBJECT))
+        c.cartesian_pose.moving_frame.CopyFrom(self.nref_frame(self.robot, self.tcp_frame))
+        c.cartesian_pose.target_frame.CopyFrom(self.nref(ROOT_OBJECT))
         c.cartesian_pose.target_frame_offset.CopyFrom(tf.pose_to_proto(pos, rot, pose_pb2))
         return c
 
@@ -319,7 +393,7 @@ class IntrinsicClient:
            collision_settings: Optional[collision_settings_pb2.CollisionSettings] = None,
            ensure_same_branch: bool = False, allow_collisions: bool = False) -> Tuple[List[np.ndarray], str, float]:
         req = motion_planner_service_pb2.IkRequest(world_id=self.world_id, max_num_solutions=max_solutions)
-        req.robot_reference.object_id.CopyFrom(obj_ref(self.robot))
+        req.robot_reference.object_id.CopyFrom(self.oref(self.robot))
         req.target.CopyFrom(self.pose_target(pos, rot))
         req.starting_joints.joints.extend([float(v) for v in seed])
         if collision_settings is not None:
@@ -335,7 +409,7 @@ class IntrinsicClient:
     def check_collisions(self, waypoints: Sequence[Sequence[float]],
                          collision_settings: Optional[collision_settings_pb2.CollisionSettings] = None):
         req = motion_planner_service_pb2.CheckCollisionsRequest(world_id=self.world_id)
-        req.robot_reference.object_id.CopyFrom(obj_ref(self.robot))
+        req.robot_reference.object_id.CopyFrom(self.oref(self.robot))
         for w in waypoints:
             req.waypoint.add().joints.extend([float(v) for v in w])
         if collision_settings is not None:
@@ -352,7 +426,7 @@ class IntrinsicClient:
                         caller_id: str = "libero_bridge") -> Trajectory:
         """PlanTrajectory: collision-free, time-parameterized trajectory from q_start to target."""
         req = motion_planner_service_pb2.MotionPlanningRequest(world_id=self.world_id, caller_id=caller_id)
-        req.robot_specification.robot_reference.object_id.CopyFrom(obj_ref(self.robot))
+        req.robot_specification.robot_reference.object_id.CopyFrom(self.oref(self.robot))
         req.robot_specification.start_configuration.joints.extend([float(v) for v in q_start])
         seg = req.motion_specification.motion_segments.add()
         seg.target.CopyFrom(target)
@@ -388,7 +462,7 @@ class IntrinsicClient:
 
 # ----------------------------------------------------------------------------- collision rules
 def collision_settings(exclude_pairs: Sequence[Tuple[str, str]] = (), minimum_margin: Optional[float] = None,
-                       disable_all: bool = False) -> collision_settings_pb2.CollisionSettings:
+                       disable_all: bool = False, resolver=None) -> collision_settings_pb2.CollisionSettings:
     """Build CollisionSettings. `exclude_pairs` lists (object_a, object_b) whose contact is
     intentional (e.g. grasped object vs gripper) and must not count as collision; every other
     pair keeps Intrinsic's default checking."""
@@ -400,6 +474,6 @@ def collision_settings(exclude_pairs: Sequence[Tuple[str, str]] = (), minimum_ma
     for a, b in exclude_pairs:
         rule = cs.collision_rules.add()
         rule.collision_action.CopyFrom(collision_action_pb2.CollisionAction(is_excluded=True))
-        rule.left.add().object.CopyFrom(obj_ref(a))
-        rule.right.add().object.CopyFrom(obj_ref(b))
+        rule.left.add().object.CopyFrom(resolver(a) if resolver else obj_ref(a))
+        rule.right.add().object.CopyFrom(resolver(b) if resolver else obj_ref(b))
     return cs

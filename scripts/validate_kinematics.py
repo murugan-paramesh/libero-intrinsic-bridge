@@ -98,7 +98,7 @@ def main():
         # ---- collision check sanity
         set_q(env, q_home)
         sync.sync()
-        free_cs = collision_settings()
+        free_cs = collision_settings(resolver=client.oref)
         home_coll, msg_home, _ = client.check_collisions([q_home], free_cs)
         # push the arm down into the table: joint2 forward + joint4 open (empirically intersects the table)
         q_bad = q_home.copy(); q_bad[1] = min(lim[1, 1], 1.4); q_bad[3] = max(lim[3, 0], -1.2)

@@ -30,7 +30,9 @@ CONTROL_DT = 1.0 / 20.0
 
 @dataclasses.dataclass
 class ExecutionConfig:
-    time_scale: float = 1.0          # >1 slows execution (trajectory time / time_scale)
+    time_scale: float = 1.0          # >1 slows execution (trajectory time * time_scale)
+    max_tcp_step: float = 0.02       # m per 20 Hz step the OSC controller is asked to follow (auto time scaling)
+    max_rot_step_deg: float = 6.0    # deg per step
     pos_gain: float = 1.5            # error gain per step before saturation (tuned: 2 mm mean tcp error)
     rot_gain: float = 1.5
     lookahead_s: float = 0.10        # target time offset (compensates OSC lag)
@@ -60,6 +62,7 @@ class ExecutionResult:
     wall_time_s: float
     log: List[dict]
     executed_q: Optional[np.ndarray] = None   # (steps, 7) joint samples actually reached
+    time_scale: float = 1.0                   # execution slow-down actually applied
 
 
 class TrajectoryExecutor:
@@ -69,12 +72,26 @@ class TrajectoryExecutor:
         self.on_step = on_step  # called after every env.step (e.g. video frame capture)
 
     def _tcp_refs(self, traj: Trajectory, cfg: ExecutionConfig):
-        """Sample the trajectory at control rate and compute Intrinsic FK for every sample."""
-        T = traj.duration * cfg.time_scale
-        n = max(int(np.ceil(T / CONTROL_DT)), 1)
-        times = np.linspace(0.0, T, n + 1)
-        qs = np.array([traj.sample(t / cfg.time_scale) for t in times])
-        poses = [self.client.fk(q) for q in qs]
+        """Sample the trajectory at control rate and compute Intrinsic FK for every sample.
+
+        Intrinsic's trajectories respect the Panda velocity limits and can be far faster than the
+        20 Hz OSC controller can follow (its output saturates at 5 cm / 0.5 rad per step). The
+        execution time scale is therefore raised automatically until no two consecutive TCP
+        samples are farther apart than max_tcp_step / max_rot_step_deg; the path is unchanged."""
+        scale = cfg.time_scale
+        for _ in range(8):
+            T = traj.duration * scale
+            n = max(int(np.ceil(T / CONTROL_DT)), 1)
+            times = np.linspace(0.0, T, n + 1)
+            qs = np.array([traj.sample(t / scale) for t in times])
+            poses = [self.client.fk(q) for q in qs]
+            dpos = max((np.linalg.norm(poses[i + 1][0] - poses[i][0]) for i in range(n)), default=0.0)
+            drot = max((tf.rot_error_deg(poses[i + 1][1], poses[i][1]) for i in range(n)), default=0.0)
+            f = max(dpos / cfg.max_tcp_step, drot / cfg.max_rot_step_deg, 1.0)
+            if f <= 1.02:
+                break
+            scale *= f * 1.05
+        self.last_time_scale = scale
         return times, qs, poses
 
     def execute(self, traj: Trajectory, cfg: ExecutionConfig = ExecutionConfig()) -> ExecutionResult:
@@ -153,4 +170,5 @@ class TrajectoryExecutor:
             rot_err_mean_deg=float(np.mean(rot_errs)) if rot_errs else 0.0,
             joint_err_max=float(np.max(joint_errs)) if joint_errs else 0.0,
             joint_err_final=fj, final_pos_err=fp, final_rot_err_deg=fr,
-            wall_time_s=time.time() - t_wall, log=log, executed_q=np.array(executed_q) if executed_q else None)
+            wall_time_s=time.time() - t_wall, log=log, executed_q=np.array(executed_q) if executed_q else None,
+            time_scale=float(self.last_time_scale))

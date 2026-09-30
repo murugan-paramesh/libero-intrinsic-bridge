@@ -63,7 +63,7 @@ def main():
         summary = {"task": task.name, "init": a.init, "object": obj, "grasp": c.label, "pregrasp_target": pre.tolist(),
                    "trajectory_id": traj.request_id, "planned_duration_s": traj.duration, "planning_latency_s": traj.planning_latency_s,
                    "n_states": int(len(traj.t)), "ik_solutions": len(sols),
-                   "execution": {k: v for k, v in res.__dict__.items() if k != "log"},
+                   "execution": {k: v for k, v in res.__dict__.items() if k not in ("log", "executed_q")},
                    "final_tcp": rs.tcp_pos.tolist(), "final_q": rs.q.tolist(), "planned_final_q": traj.q[-1].tolist(),
                    "video": video.path, "requests": len(log.records), "addresses": srv.addresses.__dict__}
         with open(os.path.join(a.out, "summary.json"), "w") as f:

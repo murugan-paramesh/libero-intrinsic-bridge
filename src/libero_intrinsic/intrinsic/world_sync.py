@@ -36,6 +36,9 @@ class WorldSync:
         self.spec = spec
         self.bodies: List[str] = [b.body for b in spec.exported_bodies]
         self.attached: Dict[str, Tuple[np.ndarray, np.ndarray]] = {}  # body -> tcp_t_obj at grasp
+        client.ensure_tcp_frame(spec.tcp_link, spec.tcp_link_t_tcp_pos, spec.tcp_link_t_tcp_rot)
+        # set link_t_tcp explicitly (see scene_to_sdf.py for why the SDF value is not trusted)
+        client.set_tcp_frame_offset(spec.tcp_link, spec.tcp_link_t_tcp_pos, spec.tcp_link_t_tcp_rot)
         self._intrinsic_objects = set(client.list_objects())
         missing = [b for b in self.bodies if b not in self._intrinsic_objects]
         if missing:
@@ -88,14 +91,14 @@ class WorldSync:
         object is attached, contact between it and the robot is intentional too (the fingers
         squeeze it), and contact between it and its support surface at release is intentional."""
         pairs = [(self.client.robot, target_body)] + [(self.client.robot, b) for b in self.attached] + list(extra_pairs)
-        return collision_settings(pairs, minimum_margin=margin)
+        return collision_settings(pairs, minimum_margin=margin, resolver=self.client.oref)
 
     def transport_collision_settings(self, support_bodies: Sequence[str] = (), margin: Optional[float] = None):
         pairs = [(self.client.robot, b) for b in self.attached]
         for b in self.attached:
             for s in support_bodies:
                 pairs.append((b, s))
-        return collision_settings(pairs, minimum_margin=margin)
+        return collision_settings(pairs, minimum_margin=margin, resolver=self.client.oref)
 
     def free_collision_settings(self, margin: Optional[float] = None):
-        return collision_settings([(self.client.robot, b) for b in self.attached], minimum_margin=margin)
+        return collision_settings([(self.client.robot, b) for b in self.attached], minimum_margin=margin, resolver=self.client.oref)

@@ -27,7 +27,7 @@ from libero_intrinsic.skills.task_spec import task_spec_from_env
 from libero_intrinsic.skills.planner import build_skill_sequence
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-DEFAULT_BINARY = "/home/user/bazel_out/execroot/_main/bazel-out/k8-opt/bin/libero_bridge/libero_planner_server"
+DEFAULT_BINARY = "/home/user/bazel_out/execroot/_main/bazel-out/haswell-opt/bin/libero_bridge/libero_planner_server"
 
 
 def git_rev(path: str) -> str:

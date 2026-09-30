@@ -40,7 +40,7 @@ GEOM_PLANE, GEOM_HFIELD, GEOM_SPHERE, GEOM_CAPSULE, GEOM_ELLIPSOID, GEOM_CYLINDE
 JNT_FREE, JNT_BALL, JNT_SLIDE, JNT_HINGE = range(4)
 
 ROBOT_MODEL_NAME = "panda"
-TCP_FRAME_NAME = "tcp"
+TCP_FRAME_NAME = "flange"  # Intrinsic requires exactly one frame named "flange" (ISO 9787) on a robot for planning; ours is at the grip site
 ARM_LINK_CHAIN = [
     "robot0_base", "robot0_link0", "robot0_link1", "robot0_link2", "robot0_link3",
     "robot0_link4", "robot0_link5", "robot0_link6", "robot0_link7", "robot0_right_hand",
@@ -103,6 +103,9 @@ class SdfWorldSpec:
     skipped_geoms: List[str]
     robot_base_pos: np.ndarray
     robot_base_rot: np.ndarray
+    tcp_link: str = "gripper0_eef"           # link entity the tcp frame is attached to
+    tcp_link_t_tcp_pos: np.ndarray = None    # site offset in that link (== gripper0_grip_site)
+    tcp_link_t_tcp_rot: np.ndarray = None
 
 
 class MeshExporter:
@@ -294,13 +297,17 @@ class SceneToSdf:
                     raise RuntimeError(f"unexpected joints on {body}: {[m.joint_id2name(j) for j in jids]}")
             prev = body
         x += joint_xml
-        # TCP frame: identity on the eef link (== site gripper0_grip_site, which is at the eef body origin)
+        # TCP frame attached to the eef link (== site gripper0_grip_site). NOTE: WorldFromSdf
+        # resolves the frame's world pose with all joints at zero, but joint 4's zero lies outside
+        # its limits, so Intrinsic initialises that joint at mid-range and stores a wrong
+        # link_t_frame. The client therefore re-sets link_t_tcp at runtime (UpdateTransform with
+        # base_t_tcp taken from MuJoCo at the synced joint vector); see IntrinsicClient.calibrate_tcp_frame.
         site_id = m.site_name2id("gripper0_grip_site")
         assert m.body_id2name(m.site_bodyid[site_id]) == ARM_LINK_CHAIN[-1]
-        sp = np.array(m.site_pos[site_id])
-        srot = quat_wxyz_to_mat(m.site_quat[site_id])
-        x += (f'      <frame name="{TCP_FRAME_NAME}" attached_to="{ARM_LINK_CHAIN[-1]}">'
-              f"<pose>{pose_str(sp, rot_to_rpy(srot))}</pose></frame>\n")
+        self.tcp_site_pos = np.array(m.site_pos[site_id])
+        self.tcp_site_rot = quat_wxyz_to_mat(m.site_quat[site_id])
+        x += (f'      <frame name="{TCP_FRAME_NAME}" attached_to="{ARM_LINK_CHAIN[-1]}" intrinsic:create_attachment_entity="true">'
+              f"<pose>{pose_str(self.tcp_site_pos, rot_to_rpy(self.tcp_site_rot))}</pose></frame>\n")
         x += "    </model>\n"
         return x, base_pos, base_rot
 
@@ -341,4 +348,5 @@ class SceneToSdf:
         with open(path, "w") as f:
             f.write(sdf)
         return SdfWorldSpec(path, self.asset_dir, ROBOT_MODEL_NAME, TCP_FRAME_NAME, list(ARM_JOINTS),
-                            self.exported, list(self.skipped), bpos, brot)
+                            self.exported, list(self.skipped), bpos, brot, ARM_LINK_CHAIN[-1],
+                            self.tcp_site_pos, self.tcp_site_rot)
