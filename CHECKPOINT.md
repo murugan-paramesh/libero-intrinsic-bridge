@@ -1,0 +1,38 @@
+# CHECKPOINT (living file: completed work, exact commands, blockers, next actions)
+
+Updated: 2026-09-30 (session 1)
+
+## Pinned upstream revisions
+- intrinsic-core: c61bf075f2335371c6367b61117e8a62bb960c3b (2026-09-30, shallow clone in third_party/intrinsic-core)
+- LIBERO: 8f1084e3132a39270c3a13ebe37270a43ece2a01 (2025-03-15, shallow clone in third_party/LIBERO)
+- bazel-central-registry: shallow clone in third_party/bazel-central-registry (needed because bcr.bazel.build is blocked by egress policy)
+
+## Machine (cloud workspace)
+4 vCPU, 15 GiB RAM, no GPU, ~30 GiB writable disk allowance. Ubuntu 24.04. Docker CLI present but no daemon; no k3s.
+Rendering: Mesa EGL + OSMesa installed via apt (libegl1 libegl-mesa0 libgl1-mesa-dri libosmesa6). MUJOCO_GL=egl works on CPU.
+
+## Completed
+1. Python 3.10 venv (.venv) with robosuite==1.4.0, mujoco==2.3.7, numpy==1.23.5, bddl==1.0.1, gym==0.25.2, libero (editable via .pth). 
+   LIBERO's benchmark loader needs torch only for torch.load of init files; we load them torch-free (src/libero_intrinsic/env/init_states.py), torch removed to save 6 GB.
+2. LIBERO-10 env smoke test: all 10 tasks enumerated; OffScreenRenderEnv reset + set_init_state + step works (20 steps ~10 s on CPU incl. 128x128 EGL render).
+3. Source surveys of both repos (see docs/contract.md).
+4. Bazelisk installed (BAZELISK_BASE_URL=https://github.com/bazelbuild/bazel/releases/download since releases.bazel.build is blocked). Bazel 8.8.1.
+
+## In progress
+- Bazel build (background) of Intrinsic in-process planner service:
+  cd third_party/intrinsic-core && bazel --output_base=/home/user/bazel_out build \
+    --registry=file:///home/user/libero-intrinsic-bridge/third_party/bazel-central-registry \
+    --jobs=3 --local_resources=memory=11000 --keep_going \
+    //intrinsic_motion_planning/intrinsic/motion_planning/service:motion_planner_service_in_process \
+    //intrinsic/world/service/test:world_service_fake //intrinsic/world/conversion/sdf:sdf_to_world
+  Log: build_logs/bazel_build_1.log
+
+## Blockers / risks
+- Egress policy blocks bcr.bazel.build, releases.bazel.build, mirror.bazel.build, sourceforge.net, go.dev, *.googlesource.com. Worked around with a local file registry; any dep hosted only on a blocked host will fail to fetch.
+- Disk: LLVM toolchain + deps ~12 GB in /home/user/bazel_out; ~11 GB free after clearing caches.
+- Intrinsic full runtime (k3s + release tarball, Ubuntu 26.04) is not deployable here -> use MotionPlannerServiceInProcess + FakeWorldService (both are official intrinsic-core C++ targets) served over local TCP gRPC.
+
+## Next actions
+1. Write docs/contract.md (verified facts), env wrapper, MJCF->SDF Panda converter.
+2. C++ intrinsic_stack server: load SDF worlds, expose ObjectWorldService + MotionPlannerService on TCP.
+3. Python gRPC client via Intrinsic's own py protos; FK/IK validation vs MuJoCo.
