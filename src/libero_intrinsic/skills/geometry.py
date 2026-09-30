@@ -265,8 +265,16 @@ def evaluate_grasp(pts_world: np.ndarray, tcp_pos: np.ndarray, rot: np.ndarray):
     return True, width, int(in_pad_band.sum()), "ok"
 
 
+def tilted_rotation(yaw: float, tilt_axis: str, tilt: float) -> np.ndarray:
+    """Top-down grasp frame additionally rotated by `tilt` about its own x (closing) or y axis,
+    so the approach direction (tcp z) leans away from a neighbouring obstacle."""
+    R0 = top_down_rotation(yaw)
+    ax = R0[:, 0] if tilt_axis == "x" else R0[:, 1]
+    return R.from_rotvec(ax * tilt).as_matrix() @ R0
+
+
 def grasp_candidates(env, body: str, yaws: Sequence[float] = (), heights: Sequence[float] = (),
-                     extra_points: Sequence[np.ndarray] = ()) -> List[GraspCandidate]:
+                     extra_points: Sequence[np.ndarray] = (), tilts: Sequence[float] = ()) -> List[GraspCandidate]:
     """Generic top-down pinch grasps for a box-decomposed object: candidate tcp positions are the
     centers of the object's geoms (thin features such as handles, rims, walls) plus the cross-section
     centers at several heights; every (position, yaw) is checked with evaluate_grasp against the
@@ -296,15 +304,39 @@ def grasp_candidates(env, body: str, yaws: Sequence[float] = (), heights: Sequen
         p[2] = min(p[2], box.top_z - 0.012)  # pads must be below the top
         p[2] = max(p[2], box.bottom_z + 0.008)  # and above the support surface
         for yaw in yaws:
-            R_ = top_down_rotation(yaw)
-            ok, w, n, why = evaluate_grasp(pts, p, R_)
-            if not ok:
-                continue
-            key = (round(p[0], 3), round(p[1], 3), round(p[2], 3), round(float(yaw), 2))
-            if key in seen:
-                continue
-            seen.add(key)
-            score = (MAX_WIDTH - w) + 0.0005 * min(n, 60) - 0.01 * abs(np.arctan2(np.sin(yaw), np.cos(yaw))) + 0.3 * (p[2] - box.bottom_z)
-            out.append(GraspCandidate(p, R_, np.array([0, 0, -1.0]), w, float(yaw), float(score), f"pinch_z{p[2]:.3f}_yaw{np.degrees(yaw):.0f}"))
+            variants = [("", top_down_rotation(yaw), 0.0)]
+            for t in tilts:
+                for axn in ("x", "y"):
+                    for sgn in (1, -1):
+                        variants.append((f"_tilt{axn}{sgn*np.degrees(t):+.0f}", tilted_rotation(yaw, axn, sgn * t), abs(t)))
+            for suffix, R_, tilt_mag in variants:
+                ok, w, n, why = evaluate_grasp(pts, p, R_)
+                if not ok:
+                    continue
+                key = (round(p[0], 3), round(p[1], 3), round(p[2], 3), round(float(yaw), 2), suffix)
+                if key in seen:
+                    continue
+                seen.add(key)
+                score = (MAX_WIDTH - w) + 0.0005 * min(n, 60) - 0.01 * abs(np.arctan2(np.sin(yaw), np.cos(yaw))) + 0.3 * (p[2] - box.bottom_z) - 0.02 * tilt_mag
+                out.append(GraspCandidate(p, R_, R_[:, 2].copy(), w, float(yaw), float(score), f"pinch_z{p[2]:.3f}_yaw{np.degrees(yaw):.0f}{suffix}"))
     out.sort(key=lambda g: -g.score)
     return out
+
+
+def scene_clearance(env, cand: GraspCandidate, opening: float, other_bodies: Sequence[str], radius: float = 0.25) -> Tuple[bool, str]:
+    """Check a grasp candidate against neighbouring objects: with the fingers opened to
+    `opening` (total), no point of another object may lie in the finger or hand zones of the
+    tcp frame. Returns (ok, blocking_body)."""
+    half_open = opening / 2.0
+    for b in other_bodies:
+        p = env.body_pose(b)[0]
+        if np.linalg.norm(p[:2] - cand.pos[:2]) > radius:
+            continue
+        pts = object_point_cloud(env, b, spacing=0.012)
+        local = (pts - cand.pos) @ cand.rot
+        x, y, z = local[:, 0], local[:, 1], local[:, 2]
+        finger = (np.abs(x) >= cand.width / 2 - 0.002) & (np.abs(x) <= half_open + 0.027) & (np.abs(y) < FINGER_HALF_Y) & (z > FINGER_Z[0]) & (z < PAD_Z[1])
+        palm = (np.abs(x) < HAND_HALF_X) & (np.abs(y) < HAND_HALF_Y) & (z > HAND_Z[0]) & (z < HAND_Z[1])
+        if finger.any() or palm.any():
+            return False, b
+    return True, ""

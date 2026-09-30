@@ -108,13 +108,15 @@ class WorldSync:
 
     # ------------------------------------------------------------------ collision settings
     def grasp_collision_settings(self, target_body: str, extra_pairs: Sequence[Tuple[str, str]] = (),
-                                 margin: Optional[float] = None):
+                                 margin: Optional[float] = None, support_bodies: Sequence[str] = ()):
         """Rules for the approach/grasp phase: contact between the robot (gripper) and the
         object about to be grasped is intentional; everything else is checked. While an
         object is attached, contact between it and the robot is intentional too (the fingers
         squeeze it), and contact between it and its support surface at release is intentional."""
         f = list(self.fingers.values())
         pairs = self._base_pairs() + [(self.client.robot, target_body)] + [(x, target_body) for x in f] + list(extra_pairs)
+        for sb in support_bodies:  # fingers may touch the surface the target rests on / the container walls
+            pairs += [(x, sb) for x in f]
         return collision_settings(pairs, minimum_margin=margin, resolver=self.client.oref)
 
     def transport_collision_settings(self, support_bodies: Sequence[str] = (), margin: Optional[float] = None):

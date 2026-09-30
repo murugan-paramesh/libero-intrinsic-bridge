@@ -38,6 +38,21 @@ class PickParams:
     plan_timeout_s: float = 15.0
     z_offset: float = 0.0
     max_depth: float = 0.045
+    open_clearance: float = 0.024      # gripper pre-opening = object width + this (1 cm per control step)
+
+
+def support_of(env, sync, body: str) -> List[str]:
+    """Bodies the object rests on (their top is just below the object's bottom and their footprint
+    overlaps it); fingers may touch them while grasping thin objects."""
+    box = geo.object_box(env, body)
+    out = []
+    for b in sync.bodies:
+        if b == body:
+            continue
+        ob = geo.object_box(env, b)
+        if -0.005 <= box.bottom_z - ob.top_z <= 0.02 and np.all(np.abs(ob.center_world[:2] - box.center_world[:2]) <= ob.half_extents_world[:2] + box.half_extents_world[:2]):
+            out.append(b)
+    return out
 
 
 def _plan_and_execute(ctx: SkillContext, label: str, q_start, pos, rot, cs, motion_type="ANY",
@@ -77,32 +92,60 @@ class PickSkill(Skill):
             return f"gripper already holding {ctx.sync.attached_bodies()}"
         return None
 
+    _last_width = 0.05
+
     def recover(self, ctx, last):
-        ctx.open_gripper(10)
+        # open just enough to free the object (fingers stay clear of neighbours), then withdraw
+        ctx.open_gripper(int(np.ceil(min(geo.GRIPPER_MAX_OPENING, self._last_width + self.p.open_clearance) / 0.01)))
         for b in ctx.sync.attached_bodies():
             ctx.sync.detach(b)
         rs = ctx.env.robot_state()
         ctx.sync.sync()
-        # retreat straight up 8 cm (LINEAR, target object contact allowed)
+        # retreat straight up 8 cm (LINEAR, target object + support contact allowed)
         try:
             _plan_and_execute(ctx, "pick_recover_retreat", rs.q, rs.tcp_pos + [0, 0, 0.08], rs.tcp_rot,
-                              ctx.sync.grasp_collision_settings(self.body), motion_type="LINEAR", gripper=-1.0,
-                              timeout_s=5.0)
+                              ctx.sync.grasp_collision_settings(self.body, support_bodies=support_of(ctx.env, ctx.sync, self.body)),
+                              motion_type="LINEAR", gripper=0.0, timeout_s=5.0)
         except IntrinsicRequestError as e:
             ctx.record(event="recover_plan_failed", reason=str(e))
 
     def attempt(self, ctx, i):
         env, client, sync = ctx.env, ctx.client, ctx.sync
-        ctx.open_gripper(6)
         sync.sync()
         cands = [c for c in geo.grasp_candidates(env, self.body, yaws=self.p.yaws) if c.label not in self._tried]
         if not cands:
             return SkillResult(self.name, False, "no_grasp_candidate")
+        # scene-level clearance: fingers (opened to width + clearance) and hand must not hit neighbours
+        others = [b for b in sync.bodies if b != self.body]
+
+        def clear(cs):
+            out = []
+            for c in cs:
+                opening = min(geo.GRIPPER_MAX_OPENING, c.width + self.p.open_clearance)
+                ok, blocker = geo.scene_clearance(env, c, opening, others)
+                if ok:
+                    out.append(c)
+            return out
+        cleared = clear(cands)
+        n_tilted = 0
+        if not cleared:
+            # neighbours block every vertical grasp: try approaches tilted away from them
+            tilted = [c for c in geo.grasp_candidates(env, self.body, yaws=self.p.yaws, tilts=(np.radians(20), np.radians(35)))
+                      if c.label not in self._tried and "tilt" in c.label]
+            n_tilted = len(tilted)
+            cleared = clear(tilted)
+        ctx.record(event="grasp_candidates", n_total=len(cands), n_cleared=len(cleared), n_tilted=n_tilted)
+        cands = cleared or cands
         rs = env.robot_state()
         free_cs = sync.free_collision_settings()
-        grasp_cs = sync.grasp_collision_settings(self.body)
+        grasp_cs = sync.grasp_collision_settings(self.body, support_bodies=support_of(env, sync, self.body))
         chosen = None
         for c in cands[: self.p.max_candidates]:
+            # pre-open the gripper only as far as needed (1 cm per step): keeps the fingers clear of neighbours
+            opening = min(geo.GRIPPER_MAX_OPENING, c.width + self.p.open_clearance)
+            ctx.close_gripper(9)
+            ctx.open_gripper(int(np.ceil(opening / 0.01)))
+            sync.sync()
             pre = c.pos - c.approach * self.p.pregrasp_clearance
             sols, rid, lat = client.ik(pre, c.rot, rs.q, max_solutions=4, collision_settings=free_cs)
             ctx.record(event="ik", label="pregrasp", grasp=c.label, n_solutions=len(sols), request_id=rid, latency_s=lat)
@@ -118,12 +161,13 @@ class PickSkill(Skill):
         c, pre = chosen
         self._tried.append(c.label)
         # 1. free-space motion to the pre-grasp
-        traj, res = _plan_and_execute(ctx, "pick_pregrasp", rs.q, pre, c.rot, free_cs, "ANY", -1.0, self.p.plan_timeout_s)
+        self._last_width = c.width
+        traj, res = _plan_and_execute(ctx, "pick_pregrasp", rs.q, pre, c.rot, free_cs, "ANY", 0.0, self.p.plan_timeout_s)
         if not res.ok:
             return SkillResult(self.name, False, f"pregrasp_exec:{res.reason}", details={"grasp": c.label})
         # 2. linear approach; only contact with the target object is permitted
         rs = env.robot_state()
-        traj, res = _plan_and_execute(ctx, "pick_approach", rs.q, c.pos, c.rot, grasp_cs, "LINEAR", -1.0, self.p.plan_timeout_s)
+        traj, res = _plan_and_execute(ctx, "pick_approach", rs.q, c.pos, c.rot, grasp_cs, "LINEAR", 0.0, self.p.plan_timeout_s)
         if not res.ok:
             return SkillResult(self.name, False, f"approach_exec:{res.reason}", details={"grasp": c.label})
         # 3. close and verify
@@ -178,6 +222,7 @@ class PlaceSkill(Skill):
         self.target_fn = target_fn  # returns (target_xy_z_of_object_origin, support_top_z)
         self.support = list(support_bodies)
         self.p = params
+        self._released = False
 
     def preconditions(self, ctx):
         if self.body not in ctx.sync.attached_bodies():
@@ -196,6 +241,9 @@ class PlaceSkill(Skill):
     def attempt(self, ctx, i):
         env, client, sync = ctx.env, ctx.client, ctx.sync
         sync.sync()
+        if self._released or self.body not in sync.attached:
+            # the object was already released by an earlier attempt (only the retreat failed)
+            return self._retreat(ctx, SkillResult(self.name, True, "released_earlier"))
         rs = env.robot_state()
         target_origin, support_z = self.target_fn(rs.tcp_rot[:, 0])
         tcp_t_obj_p, tcp_t_obj_R = sync.attached[self.body]
@@ -234,16 +282,28 @@ class PlaceSkill(Skill):
                                       self.p.plan_timeout_s, contact_monitor=monitor, time_scale=1.5)
         if not res.ok and not res.reason.startswith("contact:"):
             return SkillResult(self.name, False, f"lower_exec:{res.reason}")
-        ctx.open_gripper(self.p.open_steps)
+        # release: open only as much as needed (fingers stay clear of container walls)
+        ctx.open_gripper(int(np.ceil((geo.object_box(env, self.body).half_extents_world.max() * 2 + 0.03) / 0.01)))
         sync.detach(self.body)
-        ctx.hold(-1.0, self.p.settle_steps)
-        rs = env.robot_state()
+        self._released = True
+        ctx.hold(0.0, self.p.settle_steps)
         obj_pos = env.body_pose(self.body)[0]
         ctx.record(event="place_verify", obj_pos=[float(v) for v in obj_pos], target=[float(v) for v in target_origin],
                    xy_err=float(np.linalg.norm(obj_pos[:2] - target_origin[:2])), lower_stop=res.reason)
-        # retreat: contact with the just-released object is tolerated while the fingers withdraw
-        cs_retreat = sync.grasp_collision_settings(self.body)
-        traj, res = _plan_and_execute(ctx, "place_retreat", rs.q, rs.tcp_pos + [0, 0, self.p.retreat_height], rs.tcp_rot,
-                                      cs_retreat, "LINEAR", -1.0, self.p.plan_timeout_s)
-        return SkillResult(self.name, True, details={"xy_err": float(np.linalg.norm(obj_pos[:2] - target_origin[:2])),
-                                                     "retreat_ok": res.ok})
+        return self._retreat(ctx, SkillResult(self.name, True, details={"xy_err": float(np.linalg.norm(obj_pos[:2] - target_origin[:2]))}))
+
+    def _retreat(self, ctx, result: SkillResult) -> SkillResult:
+        """Withdraw straight up. Contact with the just-released object and with the support/
+        container (the open fingers may touch its walls) is intentional while withdrawing."""
+        env, sync = ctx.env, ctx.sync
+        sync.sync()
+        rs = env.robot_state()
+        cs_retreat = sync.grasp_collision_settings(self.body, support_bodies=self.support)
+        try:
+            traj, res = _plan_and_execute(ctx, "place_retreat", rs.q, rs.tcp_pos + [0, 0, self.p.retreat_height], rs.tcp_rot,
+                                          cs_retreat, "LINEAR", 0.0, self.p.plan_timeout_s)
+            result.details["retreat_ok"] = res.ok
+        except IntrinsicRequestError as e:
+            result.details["retreat_ok"] = False
+            result.details["retreat_error"] = str(e)[:200]
+        return result

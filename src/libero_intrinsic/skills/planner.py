@@ -53,6 +53,14 @@ def region_owner_body(env, region: str, spec: TaskSpec) -> str:
     return m.body_id2name(m.site_bodyid[sid])
 
 
+def is_site(env, name: str) -> bool:
+    try:
+        env.model.site_name2id(name)
+        return True
+    except Exception:
+        return False
+
+
 def has_collision_geoms(env, body: str) -> bool:
     m = env.model
     bid = m.body_name2id(body)
@@ -97,7 +105,7 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
     all_movable = [root_body(env, o) for o in env.object_names()]
     region_members = {}
     for atom in manip:
-        if atom.predicate == "in":
+        if atom.predicate == "in" or (atom.predicate == "on" and is_site(env, atom.args[1])):
             region_members.setdefault(atom.args[1], []).append(root_body(env, atom.args[0]))
     slot_index = {}
     for region, bodies in region_members.items():
@@ -127,19 +135,17 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
             skills.append(PlaceSkill(body, target_fn, support))
         elif atom.predicate == "on":
             tgt = atom.args[1]
-            try:
-                env.model.site_name2id(tgt)
-                is_site = True
-            except Exception:
-                is_site = False
-            if is_site:
+            if is_site(env, tgt):
                 owner = support_body_for(env, region_owner_body(env, tgt, spec))
                 support = [owner]
+                si, members = slot_index[(tgt, body)]
 
-                def target_fn(closing_axis, tgt=tgt, owner=owner):
+                def target_fn(closing_axis, tgt=tgt, owner=owner, body=body, si=si, members=members):
                     c, rot, half = geo.site_box_world(env, tgt)
-                    top = c[2] + half[2]
-                    return np.array([c[0], c[1], top]), top
+                    top = max(c[2] + half[2], geo.object_box(env, owner).top_z)
+                    slot = placement.region_slots(env, tgt, members, closing_axis)[si]
+                    xy, min_bottom = placement.free_spot(env, tgt, body, slot, all_movable, exclude=[owner])
+                    return np.array([xy[0], xy[1], max(top, min_bottom)]), max(top, min_bottom)
             else:
                 owner = root_body(env, tgt)
                 support = [owner]
