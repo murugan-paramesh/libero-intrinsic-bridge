@@ -47,3 +47,12 @@ Completed since last entry:
 - scripts/gen_intrinsic_protos.py generated 91 pb2 modules into build/intrinsic_py.
 Blocker: Bazel build still compiling (~7.9k/16.9k actions at 14:50). Server binary target to build next:
   bazel --output_base=/home/user/bazel_out build --registry=file://.../bazel-central-registry --jobs=3 //libero_bridge:libero_planner_server
+
+## Session 1, 15:05 UTC
+- All 10 task SDF worlds generate (runs/dev/worlds). Articulated parts confirmed: flat_stove_1_button (hinge), white_cabinet_1_bottom_level (slide, open -0.146), microwave_1_microjoint (hinge, open -1.58).
+- Generic pinch-grasp sampler (skills/geometry.py grasp_candidates) finds candidates for every goal object incl. moka pot handle (1.3 cm), bowl rim, mug rims.
+- Executor tuned on a synthetic joint trajectory with a MuJoCo-FK stub: tcp tracking 2 mm mean / 3 mm max; joint null-space deviation up to 0.30 rad (OSC pulls toward init posture) -> executed-path collision audit added (Intrinsic CheckCollisions on executed samples).
+- Physics-only stepping (use_camera_obs=False): 26 ms/step vs 170 ms with camera obs; video rendered on demand every 2nd step.
+- Frozen protocol declared in configs/eval_frozen.yaml (dev inits 0-4, eval inits 10-19, budget 1200 steps, also report <=600).
+- Bazel: 10.4k/16.9k actions at 15:05; server build queued (build_logs/bazel_build_server.log).
+Next: validate_kinematics -> demo_motion -> Task 0 dev runs -> fix skills -> all tasks -> frozen eval -> report.
