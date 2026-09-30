@@ -112,10 +112,13 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
         for i, b in enumerate(bodies):
             slot_index[(region, b)] = (i, bodies)
 
+    import dataclasses as _dc
     for atom in manip:
         obj = atom.args[0]
         body = root_body(env, obj)
         params = PICK_PARAMS.get(category(obj), PICK_PARAMS["default"])
+        if atom.predicate == "in" and geo.is_roofed_region(env, atom.args[1], support_body_for(env, region_owner_body(env, atom.args[1], spec))):
+            params = _dc.replace(params, side_grasp=True)   # must enter a front-loading container
         skills.append(PickSkill(body, params))
         if atom.predicate == "in":
             region = atom.args[1]

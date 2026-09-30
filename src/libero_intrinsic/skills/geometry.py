@@ -232,12 +232,13 @@ def object_point_cloud(env, body: str, spacing: float = 0.008) -> np.ndarray:
 
 
 # PandaGripper geometry in the tcp frame (x = closing axis, y = finger width, z = toward fingertips)
-PAD_Z = (-0.016, 0.007)        # finger pad extent along tcp z
+# measured from the robosuite PandaGripper collision meshes in the tcp frame (see docs/report.md)
+PAD_Z = (-0.016, 0.010)        # finger pad / finger tip extent along tcp z (+3 mm margin)
 PAD_HALF_Y = 0.012             # half width of the pad contact face (+ margin)
-FINGER_HALF_Y = 0.016          # finger body half width
-FINGER_Z = (-0.05, -0.016)     # finger bodies above the pads
-HAND_Z = (-0.20, -0.05)        # hand/palm zone
-HAND_HALF_X, HAND_HALF_Y = 0.105, 0.035
+FINGER_HALF_Y = 0.016          # finger body half width (+ margin)
+FINGER_Z = (-0.050, -0.016)    # finger bodies above the pads
+HAND_Z = (-0.130, -0.026)      # hand/palm body: z in [-0.123, -0.031] measured, +5 mm margin
+HAND_HALF_X, HAND_HALF_Y = 0.109, 0.037
 MAX_WIDTH = 0.072              # usable opening (0.08 minus pad thickness/margin)
 
 
@@ -367,3 +368,59 @@ def scene_clearance(env, cand: GraspCandidate, opening: float, other_bodies: Seq
         if finger.any() or palm.any():
             return False, b
     return True, ""
+
+
+def side_rotation(approach_yaw: float, roll: float = 0.0) -> np.ndarray:
+    """tcp frame for a horizontal approach: z (approach) = (cos, sin, 0) pointing at the object,
+    y = world up (so the closing axis x is horizontal and tangential; the 6.4 cm-thick hand is
+    horizontal, which fits low openings such as a microwave). `roll` rotates about the approach."""
+    z = np.array([np.cos(approach_yaw), np.sin(approach_yaw), 0.0])
+    y = np.array([0.0, 0.0, 1.0])
+    x = np.cross(y, z)
+    R0 = np.stack([x, y, z], axis=1)
+    return R.from_rotvec(z * roll).as_matrix() @ R0
+
+
+def side_grasp_candidates(env, body: str, n_yaw: int = 16, rolls=(0.0, np.pi / 2)) -> List[GraspCandidate]:
+    """Horizontal-approach pinch grasps (e.g. a mug handle or a thin rim from the side). The tcp
+    is positioned on every geom centre and on the object's outer surface points at several
+    heights; the candidate is kept if the object's own geometry admits the pinch."""
+    pts = object_point_cloud(env, body)
+    box = object_box(env, body)
+    m = env.model
+    root = m.body_name2id(body)
+    pos, rot = env.body_pose(body)
+    centres = [rot @ np.array(m.geom_pos[gi]) + pos for gi in range(m.ngeom)
+               if int(m.geom_bodyid[gi]) == root and (int(m.geom_contype[gi]) or int(m.geom_conaffinity[gi]))]
+    out, seen = [], set()
+    for yaw in np.linspace(0, 2 * np.pi, n_yaw, endpoint=False):
+        for roll in rolls:
+            R_ = side_rotation(yaw, roll)
+            for c in centres:
+                p = np.array(c, dtype=float)
+                p[2] = min(max(p[2], box.bottom_z + 0.02), box.top_z - 0.01)
+                ok, w, n, why = evaluate_grasp(pts, p, R_)
+                if not ok:
+                    continue
+                key = (round(p[0], 3), round(p[1], 3), round(p[2], 3), round(float(yaw), 2), round(roll, 2))
+                if key in seen:
+                    continue
+                seen.add(key)
+                # prefer high grasps (object hangs less), narrow features, more contact
+                score = (MAX_WIDTH - w) + 0.0005 * min(n, 60) + 0.3 * (p[2] - box.bottom_z)
+                out.append(GraspCandidate(p, R_, R_[:, 2].copy(), w, float(yaw), float(score),
+                                          f"side_z{p[2]:.3f}_yaw{np.degrees(yaw):.0f}_roll{np.degrees(roll):.0f}"))
+    out.sort(key=lambda g: -g.score)
+    return out
+
+
+def is_roofed_region(env, region: str, owner: str) -> bool:
+    """A container region with the owner's geometry above it (microwave): objects must enter
+    from the side, not from above."""
+    c, rot, half = site_box_world(env, region)
+    for g in body_collision_geoms_world(env, owner):
+        above = g[:, 2].min() > c[2] + half[2] - 0.02
+        over = np.all(np.abs(g[:, :2].mean(0) - c[:2]) < half[:2] + 0.05)
+        if above and over:
+            return True
+    return False

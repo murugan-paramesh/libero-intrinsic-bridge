@@ -56,15 +56,33 @@ class WorldSync:
             rel = tcp_inv @ tf.make_T(*self.env.body_pose(fbody))
             self.client.set_frame_relative_pose(self.client.robot, self.client.tcp_frame, obj, rel[:3, 3], rel[:3, :3])
 
+    def resting_pairs(self):
+        """Every movable body vs the body it currently rests on: physically resting objects
+        penetrate their support by a fraction of a millimetre in MuJoCo, which the exact
+        collision checker would otherwise report as an invalid world state."""
+        from libero_intrinsic.skills import geometry as geo
+        pairs = []
+        boxes = {b: geo.object_box(self.env, b) for b in self.bodies}
+        for b, box in boxes.items():
+            if b in self.attached:
+                continue
+            for s, sb in boxes.items():
+                if s == b:
+                    continue
+                if -0.006 <= box.bottom_z - sb.top_z <= 0.01 and np.all(np.abs(sb.center_world[:2] - box.center_world[:2]) <= sb.half_extents_world[:2] + box.half_extents_world[:2]):
+                    pairs.append((b, s))
+        return pairs
+
     def _base_pairs(self):
         """Contacts that are always intentional: fingers vs the robot (they are part of it),
-        fingers vs each other, and fingers/robot vs an attached (grasped) object."""
+        fingers vs each other, fingers/robot vs an attached (grasped) object, and every
+        resting object vs its support."""
         r = self.client.robot
         f = list(self.fingers.values())
         pairs = [(r, x) for x in f] + [(f[0], f[1])] if len(f) == 2 else [(r, x) for x in f]
         for b in self.attached:
             pairs += [(r, b)] + [(x, b) for x in f]
-        return pairs
+        return pairs + self.resting_pairs()
 
     # ------------------------------------------------------------------ pose push
     def sync(self, verify: bool = False) -> SyncReport:

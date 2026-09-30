@@ -41,6 +41,7 @@ class PickParams:
     z_offset: float = 0.0
     max_depth: float = 0.045
     open_clearance: float = 0.024      # gripper pre-opening = object width + this (1 cm per control step)
+    side_grasp: bool = False           # use horizontal-approach candidates (object goes into a roofed container)
 
 
 def support_of(env, sync, body: str) -> List[str]:
@@ -133,7 +134,10 @@ class PickSkill(Skill):
     def attempt(self, ctx, i):
         env, client, sync = ctx.env, ctx.client, ctx.sync
         sync.sync()
-        cands = [c for c in geo.grasp_candidates(env, self.body, yaws=self.p.yaws) if c.label not in self._tried]
+        if self.p.side_grasp:
+            cands = [c for c in geo.side_grasp_candidates(env, self.body) if c.label not in self._tried]
+        else:
+            cands = [c for c in geo.grasp_candidates(env, self.body, yaws=self.p.yaws) if c.label not in self._tried]
         if not cands:
             return SkillResult(self.name, False, "no_grasp_candidate")
         # scene-level clearance: fingers (opened to width + clearance) and hand must not hit neighbours
@@ -279,12 +283,28 @@ class PlaceSkill(Skill):
         obj_origin_above_bottom = env.body_pose(self.body)[0][2] - box.bottom_z
         R_tcp = rs.tcp_rot
         container = self.region is not None and placement.is_container_region(env, self.region)
+        rot_options = [R_tcp]
         if container:
-            # rotate the carried object about world z so that its footprint fits the container slot
+            # rotate the carried object about world z so that its footprint fits the container slot;
+            # both rotation directions are candidates (one may violate the wrist joint limit)
             dyaw = placement.fit_rotation(env, self.region, self.body)
             if abs(dyaw) > 1e-6:
-                R_tcp = R.from_euler("z", dyaw).as_matrix() @ R_tcp
+                rot_options = [R.from_euler("z", a).as_matrix() @ R_tcp for a in (dyaw, -dyaw) if abs(a) > 1e-6]
                 ctx.record(event="place_fit_rotation", yaw_deg=float(np.degrees(dyaw)))
+        if len(rot_options) > 1:
+            cs_probe = sync.transport_collision_settings(self.support)
+            t0, _ = targets[0]
+            for Rc in rot_options:
+                probe = np.array([t0[0], t0[1], t0[2] + 0.15]) - Rc @ tcp_t_obj_p  # well above the target
+                try:
+                    sols, _, _ = nearest_ik(ctx, probe, Rc, rs.q, cs_probe, n=4)
+                except IntrinsicRequestError:
+                    sols = []
+                if sols:
+                    R_tcp = Rc
+                    break
+            else:
+                R_tcp = rot_options[0]
         rim_z = max(geo.object_box(env, b).top_z for b in self.support)
         hand_low = geo.hand_lowest_offset(R_tcp)   # lowest hand corner relative to the tcp (rotation aware)
         others = [b for b in sync.bodies if b != self.body]
@@ -323,7 +343,10 @@ class PlaceSkill(Skill):
                 tcp_release[2] = max(tcp_release[2], rim_z + self.p.rim_clearance - hand_low)
         else:
             target_origin, support_z, tcp_release = chosen
-        tcp_pre = tcp_release + np.array([0, 0, self.p.preplace_clearance])
+        approach = R_tcp[:, 2]            # tcp z: down for top grasps, horizontal for side grasps
+        tcp_pre = tcp_release - approach * self.p.preplace_clearance
+        if approach[2] > -0.9:            # side grasp: also stay clear above the floor before entering
+            tcp_pre = tcp_pre + np.array([0, 0, 0.02])
         cs_transport = sync.transport_collision_settings(self.support)
         traj, res = _plan_and_execute(ctx, "place_transport", rs.q, tcp_pre, R_tcp, cs_transport, "ANY", +1.0, self.p.plan_timeout_s)
         if not res.ok:
@@ -340,7 +363,20 @@ class PlaceSkill(Skill):
         traj, res = _plan_and_execute(ctx, "place_lower", rs.q, tcp_release, R_tcp, cs_transport, "LINEAR", +1.0,
                                       self.p.plan_timeout_s, contact_monitor=monitor, time_scale=1.5)
         if not res.ok and not res.reason.startswith("contact:"):
-            return SkillResult(self.name, False, f"lower_exec:{res.reason}")
+            if res.reason.startswith("final_pose_error") and res.final_pos_err < 0.035:
+                # blocked just short of the release pose (object touching the container/support):
+                # release here, the drop is small
+                ctx.record(event="place_lower_short", final_pos_err=res.final_pos_err)
+            else:
+                return SkillResult(self.name, False, f"lower_exec:{res.reason}")
+        if approach[2] > -0.9 and res.ok:
+            # side grasp: after entering, lower the object onto the support (contact monitored)
+            rs = env.robot_state()
+            try:
+                _, res2 = _plan_and_execute(ctx, "place_settle", rs.q, rs.tcp_pos - [0, 0, 0.04], rs.tcp_rot, cs_transport, "LINEAR", +1.0,
+                                            self.p.plan_timeout_s, contact_monitor=monitor, time_scale=1.5)
+            except IntrinsicRequestError as e:
+                ctx.record(event="place_settle_failed", reason=str(e)[:200])
         # release: open only as much as needed (fingers stay clear of container walls)
         ctx.open_gripper(int(np.ceil((geo.object_box(env, self.body).half_extents_world.max() * 2 + 0.03) / 0.01)))
         sync.detach(self.body)
@@ -358,8 +394,9 @@ class PlaceSkill(Skill):
         sync.sync()
         rs = env.robot_state()
         cs_retreat = sync.grasp_collision_settings(self.body, support_bodies=self.support)
+        back = -rs.tcp_rot[:, 2]          # withdraw along the negative approach axis (up, or out of a front opening)
         try:
-            traj, res = _plan_and_execute(ctx, "place_retreat", rs.q, rs.tcp_pos + [0, 0, self.p.retreat_height], rs.tcp_rot,
+            traj, res = _plan_and_execute(ctx, "place_retreat", rs.q, rs.tcp_pos + back * self.p.retreat_height, rs.tcp_rot,
                                           cs_retreat, "LINEAR", 0.0, self.p.plan_timeout_s)
             result.details["retreat_ok"] = res.ok
         except IntrinsicRequestError as e:
