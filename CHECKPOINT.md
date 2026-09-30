@@ -56,3 +56,10 @@ Blocker: Bazel build still compiling (~7.9k/16.9k actions at 14:50). Server bina
 - Frozen protocol declared in configs/eval_frozen.yaml (dev inits 0-4, eval inits 10-19, budget 1200 steps, also report <=600).
 - Bazel: 10.4k/16.9k actions at 15:05; server build queued (build_logs/bazel_build_server.log).
 Next: validate_kinematics -> demo_motion -> Task 0 dev runs -> fix skills -> all tasks -> frozen eval -> report.
+
+## Session 2 (16:35 UTC) - Intrinsic integration proven
+- Library build finished (102 min, 16,930 actions); server: build/bin/libero_planner_server -> bazel-out/haswell-opt/bin/libero_bridge/libero_planner_server (77 MB).
+- Fixes for SDF-loaded worlds: (1) by-name object references need name_is_global_alias -> resolve ids via ListObjects and set the alias on the robot (UpdateObjectName) because the planner resolves the robot by name; (2) SDF <frame> needs intrinsic:create_attachment_entity="true"; (3) WorldFromSdf resolves the frame pose at q=0 (outside joint-4 limits) -> set link_t_frame via UpdateTransform with node_a_filter=eef link; (4) the planner needs exactly one frame named "flange" -> our tcp frame is named flange.
+- Milestone 0 (evidence/milestone0_kinematics): 200 random configs: FK max err 5e-9 m / 2e-6 deg (Intrinsic ComputeFk vs MuJoCo site); IK 40/40 solved, max 1e-6 m / 1.3e-4 deg after setting the solution in MuJoCo; CheckCollisions flags link6/link5 vs table for an arm-in-table config (MuJoCo: 17 contacts) and OK at home.
+- Milestone 1 (evidence/milestone1_first_intrinsic_motion): PlanTrajectory (75 states, 0.32 s, 30 ms latency) executed via OSC_POSE with auto time scaling 3.2x: 23 steps, tcp err 4.9 mm mean / 7.3 mm max, final 5.6 mm / 0.9 deg.
+Commands: scripts/validate_kinematics.py --task 0 ; scripts/demo_motion.py --task 0 --init 0
