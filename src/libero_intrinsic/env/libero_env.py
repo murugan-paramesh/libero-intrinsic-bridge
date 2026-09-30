@@ -98,18 +98,24 @@ class RobotState:
 class LiberoEnv:
     """Owns one LIBERO OffScreenRenderEnv for one task."""
 
-    def __init__(self, task: TaskInfo, camera_hw=(256, 256), seed: int = 0, horizon: int = 100000):
+    def __init__(self, task: TaskInfo, camera_hw=(256, 256), seed: int = 0, horizon: int = 100000,
+                 use_camera_obs: bool = False):
         from libero.libero.envs import OffScreenRenderEnv
 
         self.task = task
+        self.camera_hw = camera_hw
         # horizon is set large so that robosuite's own timeout never raises
         # "executing action in terminated episode"; our own episode budget is enforced by
-        # the runner. Every other setting is the LIBERO default (OSC_POSE, 20 Hz, Panda).
+        # the runner. use_camera_obs=False removes per-step image rendering (26 ms vs 170 ms per
+        # step on this CPU); it changes observations only, not physics or control. Video frames
+        # are rendered on demand with sim.render(). Every other setting is the LIBERO default
+        # (OSC_POSE, 20 Hz, Panda).
         self.env = OffScreenRenderEnv(
             bddl_file_name=task.bddl_path,
             camera_heights=camera_hw[0],
             camera_widths=camera_hw[1],
             horizon=horizon,
+            use_camera_obs=use_camera_obs,
         )
         self.env.seed(seed)
         self.sim = None
@@ -235,7 +241,6 @@ class LiberoEnv:
 
     # ------------------------------------------------------------------ rendering
     def render_frame(self, camera: str = "agentview") -> np.ndarray:
-        """Return an upright RGB frame (LIBERO/robosuite images are vertically flipped)."""
-        obs = self._last_obs
-        img = obs[f"{camera}_image"]
+        """Render an upright RGB frame on demand (robosuite's offscreen buffer is vertically flipped)."""
+        img = self.sim.render(width=self.camera_hw[1], height=self.camera_hw[0], camera_name=camera)
         return np.ascontiguousarray(img[::-1])

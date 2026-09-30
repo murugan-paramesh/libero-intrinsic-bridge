@@ -50,7 +50,7 @@ def software_revisions() -> Dict[str, str]:
 
 
 class VideoRecorder:
-    def __init__(self, env: LiberoEnv, path: str, fps: int = 20, camera: str = "agentview", every: int = 1):
+    def __init__(self, env: LiberoEnv, path: str, fps: int = 10, camera: str = "agentview", every: int = 2):
         import imageio
         self.env, self.path, self.every, self.camera = env, path, every, camera
         os.makedirs(os.path.dirname(path), exist_ok=True)

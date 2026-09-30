@@ -1,0 +1,14 @@
+# Frozen evaluation protocol (declared before running the final evaluation; see docs/report.md).
+suite: libero_10
+tasks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+# Development init states (used while building/tuning skills) are 0..4 of each task's 50 official
+# .pruned_init states. Evaluation uses disjoint official states:
+dev_init_states: [0, 1, 2, 3, 4]
+eval_init_states: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+seed: 0
+step_budget: 1200          # control steps at 20 Hz per episode (60 s simulated); recovery attempts count
+report_also_within: 600    # LIBERO's default policy horizon, reported as a secondary number
+retry_policy: "bounded per-skill recovery (pick: 3 attempts, place: 2, push/knob: 3); one episode per init state; no episode re-runs"
+observation_mode: privileged_state   # object poses from the simulator (perception replaceable)
+controller: "robosuite OSC_POSE, osc_pose.json defaults, 20 Hz (LIBERO default)"
+video: true
