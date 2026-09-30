@@ -48,7 +48,19 @@ def _plan_and_execute(ctx: SkillContext, label: str, q_start, pos, rot, cs, moti
                n_states=int(len(traj.t)), duration_s=traj.duration, latency_s=traj.planning_latency_s,
                target_pos=[float(v) for v in pos])
     cfg = ExecutionConfig(gripper=gripper, contact_monitor=contact_monitor, time_scale=time_scale)
-    return traj, ctx.execute(traj, cfg, label)
+    res = ctx.execute(traj, cfg, label)
+    # Post-execution audit: the OSC controller's null-space drift means the executed joint path
+    # differs from the planned one; ask Intrinsic whether the configurations actually reached
+    # were collision-free under the same collision settings (unintended-collision metric).
+    if res.executed_q is not None and len(res.executed_q):
+        try:
+            sub = res.executed_q[:: max(1, len(res.executed_q) // 20)]
+            coll, msg, rid = ctx.client.check_collisions(sub, cs)
+            ctx.record(event="executed_path_audit", label=label, trajectory_id=traj.request_id, n_checked=int(len(sub)),
+                       collision=bool(coll), msg=msg[:200], request_id=rid)
+        except IntrinsicRequestError as e:
+            ctx.record(event="executed_path_audit", label=label, error=str(e)[:200])
+    return traj, res
 
 
 class PickSkill(Skill):

@@ -31,9 +31,9 @@ CONTROL_DT = 1.0 / 20.0
 @dataclasses.dataclass
 class ExecutionConfig:
     time_scale: float = 1.0          # >1 slows execution (trajectory time / time_scale)
-    pos_gain: float = 1.0            # fraction of the error commanded per step (before saturation)
-    rot_gain: float = 1.0
-    lookahead_s: float = 0.05        # target time offset (compensates OSC lag)
+    pos_gain: float = 1.5            # error gain per step before saturation (tuned: 2 mm mean tcp error)
+    rot_gain: float = 1.5
+    lookahead_s: float = 0.10        # target time offset (compensates OSC lag)
     settle_pos_tol: float = 0.006    # m: final convergence tolerance
     settle_rot_tol_deg: float = 3.0
     settle_max_steps: int = 20
@@ -59,6 +59,7 @@ class ExecutionResult:
     final_rot_err_deg: float
     wall_time_s: float
     log: List[dict]
+    executed_q: Optional[np.ndarray] = None   # (steps, 7) joint samples actually reached
 
 
 class TrajectoryExecutor:
@@ -80,7 +81,7 @@ class TrajectoryExecutor:
         t_wall = time.time()
         times, q_ref, poses = self._tcp_refs(traj, cfg)
         n = len(times)
-        log, pos_errs, rot_errs, joint_errs = [], [], [], []
+        log, pos_errs, rot_errs, joint_errs, executed_q = [], [], [], [], []
         reason, ok = "completed", True
         lim = self.env.joint_limits()
         steps = 0
@@ -104,7 +105,7 @@ class TrajectoryExecutor:
             pe = float(np.linalg.norm(poses[k][0] - rs2.tcp_pos))
             re = tf.rot_error_deg(poses[k][1], rs2.tcp_rot)
             je = float(np.max(np.abs(rs2.q - q_ref[k])))
-            pos_errs.append(pe); rot_errs.append(re); joint_errs.append(je)
+            pos_errs.append(pe); rot_errs.append(re); joint_errs.append(je); executed_q.append(rs2.q.copy())
             log.append({"k": k, "t": float(times[k]), "pos_err": pe, "rot_err_deg": re, "joint_err": je,
                         "action": a.round(4).tolist()})
             if np.any(rs2.q < lim[:, 0] - 1e-3) or np.any(rs2.q > lim[:, 1] + 1e-3):
@@ -152,4 +153,4 @@ class TrajectoryExecutor:
             rot_err_mean_deg=float(np.mean(rot_errs)) if rot_errs else 0.0,
             joint_err_max=float(np.max(joint_errs)) if joint_errs else 0.0,
             joint_err_final=fj, final_pos_err=fp, final_rot_err_deg=fr,
-            wall_time_s=time.time() - t_wall, log=log)
+            wall_time_s=time.time() - t_wall, log=log, executed_q=np.array(executed_q) if executed_q else None)
