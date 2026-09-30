@@ -367,8 +367,15 @@ class IntrinsicClient:
             view=object_world_updates_pb2.ObjectView.BASIC)
         self._call("ReparentObject", self.world.ReparentObject, req, {"object": name, "parent": ROOT_OBJECT})
 
+    joint_limits: Optional[np.ndarray] = None   # (7,2) set by WorldSync; MuJoCo joint limits are soft
+
     def update_robot_joints(self, q: Sequence[float]):
-        """Store the current robot configuration in the world (used as the default start)."""
+        """Store the current robot configuration in the world (used as the default start).
+        MuJoCo enforces joint limits softly, so the controller can push a joint a fraction of a
+        milliradian past its range; Intrinsic rejects such values, so they are clamped."""
+        q = np.asarray(q, dtype=float)
+        if self.joint_limits is not None:
+            q = np.clip(q, self.joint_limits[:, 0] + 1e-6, self.joint_limits[:, 1] - 1e-6)
         req = object_world_updates_pb2.UpdateObjectJointsRequest(
             world_id=self.world_id, object=self.oref(self.robot), joint_positions=[float(v) for v in q],
             view=object_world_updates_pb2.ObjectView.BASIC)
@@ -385,12 +392,25 @@ class IntrinsicClient:
         _, resp, _ = self._call("ComputeFk", self.planner.ComputeFk, req, {"n_joints": len(q)})
         return tf.proto_to_pose(resp.reference_t_target)
 
-    def pose_target(self, pos, rot) -> geometric_constraints_pb2.GeometricConstraint:
-        """GeometricConstraint: tcp frame == root_t_target (PoseEquality)."""
+    def pose_target(self, pos, rot, joint_limits=None) -> geometric_constraints_pb2.GeometricConstraint:
+        """GeometricConstraint: tcp frame == root_t_target (PoseEquality). With `joint_limits`
+        = (lower[7], upper[7]) the pose constraint is intersected with a JointPositionLimits
+        constraint (posture preference, e.g. elbow up), which Intrinsic's IK resolves as
+        tightened planning limits (intrinsic_kinematics/.../compute_ik_util.cc)."""
+        pose = geometric_constraints_pb2.GeometricConstraint()
+        pose.cartesian_pose.moving_frame.CopyFrom(self.nref_frame(self.robot, self.tcp_frame))
+        pose.cartesian_pose.target_frame.CopyFrom(self.nref(ROOT_OBJECT))
+        pose.cartesian_pose.target_frame_offset.CopyFrom(tf.pose_to_proto(pos, rot, pose_pb2))
+        if joint_limits is None:
+            return pose
+        lo, hi = joint_limits
+        jl = geometric_constraints_pb2.GeometricConstraint()
+        jl.joint_position_limits.object_id.CopyFrom(self.oref(self.robot))
+        jl.joint_position_limits.lower_limits.extend([float(v) for v in lo])
+        jl.joint_position_limits.upper_limits.extend([float(v) for v in hi])
         c = geometric_constraints_pb2.GeometricConstraint()
-        c.cartesian_pose.moving_frame.CopyFrom(self.nref_frame(self.robot, self.tcp_frame))
-        c.cartesian_pose.target_frame.CopyFrom(self.nref(ROOT_OBJECT))
-        c.cartesian_pose.target_frame_offset.CopyFrom(tf.pose_to_proto(pos, rot, pose_pb2))
+        c.constraint_intersection.constraints.add().CopyFrom(pose)
+        c.constraint_intersection.constraints.add().CopyFrom(jl)
         return c
 
     def joint_target(self, q) -> geometric_constraints_pb2.GeometricConstraint:
@@ -400,10 +420,11 @@ class IntrinsicClient:
 
     def ik(self, pos, rot, seed: Sequence[float], max_solutions: int = 8,
            collision_settings: Optional[collision_settings_pb2.CollisionSettings] = None,
-           ensure_same_branch: bool = False, allow_collisions: bool = False) -> Tuple[List[np.ndarray], str, float]:
+           ensure_same_branch: bool = False, allow_collisions: bool = False,
+           joint_limits=None) -> Tuple[List[np.ndarray], str, float]:
         req = motion_planner_service_pb2.IkRequest(world_id=self.world_id, max_num_solutions=max_solutions)
         req.robot_reference.object_id.CopyFrom(self.oref(self.robot))
-        req.target.CopyFrom(self.pose_target(pos, rot))
+        req.target.CopyFrom(self.pose_target(pos, rot, joint_limits=joint_limits))
         req.starting_joints.joints.extend([float(v) for v in seed])
         if collision_settings is not None:
             req.collision_settings.CopyFrom(collision_settings)

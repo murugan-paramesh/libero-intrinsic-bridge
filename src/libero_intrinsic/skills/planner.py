@@ -192,12 +192,18 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
         proj = pts @ axis
         front = pts[np.argmin(proj)]
         center_line = box.center_world - axis * (proj.max() - proj.min()) / 2
-        contact = np.array([center_line[0], center_line[1], box.bottom_z + 0.5 * (box.top_z - box.bottom_z)])
+        contact = np.array([center_line[0], center_line[1], box.bottom_z + 0.4 * (box.top_z - box.bottom_z)])
         contact = contact - axis * (0.015)  # fingertips 1.5 cm outside the front face
-        # push the drawer front the natural way: fingers closed, hand horizontal behind the
-        # fingertips, approach along the push direction (the hand stays outside the drawer)
-        rot = geo.side_rotation(np.arctan2(axis[1], axis[0]), 0.0)
-        pre = contact - axis * 0.08 + np.array([0, 0, 0.02])
+        # Push from above with the fingers closed: tcp z (approach) tilted 50 deg from vertical
+        # TOWARD the push direction, so the hand body sits outside the drawer (away from the
+        # cabinet and from objects inside the drawer) while the fingertips touch the front face.
+        # (A horizontal push from the front is blocked by fixtures in front of the cabinet.)
+        yaw = np.arctan2(axis[1], axis[0]) + np.pi / 2       # closing axis perpendicular to the push
+        rot = geo.top_down_rotation(yaw)
+        tilt_axis = rot[:, 0]
+        sign = 1.0 if np.dot(np.cross(tilt_axis, rot[:, 2]), axis) > 0 else -1.0
+        rot = R.from_rotvec(tilt_axis * sign * np.radians(50)).as_matrix() @ rot
+        pre = contact - rot[:, 2] * 0.10                      # back along the approach axis
         path = [contact, contact + axis * (abs(q) + 0.03)]
         return pre, rot, path
 

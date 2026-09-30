@@ -37,6 +37,7 @@ class WorldSync:
         self.bodies: List[str] = [b.body for b in spec.exported_bodies]
         self.attached: Dict[str, Tuple[np.ndarray, np.ndarray]] = {}  # body -> tcp_t_obj at grasp
         self.fingers: Dict[str, str] = dict(spec.finger_objects or {})  # finger body -> object
+        client.joint_limits = env.joint_limits()
         client.ensure_tcp_frame(spec.tcp_link, spec.tcp_link_t_tcp_pos, spec.tcp_link_t_tcp_rot)
         # set link_t_tcp explicitly (see scene_to_sdf.py for why the SDF value is not trusted)
         client.set_tcp_frame_offset(spec.tcp_link, spec.tcp_link_t_tcp_pos, spec.tcp_link_t_tcp_rot)
@@ -112,6 +113,18 @@ class WorldSync:
         obj_T = tf.make_T(pos, rot)
         rel = tf.inv_T(tcp_T) @ obj_T
         self.attached[body] = (rel[:3, 3].copy(), rel[:3, :3].copy())
+
+    def refresh_attachment(self, body: str) -> float:
+        """Re-measure tcp_t_obj for an attached object (the object may have slipped or rotated in
+        the grasp) and update the Intrinsic world accordingly. Returns the position drift (m)."""
+        if body not in self.attached:
+            return 0.0
+        rs = self.env.robot_state()
+        rel = tf.inv_T(tf.make_T(rs.tcp_pos, rs.tcp_rot)) @ tf.make_T(*self.env.body_pose(body))
+        drift = float(np.linalg.norm(rel[:3, 3] - self.attached[body][0]))
+        self.attached[body] = (rel[:3, 3].copy(), rel[:3, :3].copy())
+        self.client.set_frame_relative_pose(self.client.robot, self.client.tcp_frame, body, rel[:3, 3], rel[:3, :3])
+        return drift
 
     def detach(self, body: str):
         if body not in self.attached:

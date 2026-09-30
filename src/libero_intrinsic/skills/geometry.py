@@ -343,6 +343,22 @@ def hand_clearance(env, tcp_pos, tcp_rot, opening: float, width: float, other_bo
     return True, ""
 
 
+def gripper_corners_tcp(opening: float) -> np.ndarray:
+    """Corner points (tcp frame) of the hand body and of both finger bodies at `opening`."""
+    hand = np.array([[sx, sy, sz] for sx in (-HAND_HALF_X, HAND_HALF_X) for sy in (-HAND_HALF_Y, HAND_HALF_Y) for sz in (HAND_Z[0], HAND_Z[1])])
+    fingers = []
+    for side in (-1, 1):
+        x0, x1 = side * opening / 2, side * (opening / 2 + 0.027)
+        fingers += [[sx, sy, sz] for sx in (x0, x1) for sy in (-FINGER_HALF_Y, FINGER_HALF_Y) for sz in (FINGER_Z[0], PAD_Z[1])]
+    return np.vstack([hand, np.array(fingers)])
+
+
+def gripper_above_plane(tcp_pos, tcp_rot, opening: float, plane_z: float, margin: float = 0.004) -> bool:
+    """Exact check that no hand/finger corner is below a horizontal support plane (table top)."""
+    pts = gripper_corners_tcp(opening) @ tcp_rot.T + tcp_pos
+    return bool(pts[:, 2].min() >= plane_z + margin)
+
+
 def hand_lowest_offset(tcp_rot: np.ndarray) -> float:
     """Height of the lowest hand-body corner relative to the tcp for a given tcp rotation
     (negative = above the tcp for a top-down grasp)."""

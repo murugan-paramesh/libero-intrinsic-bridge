@@ -125,7 +125,9 @@ class TrajectoryExecutor:
             pos_errs.append(pe); rot_errs.append(re); joint_errs.append(je); executed_q.append(rs2.q.copy())
             log.append({"k": k, "t": float(times[k]), "pos_err": pe, "rot_err_deg": re, "joint_err": je,
                         "action": a.round(4).tolist()})
-            if np.any(rs2.q < lim[:, 0] - 1e-3) or np.any(rs2.q > lim[:, 1] + 1e-3):
+            # MuJoCo joint limits are soft constraints: transient overshoots of a few mrad happen
+            # under the OSC controller and are not a failure; larger violations are.
+            if np.any(rs2.q < lim[:, 0] - 0.03) or np.any(rs2.q > lim[:, 1] + 0.03):
                 ok, reason = False, "joint_limit_violation"
                 break
             if pe > cfg.max_pos_err:

@@ -156,10 +156,16 @@ class PickSkill(Skill):
         # scene-level clearance: fingers (opened to width + clearance) and hand must not hit neighbours
         others = [b for b in sync.bodies if b != self.body]
 
+        supports = support_of(env, sync, self.body)
+        plane_z = max((geo.object_box(env, b).top_z for b in supports), default=-np.inf)
+
         def clear(cs):
             out = []
             for c in cs:
                 opening = min(geo.GRIPPER_MAX_OPENING, c.width + self.p.open_clearance)
+                # exact support-plane test (the coarse point cloud of a large table misses thin overlaps)
+                if not geo.gripper_above_plane(c.pos, c.rot, opening, plane_z, margin=0.0):
+                    continue
                 ok, blocker = geo.scene_clearance(env, c, opening, others)
                 if ok:  # also at the pre-grasp pose (hand higher up, e.g. above a container rim)
                     pre = c.pos - c.approach * pre_clear
@@ -367,6 +373,27 @@ class PlaceSkill(Skill):
         traj, res = _plan_and_execute(ctx, "place_transport", rs.q, tcp_pre, R_tcp, cs_transport, "ANY", +1.0, self.p.plan_timeout_s)
         if not res.ok:
             return SkillResult(self.name, False, f"transport_exec:{res.reason}")
+        # Grasp-slip compensation: the object may have shifted/rotated in the fingers during the
+        # transport (wrist rotation, swinging). Re-measure tcp_t_obj (and update the attached
+        # geometry in the Intrinsic world) and shift the release pose so that the OBJECT, not the
+        # stale tcp target, reaches the placement target.
+        drift = sync.refresh_attachment(self.body)
+        rs = env.robot_state()
+        obj_now = env.body_pose(self.body)[0]
+        xy_corr = np.array([target_origin[0] - obj_now[0], target_origin[1] - obj_now[1], 0.0])
+        # vertical: keep the planned tcp-to-object bottom distance consistent with the new offset
+        box_now = geo.object_box(env, self.body)
+        z_corr = (support_z + self.p.release_gap) - (box_now.bottom_z - (rs.tcp_pos[2] - tcp_release[2]))
+        ctx.record(event="place_slip_compensation", drift_m=float(drift), xy_correction_m=float(np.linalg.norm(xy_corr)), z_correction_m=float(z_corr))
+        if np.linalg.norm(xy_corr) > 0.008 or abs(z_corr) > 0.008:
+            tcp_release = tcp_release + xy_corr
+            if abs(z_corr) > 0.008 and z_corr > 0:   # only raise (never plan the object into the support)
+                tcp_release[2] += z_corr
+            tcp_pre2 = tcp_release - approach * self.p.preplace_clearance
+            try:
+                _, res = _plan_and_execute(ctx, "place_transport_correct", rs.q, tcp_pre2, R_tcp, cs_transport, "LINEAR", +1.0, self.p.plan_timeout_s)
+            except IntrinsicRequestError as e:
+                ctx.record(event="place_correct_failed", reason=str(e)[:200])
         # lowering with a contact monitor: stop as soon as the carried object touches the support
         def monitor():
             for g1, g2, _ in env.contacts():
