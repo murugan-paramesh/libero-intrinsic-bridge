@@ -49,8 +49,9 @@ python scripts/validate_kinematics.py --task 0                # FK/IK agreement 
 python scripts/demo_motion.py --task 0 --init 0               # one Intrinsic-planned motion executed in LIBERO
 python scripts/run_task.py --task 0 --inits 0 1 2             # Task 0 on development init states
 python scripts/run_task.py --task 3 --inits 25                # any task / init state
-python scripts/evaluate.py --config configs/eval_frozen.yaml  # frozen evaluation suite
-python -m libero_intrinsic.eval.report runs/eval/<run>        # results table from saved episode records
+python scripts/evaluate.py --config configs/eval_frozen.yaml  # frozen evaluation suite (all tasks, eval init states)
+python scripts/evaluate.py --tasks 0 1 --inits 0 1 --out runs/dev/x   # subset / dev states (reported as such)
+python -m libero_intrinsic.eval.report runs/eval --out docs/results.json   # results table from saved episode records
 ```
 
 ## Exact Intrinsic Core integration
