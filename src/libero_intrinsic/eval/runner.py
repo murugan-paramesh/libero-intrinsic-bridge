@@ -163,6 +163,7 @@ class TaskSession:
         rec["intrinsic"]["plan_latency_s"] = [r["latency_s"] for r in plans]
         rec["intrinsic"]["plan_failures"] = sum(1 for r in plans if r["status"] != "OK")
         rec["intrinsic"]["plan_timeouts"] = sum(1 for r in plans if r["status"] == "DEADLINE_EXCEEDED")
+        rec["intrinsic"]["linear_replans"] = sum(1 for r in rpcs if r["rpc"] == "note" and "LINEAR re-plan" in str(r.get("note", "")))
         with open(os.path.join(ep_dir, "episode.json"), "w") as f:
             json.dump(rec, f, indent=1, default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o))
         return rec

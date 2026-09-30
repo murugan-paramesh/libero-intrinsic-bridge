@@ -121,3 +121,48 @@ returns). Success within LIBERO's default 600-step horizon is reported as a seco
 
 ## 8. Results, failure analysis, next steps
 See docs/results.md (generated) and the sections appended after the frozen evaluation.
+
+### 8.1 Frozen evaluation (100 episodes, revision 76267bf, docs/results.md)
+
+| task | success | notes |
+|---|---|---|
+| 0 both soup+sauce in basket | 10/10 | all within 600 steps (mean 348) |
+| 1 cream cheese + butter in basket | 5/10 | thin boxes next to tall cartons: all 5 failures are "no collision-free IK for the pre-grasp" (neighbour blocks every vertical or tilted approach); 17 grasp attempt failures, 12 recoveries |
+| 2 turn on stove, moka pot on it | 10/10 | knob turn + handle grasp; tightest tracking (max 1.0 cm) |
+| 3 bowl into bottom drawer, close it | 0/10 | bowl is placed in the drawer in every episode; closing fails: no collision-free IK for the push pre-contact (link 5/6 vs the wine rack next to the cabinet, or the hand vs upper drawers) |
+| 4 two mugs onto two plates | 10/10 | rim grasps; 4 grasp re-attempts recovered |
+| 5 book into caddy back compartment | 2/10 | 4 releases off target after the 90 deg fit rotation (book slipped/rotated in the grasp, lowering stopped on first caddy contact), 3 adapter bugs (joint 7 pushed 0.3 mrad past its limit by the controller -> UpdateObjectJoints rejected; needs clamping), 1 unreachable grasp |
+| 6 mug on plate, pudding right of plate | 9/10 | 1 placement IK collision |
+| 7 soup + cream cheese in basket | 8/10 | 1 approach tracking error (18 deg), 1 joint-limit violation during a pre-grasp execution |
+| 8 both moka pots on stove | 8/10 | 2 goal-not-reached: second pot released 2 cm off and resting on the first (grasp drift 2.3 cm during lift) |
+| 9 mug into microwave, close door | 0/10 | no collision-free horizontal grasp of the mug near table height (hand/link 5 vs table); the door-closing skill was never exercised |
+| **all** | **62/100 (95% CI 52-71%)** | 0 infrastructure errors; 0 planning timeouts; 1,580 PlanTrajectory calls, mean latency 30 ms, max 110 ms; 62/62 successes within 600 steps |
+
+Tracking: max TCP tracking error per task 1.0-5.7 cm (transients of fast transports; mean
+per-motion error 2-5 mm), except task 5 (43 cm: an aborted execution). Executed-path audits
+(Intrinsic CheckCollisions on the configurations actually reached): 17 of 1,017 audited
+motions reported a collision, all in tasks 1/4/5/6/7 (finger or hand contact with a neighbour
+after OSC null-space drift), none in tasks 0/2/3/8/9.
+
+### 8.2 Failure analysis
+- **Reachability of side/horizontal grasps (tasks 9, 3).** The Panda base sits at table height in
+  the kitchen scenes; horizontal hand orientations 5 cm above the table put link 5 into the
+  table or a neighbouring fixture. A lower-elbow posture would need explicit posture
+  constraints in the IK request (Intrinsic supports `JointPositionLimits` constraints), which
+  we did not add.
+- **Cluttered thin objects (task 1).** The 20 cm-wide hand cannot descend next to a 19 cm-tall
+  carton; pushing the carton aside first (a pre-manipulation skill) is the classical remedy.
+- **In-hand slip during wrist rotation (task 5, 8).** Rim/handle grasps with 1-2 cm of finger gap
+  slip when the wrist rotates 90 deg or the pot swings; grasp verification passed but the
+  object moved. A re-grasp after rotation or a slower rotation would help.
+- **Adapter bug (task 5, 3 episodes).** The controller can push joint 7 fractionally past the
+  MJCF limit; the world update must clamp to limits.
+- **What did not fail:** the Intrinsic backend (no timeouts, no unavailable errors), the FK/IK
+  agreement, the LINEAR re-plan protocol (749 re-plans, all succeeded on the second call).
+
+### 8.3 Next improvements
+1. Posture-constrained IK (Intrinsic `JointPositionLimits` / `JointPositionSumLimit`) for
+   low horizontal grasps; 2. clamp synced joints; 3. pre-manipulation (push aside) for blocked
+   objects; 4. re-grasp after fit rotations; 5. a JOINT_POSITION-controller condition to
+   quantify how much the OSC null-space drift costs; 6. the simple Cartesian servo baseline
+   on the same init states (not run: out of time, listed as not evaluated).

@@ -81,3 +81,8 @@ Next: articulation tasks (2, 3, 8, 9), mugs/plates (4, 6), book (5); then frozen
 | 8 | init 0 | success (458) - both moka pots on the burner |
 | 4,6,7,9 | init 0 | running |
 Key generalizations added today: partial gripper pre-opening (1 cm/step), neighbour clearance filter + tilted approaches, support-contact rules for thin objects and lifting, fingers as flange-attached objects synced to joint state, LINEAR re-plan protocol, container-aware placement (rim/hand/finger clearance search, fit rotation, slots perpendicular to closing axis, point-cloud free-spot search), nearest-IK joint targets for free-space motions.
+
+## Session 2 (20:40 UTC) - frozen evaluation done
+- 100 episodes (tasks 0-9 x init states 10-19) at revision 76267bf: 62/100 success (CI 52-71%); per task 10,5,10,0,10,2,9,8,8,0. docs/results.md (generated), docs/results.json, evidence/eval_episodes (videos + records + RPC logs per task, MANIFEST.json), docs/report.md sections 8.1-8.3.
+- Not done: servo baseline comparison; posture-constrained IK for tasks 3/9; joint clamp bug (task 5).
+Commands: python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/eval/frozen_A ; --tasks 5 6 7 8 9 --out runs/eval/frozen_B ; python -m libero_intrinsic.eval.report runs/eval --out docs/results.json ; python scripts/collect_evidence.py runs/eval

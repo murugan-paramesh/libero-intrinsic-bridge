@@ -65,7 +65,11 @@ def summarize(episodes: List[dict]) -> Dict:
         valid = n - infra
         lo, hi = wilson_interval(s, n)
         lat = [l for e in eps for l in e.get("intrinsic", {}).get("plan_latency_s", [])]
-        plan_fail = sum(e.get("intrinsic", {}).get("plan_failures", 0) for e in eps)
+        # PlanTrajectory calls with a non-OK status include the expected first call of the LINEAR
+        # re-plan protocol (Intrinsic returns NOT_FOUND with the reached configuration, we re-plan
+        # with it as joint target); those are counted separately as linear re-plans.
+        replans = sum(e.get("intrinsic", {}).get("linear_replans", 0) for e in eps)
+        plan_fail = sum(e.get("intrinsic", {}).get("plan_failures", 0) for e in eps) - replans
         plan_to = sum(e.get("intrinsic", {}).get("plan_timeouts", 0) for e in eps)
         n_plans = len(lat)
         steps = [e.get("steps", 0) for e in eps]
@@ -85,6 +89,10 @@ def summarize(episodes: List[dict]) -> Dict:
             "success_within_600": sum(1 for e in eps if classify(e) == "success" and e.get("steps", 1e9) <= 600),
             "n_plans": n_plans, "plan_latency_mean_s": sum(lat) / n_plans if n_plans else 0.0,
             "plan_latency_max_s": max(lat) if lat else 0.0, "plan_failures": plan_fail, "plan_timeouts": plan_to,
+            "linear_replans": replans,
+            "success_within_600_all": sum(1 for e in eps if classify(e) == "success" and e.get("steps", 1e9) <= 600),
+            "executed_path_collisions": sum(1 for e in eps for ev in e.get("events", []) if ev.get("event") == "executed_path_audit" and ev.get("collision")),
+            "executed_path_audits": sum(1 for e in eps for ev in e.get("events", []) if ev.get("event") == "executed_path_audit"),
             "steps_mean": sum(steps) / n if n else 0.0,
             "track_pos_err_max_m": max(pos_err) if pos_err else 0.0, "track_pos_err_mean_m": sum(pos_err) / len(pos_err) if pos_err else 0.0,
             "track_joint_err_max_rad": max(joint_err) if joint_err else 0.0,
@@ -97,16 +105,17 @@ def summarize(episodes: List[dict]) -> Dict:
 
 
 def markdown_table(summary: Dict) -> str:
-    lines = ["| # | task | episodes | success | fail | infra | rate (all) | 95% CI | plans | plan lat mean/max (s) | plan fail/timeout | steps mean | max tcp track err (m) | grasp fails | recoveries |",
-             "|---|------|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    lines = ["| # | task | episodes | success | fail | infra | rate | 95% CI | <=600 steps | plans | plan lat mean/max (s) | plan fail / timeout / linear re-plans | steps mean | max tcp track err (m) | executed-path collisions / audits | grasp attempt fails | recoveries |",
+             "|---|------|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in summary["per_task"]:
         lo, hi = r["ci95_all"]
         lines.append(f"| {r['task_index']} | {r['task_name'][:60]} | {r['episodes']} | {r['successes']} | {r['failures']} | {r['infra_errors']} | "
-                     f"{100*r['success_rate_all']:.0f}% | [{100*lo:.0f}, {100*hi:.0f}] | {r['n_plans']} | {r['plan_latency_mean_s']:.2f}/{r['plan_latency_max_s']:.2f} | "
-                     f"{r['plan_failures']}/{r['plan_timeouts']} | {r['steps_mean']:.0f} | {r['track_pos_err_max_m']:.3f} | {r['grasp_attempt_failures']} | {r['recoveries']} |")
+                     f"{100*r['success_rate_all']:.0f}% | [{100*lo:.0f}, {100*hi:.0f}] | {r['success_within_600_all']} | {r['n_plans']} | {r['plan_latency_mean_s']:.2f}/{r['plan_latency_max_s']:.2f} | "
+                     f"{r['plan_failures']} / {r['plan_timeouts']} / {r['linear_replans']} | {r['steps_mean']:.0f} | {r['track_pos_err_max_m']:.3f} | {r['executed_path_collisions']} / {r['executed_path_audits']} | {r['grasp_attempt_failures']} | {r['recoveries']} |")
     o = summary["overall"]
     lo, hi = o["ci95_all"]
-    lines.append(f"| all | | {o['n']} | {o['success']} | {o['failure']} | {o['infra']} | {100*o['success_rate_all']:.0f}% | [{100*lo:.0f}, {100*hi:.0f}] | | | | | | | |")
+    tot600 = sum(r["success_within_600_all"] for r in summary["per_task"])
+    lines.append(f"| all | | {o['n']} | {o['success']} | {o['failure']} | {o['infra']} | {100*o['success_rate_all']:.0f}% | [{100*lo:.0f}, {100*hi:.0f}] | {tot600} | | | | | | | | |")
     return "\n".join(lines)
 
 

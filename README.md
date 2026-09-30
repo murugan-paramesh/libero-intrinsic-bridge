@@ -8,6 +8,9 @@ Status, evidence and honest limitations: see `docs/report.md` (technical report)
 `docs/results.md` (generated results table), `docs/contract.md` (facts verified from the pinned
 sources), `docs/architecture.md`, `CHECKPOINT.md` (work log).
 
+## Headline result
+Frozen evaluation (100 episodes, 10 official init states per task disjoint from development states): **62/100 successes** (Wilson 95% CI 52-71%); per task 10, 5, 10, 0, 10, 2, 9, 8, 8, 0 of 10. Every motion executed was an Intrinsic `PlanTrajectory` result (1,580 plans, mean 30 ms, no timeouts). Tasks 3 and 9 are not solved (see docs/report.md 8.2). This is a privileged-state result and is not comparable to vision-only policies.
+
 ## Layout
 ```
 src/libero_intrinsic/      project code (adapter, skills, evaluation)
