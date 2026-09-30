@@ -158,7 +158,7 @@ after OSC null-space drift), none in tasks 0/2/3/8/9.
 - **Adapter bug (task 5, 3 episodes).** The controller can push joint 7 fractionally past the
   MJCF limit; the world update must clamp to limits.
 - **What did not fail:** the Intrinsic backend (no timeouts, no unavailable errors), the FK/IK
-  agreement, the LINEAR re-plan protocol (749 re-plans, all succeeded on the second call).
+  agreement, the LINEAR re-plan protocol (547 re-plans; 16 genuine plan failures in 1,580 calls).
 
 ### 8.3 Next improvements
 1. Posture-constrained IK (Intrinsic `JointPositionLimits` / `JointPositionSumLimit`) for
