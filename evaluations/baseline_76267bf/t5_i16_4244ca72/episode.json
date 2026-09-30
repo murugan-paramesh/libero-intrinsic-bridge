@@ -1,0 +1,447 @@
+{
+ "run_id": "t5_i16_4244ca72",
+ "task_index": 5,
+ "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+ "language": "pick up the book and place it in the back compartment of the caddy",
+ "init_state_index": 16,
+ "seed": 0,
+ "revisions": {
+  "libero_intrinsic_bridge": "010e62d5cc6f1a57b740f97100434ac5508ede07",
+  "intrinsic_core": "c61bf075f2335371c6367b61117e8a62bb960c3b",
+  "LIBERO": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+  "robosuite": "1.4.0",
+  "mujoco": "2.3.7",
+  "numpy": "1.23.5"
+ },
+ "observation_mode": "privileged_state",
+ "controller": "OSC_POSE (robosuite 1.4.0 default osc_pose.json, 20 Hz)",
+ "step_budget": 1200,
+ "intrinsic": {
+  "component": "MotionPlannerServiceInProcess + FakeWorldService (intrinsic-core, in-process gRPC)",
+  "binary": "/home/user/bazel_out/execroot/_main/bazel-out/haswell-opt/bin/libero_bridge/libero_planner_server",
+  "world_id": "libero10_task5",
+  "sdf": "runs/eval/frozen_B/task5/world/task5.sdf",
+  "addresses": {
+   "world_service": "127.0.0.1:40219",
+   "motion_planner_service": "dns:///localhost:34923",
+   "credentials": "local_tcp"
+  },
+  "n_requests": 255,
+  "requests_by_rpc": {
+   "CheckCollisions": 4,
+   "ComputeFk": 196,
+   "ComputeIk": 6,
+   "GetObject": 1,
+   "GetTransform": 4,
+   "ListObjects": 2,
+   "PlanTrajectory": 5,
+   "ReparentObject": 3,
+   "UpdateObjectJoints": 6,
+   "UpdateTransform": 27,
+   "note": 1
+  },
+  "plan_latency_s": [
+   0.020677173999501974,
+   0.03519045900065976,
+   0.02849850399979914,
+   0.014771035999729065,
+   0.02205148600114626
+  ],
+  "plan_failures": 1,
+  "plan_timeouts": 0,
+  "linear_replans": 1
+ },
+ "t_start": 1790788530.3415458,
+ "success": false,
+ "error": null,
+ "skills": [
+  {
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 85,
+   "details": {
+    "grasp": "pinch_z0.999_yaw0",
+    "width": 0.04718893527570933,
+    "lifted": 0.10034772596934483,
+    "drift": 0.00011204020633212355
+   }
+  },
+  {
+   "skill": "place",
+   "ok": false,
+   "reason": "intrinsic:UpdateObjectJoints:OUT_OF_RANGE:Invalid 'joint_positions' in UpdateObjectJointsRequest for object panda. new raw value 3.77925 for joint (ID 21) is outs",
+   "attempts": 2,
+   "recoveries": 1,
+   "steps": 26,
+   "details": {}
+  }
+ ],
+ "events": [
+  {
+   "event": "grasp_candidates",
+   "n_total": 4,
+   "n_cleared": 4,
+   "n_tilted": 0,
+   "t_wall": 1790788533.6337032,
+   "env_step": 0
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.999_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-126f679e7d",
+   "latency_s": 0.02131552799983183,
+   "t_wall": 1790788534.5657177,
+   "env_step": 17
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z0.999_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-d08b77e128",
+   "latency_s": 0.022502820000227075,
+   "t_wall": 1790788534.5888758,
+   "env_step": 17
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-ee7d36fb44",
+   "latency_s": 0.023074575001373887,
+   "t_wall": 1790788534.6131766,
+   "env_step": 17
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-6de7dbbbb2",
+   "motion_type": "ANY",
+   "n_states": 63,
+   "duration_s": 0.462725027,
+   "latency_s": 0.020677173999501974,
+   "target_pos": [
+    -0.2180638133142941,
+    0.1456478319696182,
+    1.0993696874767402
+   ],
+   "t_wall": 1790788534.6346242,
+   "env_step": 17
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-6de7dbbbb2",
+   "ok": true,
+   "reason": "completed",
+   "steps": 26,
+   "pos_err_max": 0.006455003670359078,
+   "pos_err_mean": 0.003918656028826166,
+   "rot_err_max_deg": 0.6396204773610681,
+   "joint_err_max": 0.06770872624557128,
+   "joint_err_final": 0.06507900513633114,
+   "final_pos_err": 0.0032135917208958487,
+   "final_rot_err_deg": 0.5935978831231234,
+   "planned_duration_s": 0.462725027,
+   "planning_latency_s": 0.020677173999501974,
+   "n_states": 63,
+   "time_scale": 2.6028326008772593,
+   "t_wall": 1790788536.1729853,
+   "env_step": 43
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-6de7dbbbb2",
+   "n_checked": 26,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-cc194ee537",
+   "t_wall": 1790788536.1799486,
+   "env_step": 43
+  },
+  {
+   "event": "plan",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-6e0c1d78db",
+   "motion_type": "LINEAR",
+   "n_states": 39,
+   "duration_s": 0.379353504,
+   "latency_s": 0.03519045900065976,
+   "target_pos": [
+    -0.2180638133142941,
+    0.1456478319696182,
+    0.9993696874767403
+   ],
+   "t_wall": 1790788536.2166777,
+   "env_step": 43
+  },
+  {
+   "event": "execute",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-6e0c1d78db",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.005344158626783945,
+   "pos_err_mean": 0.0032144698920465167,
+   "rot_err_max_deg": 0.4673916513145017,
+   "joint_err_max": 0.020264087661664654,
+   "joint_err_final": 0.020264087661664654,
+   "final_pos_err": 0.003476511050445989,
+   "final_rot_err_deg": 0.4673916513145017,
+   "planned_duration_s": 0.379353504,
+   "planning_latency_s": 0.03519045900065976,
+   "n_states": 39,
+   "time_scale": 1.8120109279842602,
+   "t_wall": 1790788537.0612867,
+   "env_step": 58
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-6e0c1d78db",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-d230b11f54",
+   "t_wall": 1790788537.0712109,
+   "env_step": 58
+  },
+  {
+   "event": "grasp_verify",
+   "finger_gap": 0.04444887002649535,
+   "pad_contacts": 6,
+   "grasp": "pinch_z0.999_yaw0",
+   "t_wall": 1790788537.630825,
+   "env_step": 70
+  },
+  {
+   "event": "plan",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-09c4c3931d",
+   "motion_type": "LINEAR",
+   "n_states": 39,
+   "duration_s": 0.38859454000000004,
+   "latency_s": 0.014771035999729065,
+   "target_pos": [
+    -0.22266435345210328,
+    0.1465053318665962,
+    1.0958686391023706
+   ],
+   "t_wall": 1790788537.6833768,
+   "env_step": 70
+  },
+  {
+   "event": "execute",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-09c4c3931d",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.005746656668172384,
+   "pos_err_mean": 0.002979178220524776,
+   "rot_err_max_deg": 0.39989954585547016,
+   "joint_err_max": 0.01832710856509767,
+   "joint_err_final": 0.011437322281705103,
+   "final_pos_err": 0.0012270533249383688,
+   "final_rot_err_deg": 0.13879598992259976,
+   "planned_duration_s": 0.38859454000000004,
+   "planning_latency_s": 0.014771035999729065,
+   "n_states": 39,
+   "time_scale": 1.750392076131746,
+   "t_wall": 1790788538.58575,
+   "env_step": 85
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-09c4c3931d",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-de801f75ae",
+   "t_wall": 1790788538.5922625,
+   "env_step": 85
+  },
+  {
+   "event": "lift_verify",
+   "lifted_m": 0.10034772596934483,
+   "tcp_obj_drift_m": 0.00011204020633212355,
+   "pad_contacts": 6,
+   "t_wall": 1790788538.5929642,
+   "env_step": 85
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "grasp": "pinch_z0.999_yaw0",
+    "width": 0.04718893527570933,
+    "lifted": 0.10034772596934483,
+    "drift": 0.00011204020633212355
+   },
+   "t_wall": 1790788538.593063,
+   "env_step": 85
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 85,
+   "t_wall": 1790788538.5930653,
+   "env_step": 85
+  },
+  {
+   "event": "place_fit_rotation",
+   "yaw_deg": 90.0,
+   "t_wall": 1790788538.6090817,
+   "env_step": 85
+  },
+  {
+   "event": "place_rotation_choice",
+   "limit_margin_rad": 0.35696643502041603,
+   "t_wall": 1790788538.656498,
+   "env_step": 85
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 1.05529,
+   "tcp_release_z": 1.0378956922607916,
+   "tcp_min_z": 1.0416015363789803,
+   "drop_height": 0.0037058441181887503,
+   "candidate": 0,
+   "t_wall": 1790788538.6575823,
+   "env_step": 85
+  },
+  {
+   "event": "ik",
+   "label": "place_transport_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-7b9ab46cc5",
+   "latency_s": 0.038106620999315055,
+   "t_wall": 1790788538.7008853,
+   "env_step": 85
+  },
+  {
+   "event": "plan",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-8ddc582b1e",
+   "motion_type": "ANY",
+   "n_states": 253,
+   "duration_s": 1.057032225,
+   "latency_s": 0.02205148600114626,
+   "target_pos": [
+    -0.4458764201977717,
+    -0.15046101118683539,
+    1.1216011228472331
+   ],
+   "t_wall": 1790788538.7245295,
+   "env_step": 85
+  },
+  {
+   "event": "execute",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-8ddc582b1e",
+   "ok": false,
+   "reason": "joint_limit_violation",
+   "steps": 26,
+   "pos_err_max": 0.07696323958382369,
+   "pos_err_mean": 0.022156829878107537,
+   "rot_err_max_deg": 46.763295067924176,
+   "joint_err_max": 1.3444808110540984,
+   "joint_err_final": 1.3418000965247434,
+   "final_pos_err": 0.1483938841722856,
+   "final_rot_err_deg": 55.74384748574495,
+   "planned_duration_s": 1.057032225,
+   "planning_latency_s": 0.02205148600114626,
+   "n_states": 253,
+   "time_scale": 1.6981952881035052,
+   "t_wall": 1790788540.2377,
+   "env_step": 111
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-8ddc582b1e",
+   "n_checked": 26,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [-0.0318931,-0.0815399,-0.156234,-3.0694,-0.191103,3.77925,-0.2005] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:val",
+   "request_id": "CheckCollisions-c4c12a4a3e",
+   "t_wall": 1790788540.245676,
+   "env_step": 111
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "place",
+   "attempt": 0,
+   "ok": false,
+   "reason": "transport_exec:joint_limit_violation",
+   "details": {},
+   "t_wall": 1790788540.2457645,
+   "env_step": 111
+  },
+  {
+   "event": "recover_failed",
+   "skill": "place",
+   "reason": "UpdateObjectJoints failed [OUT_OF_RANGE] Invalid 'joint_positions' in UpdateObjectJointsRequest for object panda. new raw value 3.77925 for joint (ID 21) is outside system limits of [-0.0175, 3.7525] (request UpdateObjectJoints-6b8386df57)",
+   "t_wall": 1790788540.2477942,
+   "env_step": 111
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "place",
+   "attempt": 1,
+   "ok": false,
+   "reason": "intrinsic:UpdateObjectJoints:OUT_OF_RANGE:Invalid 'joint_positions' in UpdateObjectJointsRequest for object panda. new raw value 3.77925 for joint (ID 21) is outs",
+   "details": {},
+   "t_wall": 1790788540.2493415,
+   "env_step": 111
+  },
+  {
+   "event": "skill",
+   "skill": "place",
+   "ok": false,
+   "reason": "intrinsic:UpdateObjectJoints:OUT_OF_RANGE:Invalid 'joint_positions' in UpdateObjectJointsRequest for object panda. new raw value 3.77925 for joint (ID 21) is outs",
+   "attempts": 2,
+   "steps": 26,
+   "t_wall": 1790788540.2493443,
+   "env_step": 111
+  }
+ ],
+ "world_sync": {
+  "n_objects": 4,
+  "max_pose_error_m": 0.0,
+  "max_rot_error_deg": 0.0
+ },
+ "goal": [
+  {
+   "predicate": "in",
+   "args": [
+    "black_book_1",
+    "desk_caddy_1_back_contain_region"
+   ],
+   "subgoal_index": 0
+  }
+ ],
+ "plan": [
+  "pick:black_book_1_main",
+  "place:black_book_1_main"
+ ],
+ "failure_stage": "place:black_book_1_main",
+ "failure_reason": "intrinsic:UpdateObjectJoints:OUT_OF_RANGE:Invalid 'joint_positions' in UpdateObjectJointsRequest for object panda. new raw value 3.77925 for joint (ID 21) is outs",
+ "video": "runs/eval/frozen_B/task5/episodes/t5_i16_4244ca72/agentview.mp4",
+ "steps": 111,
+ "t_end": 1790788540.3647087,
+ "wall_time_s": 10.023162841796875
+}
