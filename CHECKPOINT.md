@@ -69,3 +69,15 @@ Commands: scripts/validate_kinematics.py --task 0 ; scripts/demo_motion.py --tas
 - Fixes on the way: LINEAR re-plan protocol (Intrinsic's linear planner rejects pose targets whose IK differs from the path-IK end configuration by >1e-3 rad -> re-plan with the reached configuration, as Intrinsic recommends); fingers modeled as separate objects parented to the flange frame and synced to the real finger joints (open envelope could not enter the basket); container-aware release height (hand must clear the rim; measured hand bottom = 31 mm above tcp); placement slots perpendicular to the closing axis inside the region; free-spot search with release-height override; grasp contacts count finger bodies too.
 - Running: task0 inits 1-4 (runs/dev/task0_dev), tasks 1 & 7 inits 0-1.
 Next: articulation tasks (2, 3, 8, 9), mugs/plates (4, 6), book (5); then frozen eval.
+
+## Session 2 (18:10 UTC) - dev results so far (init states 0-4 are development states)
+| task | dev episodes | result |
+|---|---|---|
+| 0 | inits 0-4 | 5/5 success (324-363 steps) |
+| 1 | init 1 | success (393); inits 0,2 failed before the latest placement fixes (rerunning) |
+| 2 | init 0 | success (278) - knob turned to 0.79 rad, moka pot placed on burner |
+| 3 | init 0 | fail: hand hit the upper drawer at the placement spot -> hand-aware spot selection added (rerunning) |
+| 5 | init 0 | fail: book vs caddy slot -> fit rotation + geometric release height added (rerunning) |
+| 8 | init 0 | success (458) - both moka pots on the burner |
+| 4,6,7,9 | init 0 | running |
+Key generalizations added today: partial gripper pre-opening (1 cm/step), neighbour clearance filter + tilted approaches, support-contact rules for thin objects and lifting, fingers as flange-attached objects synced to joint state, LINEAR re-plan protocol, container-aware placement (rim/hand/finger clearance search, fit rotation, slots perpendicular to closing axis, point-cloud free-spot search), nearest-IK joint targets for free-space motions.
