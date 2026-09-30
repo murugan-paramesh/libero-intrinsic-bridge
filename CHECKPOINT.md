@@ -36,3 +36,14 @@ Rendering: Mesa EGL + OSMesa installed via apt (libegl1 libegl-mesa0 libgl1-mesa
 1. Write docs/contract.md (verified facts), env wrapper, MJCF->SDF Panda converter.
 2. C++ intrinsic_stack server: load SDF worlds, expose ObjectWorldService + MotionPlannerService on TCP.
 3. Python gRPC client via Intrinsic's own py protos; FK/IK validation vs MuJoCo.
+
+## Session 1, later (14:50 UTC)
+Completed since last entry:
+- src/libero_intrinsic/env/libero_env.py (env wrapper, torch-free task enumeration), env/executor.py (OSC action conversion + tracking metrics)
+- src/libero_intrinsic/model/scene_to_sdf.py: compiled MuJoCo -> SDF (robot kinematic model + STL collision meshes + static objects). Verified: Python re-implementation of the exported chain reproduces MuJoCo TCP FK to 1e-15 m over 50 random configs (runs/dev/task0_world/task0.sdf generated).
+- src/libero_intrinsic/model/transforms.py + tests/test_transforms.py (5 tests pass).
+- src/libero_intrinsic/intrinsic/client.py: gRPC client on Intrinsic's own protos; IntrinsicUnavailableError, per-request JSONL log with ids; world_sync.py.
+- intrinsic_stack/cc/libero_planner_server.cc + BUILD (symlinked as third_party/intrinsic-core/libero_bridge).
+- scripts/gen_intrinsic_protos.py generated 91 pb2 modules into build/intrinsic_py.
+Blocker: Bazel build still compiling (~7.9k/16.9k actions at 14:50). Server binary target to build next:
+  bazel --output_base=/home/user/bazel_out build --registry=file://.../bazel-central-registry --jobs=3 //libero_bridge:libero_planner_server
