@@ -152,8 +152,9 @@ class PushSkill(Skill):
         for k, p in enumerate(path):
             rs = env.robot_state()
             sync.sync()
+            p_k, rot_k = (p if isinstance(p, tuple) else (p, rot))   # path points may carry their own orientation
             try:
-                _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}", rs.q, p, rot, push_cs, "LINEAR", +1.0, 10.0)
+                _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}", rs.q, p_k, rot_k, push_cs, "LINEAR", +1.0, 10.0)
             except IntrinsicRequestError as e:
                 return SkillResult(self.name, False, f"segment{k}_plan_failed:{e.code}")
             ctx.record(event="push_progress", segment=k, satisfied=bool(self.check_fn()))
@@ -162,8 +163,8 @@ class PushSkill(Skill):
         ok = bool(self.check_fn())
         rs = env.robot_state()
         sync.sync()
-        try:
-            _plan_and_execute(ctx, f"{self.label}_retreat", rs.q, rs.tcp_pos + [0, 0, 0.08], rs.tcp_rot, push_cs, "LINEAR", +1.0, 5.0)
+        try:  # withdraw along the negative approach axis (up for top-down pushes, back for side pushes)
+            _plan_and_execute(ctx, f"{self.label}_retreat", rs.q, rs.tcp_pos - rs.tcp_rot[:, 2] * 0.08, rs.tcp_rot, push_cs, "LINEAR", +1.0, 5.0)
         except IntrinsicRequestError:
             pass
         return SkillResult(self.name, ok, "" if ok else "push_goal_not_reached")

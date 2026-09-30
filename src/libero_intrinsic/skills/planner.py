@@ -15,6 +15,7 @@ from __future__ import annotations
 from typing import List
 
 import numpy as np
+from scipy.spatial.transform import Rotation as R
 
 from libero_intrinsic.skills import geometry as geo
 from libero_intrinsic.skills import placement
@@ -191,10 +192,12 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
         proj = pts @ axis
         front = pts[np.argmin(proj)]
         center_line = box.center_world - axis * (proj.max() - proj.min()) / 2
-        contact = np.array([center_line[0], center_line[1], box.bottom_z + 0.6 * (box.top_z - box.bottom_z)])
-        contact = contact - axis * (0.02)  # fingertips 2 cm outside the front face
-        rot = geo.top_down_rotation(np.arctan2(axis[1], axis[0]))  # closing axis along push direction
-        pre = contact + np.array([0, 0, 0.10])
+        contact = np.array([center_line[0], center_line[1], box.bottom_z + 0.5 * (box.top_z - box.bottom_z)])
+        contact = contact - axis * (0.015)  # fingertips 1.5 cm outside the front face
+        # push the drawer front the natural way: fingers closed, hand horizontal behind the
+        # fingertips, approach along the push direction (the hand stays outside the drawer)
+        rot = geo.side_rotation(np.arctan2(axis[1], axis[0]), 0.0)
+        pre = contact - axis * 0.08 + np.array([0, 0, 0.02])
         path = [contact, contact + axis * (abs(q) + 0.03)]
         return pre, rot, path
 
@@ -216,18 +219,22 @@ def microwave_close_geometry(env, door_body: str, joint: str):
         r_edge = 0.85 * np.linalg.norm((edge - anchor)[:2])
         ang0 = np.arctan2((edge - anchor)[1], (edge - anchor)[0])
         z = box.bottom_z + 0.5 * (box.top_z - box.bottom_z)
-        # the door rotates by -q about the axis to close; push the outside face along the arc
+        # the door rotates by -q about the axis to close; push the outside face along the arc with
+        # a horizontal hand whose approach axis is the local tangent (perpendicular to the door face)
         sign = 1.0 if q < 0 else -1.0
-        n_seg = max(int(np.ceil(abs(q) / 0.35)), 2)
+        s_dir = sign * (1 if axis[2] > 0 else -1)
+        n_seg = max(int(np.ceil(abs(q) / 0.3)), 2)
         path = []
         for k in range(1, n_seg + 1):
-            a = ang0 + sign * abs(q) * k / n_seg * (1 if axis[2] > 0 else -1)
-            path.append(anchor + np.array([r_edge * np.cos(a), r_edge * np.sin(a), z - anchor[2]]))
-        # contact point: just outside the door face at the starting angle, offset opposite the motion
-        a_pre = ang0 - sign * 0.12 * (1 if axis[2] > 0 else -1)
+            a = ang0 + s_dir * abs(q) * k / n_seg
+            p = anchor + np.array([r_edge * np.cos(a), r_edge * np.sin(a), z - anchor[2]])
+            tangent = s_dir * np.array([-np.sin(a), np.cos(a), 0.0])
+            path.append((p, geo.side_rotation(np.arctan2(tangent[1], tangent[0]), 0.0)))
+        a_pre = ang0 - s_dir * 0.10
         contact = anchor + np.array([r_edge * np.cos(a_pre), r_edge * np.sin(a_pre), z - anchor[2]])
-        rot = geo.top_down_rotation(0.0)
-        pre = contact + np.array([0, 0, 0.12])
+        tangent0 = s_dir * np.array([-np.sin(a_pre), np.cos(a_pre), 0.0])
+        rot = geo.side_rotation(np.arctan2(tangent0[1], tangent0[0]), 0.0)
+        pre = contact - tangent0 * 0.08
         return pre, rot, [contact] + path
 
     def check_fn():

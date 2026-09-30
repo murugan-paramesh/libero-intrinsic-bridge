@@ -63,6 +63,9 @@ def nearest_ik(ctx: SkillContext, pos, rot, q_now, cs, n: int = 8):
     joint distance to q_now (proximal joints weigh more: less arm reconfiguration, which the
     OSC controller tracks far better)."""
     sols, rid, lat = ctx.client.ik(pos, rot, q_now, max_solutions=n, collision_settings=cs)
+    lim = ctx.env.joint_limits()
+    safe = [q for q in sols if np.all(np.asarray(q) > lim[:, 0] + 0.06) and np.all(np.asarray(q) < lim[:, 1] - 0.06)]
+    sols = safe or sols
     w = np.array([3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.5])
     sols.sort(key=lambda q: float(np.sum(w * (np.asarray(q) - q_now) ** 2)))
     return sols, rid, lat
@@ -136,8 +139,18 @@ class PickSkill(Skill):
         sync.sync()
         if self.p.side_grasp:
             cands = [c for c in geo.side_grasp_candidates(env, self.body) if c.label not in self._tried]
+            # reachability ordering: horizontal approaches pointing away from the robot base are the
+            # ones the Panda can realise (probe: approach directions facing the base have no IK)
+            base = env.robot_state().base_pos
+            d = env.body_pose(self.body)[0][:2] - base[:2]
+            d = d / (np.linalg.norm(d) + 1e-9)
+            for c in cands:
+                c.score += 0.08 * float(np.dot(c.approach[:2], d))
+            cands.sort(key=lambda c: -c.score)
+            pre_clear = 0.06
         else:
             cands = [c for c in geo.grasp_candidates(env, self.body, yaws=self.p.yaws) if c.label not in self._tried]
+            pre_clear = self.p.pregrasp_clearance
         if not cands:
             return SkillResult(self.name, False, "no_grasp_candidate")
         # scene-level clearance: fingers (opened to width + clearance) and hand must not hit neighbours
@@ -149,7 +162,7 @@ class PickSkill(Skill):
                 opening = min(geo.GRIPPER_MAX_OPENING, c.width + self.p.open_clearance)
                 ok, blocker = geo.scene_clearance(env, c, opening, others)
                 if ok:  # also at the pre-grasp pose (hand higher up, e.g. above a container rim)
-                    pre = c.pos - c.approach * self.p.pregrasp_clearance
+                    pre = c.pos - c.approach * pre_clear
                     ok, blocker = geo.hand_clearance(env, pre, c.rot, opening, 0.0, others)
                 if ok:
                     out.append(c)
@@ -174,7 +187,7 @@ class PickSkill(Skill):
             ctx.close_gripper(9)
             ctx.open_gripper(int(np.ceil(opening / 0.01)))
             sync.sync()
-            pre = c.pos - c.approach * self.p.pregrasp_clearance
+            pre = c.pos - c.approach * pre_clear
             sols, rid, lat = client.ik(pre, c.rot, rs.q, max_solutions=4, collision_settings=free_cs)
             ctx.record(event="ik", label="pregrasp", grasp=c.label, n_solutions=len(sols), request_id=rid, latency_s=lat)
             if not sols:
@@ -294,17 +307,20 @@ class PlaceSkill(Skill):
         if len(rot_options) > 1:
             cs_probe = sync.transport_collision_settings(self.support)
             t0, _ = targets[0]
+            lim = env.joint_limits()
+            best, best_margin = None, -1.0
             for Rc in rot_options:
                 probe = np.array([t0[0], t0[1], t0[2] + 0.15]) - Rc @ tcp_t_obj_p  # well above the target
                 try:
                     sols, _, _ = nearest_ik(ctx, probe, Rc, rs.q, cs_probe, n=4)
                 except IntrinsicRequestError:
                     sols = []
-                if sols:
-                    R_tcp = Rc
-                    break
-            else:
-                R_tcp = rot_options[0]
+                for q in sols:
+                    margin = float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q))))
+                    if margin > best_margin:
+                        best, best_margin = Rc, margin
+            R_tcp = best if best is not None else rot_options[0]
+            ctx.record(event="place_rotation_choice", limit_margin_rad=float(best_margin))
         rim_z = max(geo.object_box(env, b).top_z for b in self.support)
         hand_low = geo.hand_lowest_offset(R_tcp)   # lowest hand corner relative to the tcp (rotation aware)
         others = [b for b in sync.bodies if b != self.body]
