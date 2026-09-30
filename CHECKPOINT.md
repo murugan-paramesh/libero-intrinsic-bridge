@@ -63,3 +63,9 @@ Next: validate_kinematics -> demo_motion -> Task 0 dev runs -> fix skills -> all
 - Milestone 0 (evidence/milestone0_kinematics): 200 random configs: FK max err 5e-9 m / 2e-6 deg (Intrinsic ComputeFk vs MuJoCo site); IK 40/40 solved, max 1e-6 m / 1.3e-4 deg after setting the solution in MuJoCo; CheckCollisions flags link6/link5 vs table for an arm-in-table config (MuJoCo: 17 contacts) and OK at home.
 - Milestone 1 (evidence/milestone1_first_intrinsic_motion): PlanTrajectory (75 states, 0.32 s, 30 ms latency) executed via OSC_POSE with auto time scaling 3.2x: 23 steps, tcp err 4.9 mm mean / 7.3 mm max, final 5.6 mm / 0.9 deg.
 Commands: scripts/validate_kinematics.py --task 0 ; scripts/demo_motion.py --task 0 --init 0
+
+## Session 2 (17:10 UTC) - Task 0 solved
+- Milestone 2 (evidence/milestone2_task0_first_success): Task 0, init 0: SUCCESS in 324 steps (< LIBERO's 600). 18 PlanTrajectory calls (all <= 60 ms), 4 ComputeIk, 12 CheckCollisions (executed-path audits, all collision-free), 451 ComputeFk (per-step references). Video + JSONL request log saved.
+- Fixes on the way: LINEAR re-plan protocol (Intrinsic's linear planner rejects pose targets whose IK differs from the path-IK end configuration by >1e-3 rad -> re-plan with the reached configuration, as Intrinsic recommends); fingers modeled as separate objects parented to the flange frame and synced to the real finger joints (open envelope could not enter the basket); container-aware release height (hand must clear the rim; measured hand bottom = 31 mm above tcp); placement slots perpendicular to the closing axis inside the region; free-spot search with release-height override; grasp contacts count finger bodies too.
+- Running: task0 inits 1-4 (runs/dev/task0_dev), tasks 1 & 7 inits 0-1.
+Next: articulation tasks (2, 3, 8, 9), mugs/plates (4, 6), book (5); then frozen eval.
