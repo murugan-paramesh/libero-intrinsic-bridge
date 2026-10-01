@@ -14,6 +14,7 @@ Place: object-relative target -> tcp target via the grasp transform -> plan tran
 from __future__ import annotations
 
 import dataclasses
+import re
 from typing import Callable, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -58,11 +59,12 @@ def support_of(env, sync, body: str) -> List[str]:
     return out
 
 
-def nearest_ik(ctx: SkillContext, pos, rot, q_now, cs, n: int = 8):
+def nearest_ik(ctx: SkillContext, pos, rot, q_now, cs, n: int = 8, joint_limits=None):
     """Intrinsic IK solutions for the pose (collision checked with `cs`), sorted by weighted
     joint distance to q_now (proximal joints weigh more: less arm reconfiguration, which the
-    OSC controller tracks far better)."""
-    sols, rid, lat = ctx.client.ik(pos, rot, q_now, max_solutions=n, collision_settings=cs)
+    OSC controller tracks far better). `joint_limits` (lo, hi) adds a JointPositionLimits
+    constraint to the IK target (posture restriction, e.g. shoulder forward / elbow up)."""
+    sols, rid, lat = ctx.client.ik(pos, rot, q_now, max_solutions=n, collision_settings=cs, joint_limits=joint_limits)
     lim = ctx.env.joint_limits()
     safe = [q for q in sols if np.all(np.asarray(q) > lim[:, 0] + 0.06) and np.all(np.asarray(q) < lim[:, 1] - 0.06)]
     sols = safe or sols
@@ -71,19 +73,59 @@ def nearest_ik(ctx: SkillContext, pos, rot, q_now, cs, n: int = 8):
     return sols, rid, lat
 
 
+_START_STATE_RE = re.compile(r"Invalid initial joint configuration.*?Left object: (\S+)[^\n]*\n\s*Right objects?: (\S+)", re.S)
+
+
+def _recover_start_state(ctx: SkillContext, label: str, err: IntrinsicRequestError, cs):
+    """Bounded recovery when a plan is rejected because the CURRENT configuration touches an
+    object (e.g. a finger still in contact with the object just released, or a pushed body):
+    retreat 5 cm straight up with only that contact pair excluded, re-sync, and let the caller
+    re-plan once. Returns True when a retreat was executed."""
+    m = _START_STATE_RE.search(str(err))
+    if not m:
+        return False
+    a, b = m.group(1).replace("panda.", "").split(".")[0], m.group(2).split(".")[0]
+    sync = ctx.sync
+    movable = set(sync.bodies) | set(sync.fingers.values()) | {sync.client.robot}
+    if b not in movable and a not in movable:
+        return False
+    rs = ctx.env.robot_state()
+    from libero_intrinsic.intrinsic.client import collision_settings
+    pairs = sync._base_pairs() + [(sync.client.robot, b), (b, sync.client.robot)] + [(f, b) for f in sync.fingers.values()]
+    cs_r = collision_settings(pairs, resolver=sync.client.oref)
+    ctx.record(event="start_state_recovery", label=label, pair=[a, b])
+    try:
+        traj = ctx.client.plan_to_pose(rs.q, rs.tcp_pos + np.array([0, 0, 0.05]), rs.tcp_rot, collision_settings=cs_r,
+                                       motion_type="LINEAR", timeout_s=5.0, caller_id=label + "_recover")
+        ctx.execute(traj, ExecutionConfig(gripper=0.0), label + "_recover")
+    except IntrinsicRequestError as e2:
+        ctx.record(event="start_state_recovery_failed", label=label, reason=str(e2)[:160])
+        return False
+    sync.sync()
+    return True
+
+
 def _plan_and_execute(ctx: SkillContext, label: str, q_start, pos, rot, cs, motion_type="ANY",
-                      gripper=-1.0, timeout_s=15.0, contact_monitor=None, time_scale=1.0):
-    if motion_type == "ANY":
-        # free-space motion: plan to the IK solution nearest the current configuration (joint target)
-        sols, rid, lat = nearest_ik(ctx, pos, rot, np.asarray(q_start), cs)
-        ctx.record(event="ik", label=label + "_goal", n_solutions=len(sols), request_id=rid, latency_s=lat)
-        if not sols:
-            raise IntrinsicRequestError("ComputeIk", "NOT_FOUND", f"no collision-free IK for {label}", rid)
-        traj = ctx.client.plan_to_joints(q_start, sols[0], collision_settings=cs, motion_type="ANY",
-                                         timeout_s=timeout_s, caller_id=label)
-    else:
-        traj = ctx.client.plan_to_pose(q_start, pos, rot, collision_settings=cs, motion_type=motion_type,
-                                       timeout_s=timeout_s, caller_id=label)
+                      gripper=-1.0, timeout_s=15.0, contact_monitor=None, time_scale=1.0, joint_limits=None,
+                      _retry=True):
+    try:
+        if motion_type == "ANY":
+            # free-space motion: plan to the IK solution nearest the current configuration (joint target)
+            sols, rid, lat = nearest_ik(ctx, pos, rot, np.asarray(q_start), cs, joint_limits=joint_limits)
+            ctx.record(event="ik", label=label + "_goal", n_solutions=len(sols), request_id=rid, latency_s=lat)
+            if not sols:
+                raise IntrinsicRequestError("ComputeIk", "NOT_FOUND", f"no collision-free IK for {label}", rid)
+            traj = ctx.client.plan_to_joints(q_start, sols[0], collision_settings=cs, motion_type="ANY",
+                                             timeout_s=timeout_s, caller_id=label)
+        else:
+            traj = ctx.client.plan_to_pose(q_start, pos, rot, collision_settings=cs, motion_type=motion_type,
+                                           timeout_s=timeout_s, caller_id=label)
+    except IntrinsicRequestError as e:
+        if _retry and "Invalid initial joint configuration" in str(e) and _recover_start_state(ctx, label, e, cs):
+            rs = ctx.env.robot_state()
+            return _plan_and_execute(ctx, label, rs.q, pos, rot, cs, motion_type, gripper, timeout_s, contact_monitor,
+                                     time_scale, joint_limits, _retry=False)
+        raise
     ctx.record(event="plan", label=label, trajectory_id=traj.request_id, motion_type=motion_type,
                n_states=int(len(traj.t)), duration_s=traj.duration, latency_s=traj.planning_latency_s,
                target_pos=[float(v) for v in pos])
@@ -384,9 +426,9 @@ class PlaceSkill(Skill):
             release_origin = np.array([target_origin[0], target_origin[1], support_z + self.p.release_gap + obj_origin_above_bottom])
             tcp_release = release_origin - R_tcp @ tcp_t_obj_p
             rim_z = max(geo.object_box(env, b).top_z for b in self.support)
-            if support_z < rim_z - 0.02:
-                tcp_release[2] = max(tcp_release[2], rim_z + self.p.rim_clearance - geo.hand_lowest_offset(R_tcp))
             approach = R_tcp[:, 2]
+            if support_z < rim_z - 0.02 and approach[2] < -0.9:
+                tcp_release[2] = max(tcp_release[2], rim_z + self.p.rim_clearance - geo.hand_lowest_offset(R_tcp))
             tcp_pre = tcp_release - approach * self.p.preplace_clearance
             if approach[2] > -0.9:
                 tcp_pre = tcp_pre + np.array([0, 0, 0.02])
@@ -462,9 +504,15 @@ class PlaceSkill(Skill):
         self._released = True
         ctx.hold(0.0, self.p.settle_steps)
         obj_pos = env.body_pose(self.body)[0]
+        in_box = None
+        if self.region is not None:   # observation-based check of the goal geometry (origin inside the region box)
+            c_v, rot_v, half_v = geo.site_box_world(env, self.region)
+            in_box = bool(np.all(np.abs(rot_v.T @ (obj_pos - c_v)) <= half_v))
         ctx.record(event="place_verify", obj_pos=[float(v) for v in obj_pos], target=[float(v) for v in target_origin],
-                   xy_err=float(np.linalg.norm(obj_pos[:2] - target_origin[:2])), lower_stop=res.reason)
-        return self._retreat(ctx, SkillResult(self.name, True, details={"xy_err": float(np.linalg.norm(obj_pos[:2] - target_origin[:2]))}))
+                   xy_err=float(np.linalg.norm(obj_pos[:2] - target_origin[:2])), lower_stop=res.reason, in_region_box=in_box)
+        res_ok = in_box is not False
+        return self._retreat(ctx, SkillResult(self.name, res_ok, "" if res_ok else "released_outside_region_box",
+                                              details={"xy_err": float(np.linalg.norm(obj_pos[:2] - target_origin[:2]))}))
 
     @staticmethod
     def _box_tops(env, body):
@@ -590,6 +638,19 @@ class PlaceSkill(Skill):
         fp_off = np.array([fp_off[0], fp_off[1], 0.0])
         if self.region is not None:
             c_r, rot_r, half_r = geo.site_box_world(env, self.region)
+            # centre the footprint only along region axes that are tight for it (< 4 cm spare):
+            # in a wide cavity the hand, not the object, is the limiting body and the origin
+            # target (hand position) must stay where the slot search put it
+            ext = world_pts.max(0) - world_pts.min(0)
+            axes_w = [rot_r[:, i][:2] / (np.linalg.norm(rot_r[:, i][:2]) + 1e-9) for i in range(2)]
+            keep = np.zeros(2)
+            for i in range(2):
+                spare = 2 * half_r[i] - abs(float(np.dot(ext[:2], np.abs(axes_w[i]))))
+                if spare < 0.04:
+                    keep += axes_w[i] * float(np.dot(fp_off[:2], axes_w[i]))
+            fp_off = np.array([keep[0], keep[1], 0.0])
+        # Candidate preparation (rim-limited nominal release per candidate)
+        prepared = []
         for k, (target_origin, support_z) in enumerate(targets):
             target_origin = np.asarray(target_origin, dtype=float) - fp_off
             if self.region is not None:
@@ -600,49 +661,67 @@ class PlaceSkill(Skill):
             release_origin = np.array([target_origin[0], target_origin[1], support_z + self.p.release_gap + obj_origin_above_bottom])
             tcp_release = release_origin - R_tcp @ tcp_t_obj_p
             container = support_z < rim_z - 0.02
-            # Container-aware limit: the wide hand body cannot enter a container (basket, drawer,
-            # microwave, caddy): keep the hand above the rim ...
-            if container:
+            # Container-aware limit: the wide hand body cannot enter an open-top container (basket,
+            # drawer, caddy) from above: keep the hand above the rim. Not for horizontal approaches
+            # into a roofed container (microwave): there the hand enters below the roof and the
+            # hand/finger clearance checks against the walls apply instead.
+            if container and approach[2] < -0.9:
                 tcp_min_z = rim_z + self.p.rim_clearance - hand_low
                 if tcp_release[2] < tcp_min_z:
                     if record:
                         record(event="place_rim_limit", rim_z=float(rim_z), tcp_release_z=float(tcp_release[2]), tcp_min_z=float(tcp_min_z),
                                drop_height=float(tcp_min_z - tcp_release[2]), candidate=k)
                     tcp_release[2] = tcp_min_z
-            # ... and raise the release pose until hand, fingers and the carried object are clear
-            ok, blocker, raised, pre, trace = False, "", 0.0, None, []
-            for raised in np.arange(0.0, 0.151, 0.01):
-                cand = tcp_release + np.array([0, 0, raised])
-                if blocker:
-                    trace.append(blocker)
-                ok, blocker = geo.hand_clearance(env, cand, R_tcp, opening, width, others)
+            prepared.append((k, target_origin, support_z, tcp_release, container))
+
+        def valid(tcp_p):
+            """Release pose, pre-place pose and the straight segment between them (5 samples) must
+            keep hand/fingers clear of every other body, the carried object clear of non-support
+            bodies (8 mm) and of the support's walls (5 mm; at the release only its upper part)."""
+            ok, blocker = geo.hand_clearance(env, tcp_p, R_tcp, opening, width, others)
+            if not ok:
+                return False, "hand:" + blocker, None
+            ok, blocker = clear_of(tcp_p, non_support, 0.008)
+            if not ok:
+                return False, "obj:" + blocker, None
+            ok, blocker = clear_of(tcp_p, self.support, 0.005, walls_only=True)
+            if not ok:
+                return False, "objwall:" + blocker, None
+            pre = tcp_p - approach * self.p.preplace_clearance
+            if approach[2] > -0.9:            # side grasp: also stay clear above the floor before entering
+                pre = pre + np.array([0, 0, 0.02])
+            elif container_here and approach[2] < -0.9:   # top grasp: the object must be above the rim before descending
+                pre[2] = max(pre[2], rim_z + 0.03 - bottom_off)
+            for t in (1.0, 0.8, 0.6, 0.4, 0.2):
+                q_p = tcp_p + (pre - tcp_p) * t
+                ok, blocker = geo.hand_clearance(env, q_p, R_tcp, opening, width, others)
+                if ok:
+                    ok, blocker = clear_of(q_p, non_support + (list(self.support) if t >= 0.99 else []), 0.005 if t >= 0.99 else 0.008)
                 if not ok:
-                    blocker = "hand:" + blocker
+                    return False, ("pre:" if t >= 0.99 else f"path{t:.1f}:") + blocker, None
+            return True, "", pre
+        # Search order: every candidate at the nominal height first, then with the release raised
+        # (1 cm steps, <= 15 cm): an unraised release anywhere in the region beats a raised one at
+        # the preferred spot (shorter drop).
+        last_blockers = {}
+        traces = {k: [] for k, *_ in prepared}
+        top_off = float(world_pts[:, 2].max())      # object top relative to the tcp
+        box_top = (c_r[2] + half_r[2]) if self.region is not None else np.inf
+        for raised in np.arange(0.0, 0.151, 0.01):
+            for k, target_origin, support_z, tcp_release, container_here in prepared:
+                cand = tcp_release + np.array([0, 0, raised])
+                if approach[2] > -0.9 and cand[2] + top_off > box_top + 0.01:
+                    continue      # horizontal insertion: the object cannot be lifted out of the region box (roof)
+                ok, blocker, pre = valid(cand)
                 if ok:
-                    ok, blocker = clear_of(cand, non_support, 0.008)
-                    blocker = blocker and "obj:" + blocker
-                if ok:
-                    ok, blocker = clear_of(cand, self.support, 0.005, walls_only=True)
-                    blocker = blocker and "objwall:" + blocker
-                if ok:
-                    pre = cand - approach * self.p.preplace_clearance
-                    if approach[2] > -0.9:            # side grasp: also stay clear above the floor before entering
-                        pre = pre + np.array([0, 0, 0.02])
-                    elif container:                   # top grasp: the object must be above the rim before descending
-                        pre[2] = max(pre[2], rim_z + 0.03 - bottom_off)
-                    ok, blocker = geo.hand_clearance(env, pre, R_tcp, opening, width, others)
-                    if ok:
-                        ok, blocker = clear_of(pre, non_support + list(self.support), 0.005)
-                    if not ok:
-                        blocker = "pre:" + blocker
-                if ok:
-                    break
-            if ok:
-                if raised > 0 and record:
-                    record(event="place_release_raised", candidate=k, raised_m=float(raised), blockers=trace[:16])
-                return target_origin, support_z, tcp_release + np.array([0, 0, raised]), pre, float(raised)
-            if record:
-                record(event="place_spot_rejected", candidate=k, blocker=blocker, tcp=[float(v) for v in tcp_release])
+                    if raised > 0 and record:
+                        record(event="place_release_raised", candidate=k, raised_m=float(raised), blockers=traces[k][:16])
+                    return target_origin, support_z, cand, pre, float(raised)
+                traces[k].append(blocker)
+                last_blockers[k] = blocker
+        if record:
+            for k, target_origin, support_z, tcp_release, _ in prepared:
+                record(event="place_spot_rejected", candidate=k, blocker=last_blockers.get(k, ""), tcp=[float(v) for v in tcp_release])
         return None
 
     def grasp_compatible(self, env, sync, grasp_pos, grasp_rot) -> Tuple[bool, float]:

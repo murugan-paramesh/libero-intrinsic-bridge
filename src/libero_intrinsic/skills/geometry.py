@@ -397,10 +397,14 @@ def side_rotation(approach_yaw: float, roll: float = 0.0) -> np.ndarray:
     return R.from_rotvec(z * roll).as_matrix() @ R0
 
 
-def side_grasp_candidates(env, body: str, n_yaw: int = 16, rolls=(0.0, np.pi / 2)) -> List[GraspCandidate]:
-    """Horizontal-approach pinch grasps (e.g. a mug handle or a thin rim from the side). The tcp
-    is positioned on every geom centre and on the object's outer surface points at several
-    heights; the candidate is kept if the object's own geometry admits the pinch."""
+def side_grasp_candidates(env, body: str, n_yaw: int = 16, rolls=(0.0, np.pi / 2),
+                          pitches=(0.0, np.radians(20), np.radians(35))) -> List[GraspCandidate]:
+    """Horizontal and oblique (pitched-down) approach pinch grasps (e.g. a mug handle or a thin
+    rim from the side). The tcp is positioned on every geom centre and on the object's outer
+    surface points at several heights; the candidate is kept if the object's own geometry admits
+    the pinch. A positive pitch tilts the approach below the horizontal (the wrist rises and
+    moves back: Intrinsic IK probe, task 9: the level wrist collides with a neighbouring mug,
+    the 30 deg pitched hand has collision-free solutions at the microwave mouth)."""
     pts = object_point_cloud(env, body)
     box = object_box(env, body)
     m = env.model
@@ -411,21 +415,27 @@ def side_grasp_candidates(env, body: str, n_yaw: int = 16, rolls=(0.0, np.pi / 2
     out, seen = [], set()
     for yaw in np.linspace(0, 2 * np.pi, n_yaw, endpoint=False):
         for roll in rolls:
-            R_ = side_rotation(yaw, roll)
-            for c in centres:
-                p = np.array(c, dtype=float)
-                p[2] = min(max(p[2], box.bottom_z + 0.02), box.top_z - 0.01)
-                ok, w, n, why = evaluate_grasp(pts, p, R_)
-                if not ok:
-                    continue
-                key = (round(p[0], 3), round(p[1], 3), round(p[2], 3), round(float(yaw), 2), round(roll, 2))
-                if key in seen:
-                    continue
-                seen.add(key)
-                # prefer high grasps (object hangs less), narrow features, more contact
-                score = (MAX_WIDTH - w) + 0.0005 * min(n, 60) + 0.3 * (p[2] - box.bottom_z)
-                out.append(GraspCandidate(p, R_, R_[:, 2].copy(), w, float(yaw), float(score),
-                                          f"side_z{p[2]:.3f}_yaw{np.degrees(yaw):.0f}_roll{np.degrees(roll):.0f}"))
+            for pitch in pitches:
+                R0 = side_rotation(yaw, roll)
+                # pitch about the closing axis (tcp x): the approach z tilts below the horizontal
+                R_ = R.from_rotvec(R0[:, 0] * pitch).as_matrix() @ R0 if pitch else R0
+                if R_[2, 2] > 0:          # keep the approach pointing down, never up
+                    R_ = R.from_rotvec(-R0[:, 0] * pitch).as_matrix() @ R0
+                for c in centres:
+                    p = np.array(c, dtype=float)
+                    p[2] = min(max(p[2], box.bottom_z + 0.02), box.top_z - 0.01)
+                    ok, w, n, why = evaluate_grasp(pts, p, R_)
+                    if not ok:
+                        continue
+                    key = (round(p[0], 3), round(p[1], 3), round(p[2], 3), round(float(yaw), 2), round(roll, 2), round(float(pitch), 2))
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    # prefer high grasps (object hangs less), narrow features, more contact, level approaches
+                    score = (MAX_WIDTH - w) + 0.0005 * min(n, 60) + 0.3 * (p[2] - box.bottom_z) - 0.01 * pitch
+                    out.append(GraspCandidate(p, R_, R_[:, 2].copy(), w, float(yaw), float(score),
+                                              f"side_z{p[2]:.3f}_yaw{np.degrees(yaw):.0f}_roll{np.degrees(roll):.0f}"
+                                              + (f"_pitch{np.degrees(pitch):.0f}" if pitch else "")))
     out.sort(key=lambda g: -g.score)
     return out
 

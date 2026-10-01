@@ -117,8 +117,12 @@ class PushSkill(Skill):
     max_attempts = 3
 
     def __init__(self, body: str, contact_fn: Callable[[], Tuple[np.ndarray, np.ndarray, List[np.ndarray]]],
-                 check_fn: Callable[[], bool], label: str = "push", extra_contact_bodies: Sequence[str] = ()):
+                 check_fn: Callable[[], bool], label: str = "push", extra_contact_bodies: Sequence[str] = (),
+                 partial_ok: bool = False, progress_fn: Callable[[], float] = None):
         self.body, self.contact_fn, self.check_fn, self.label = body, contact_fn, check_fn, label
+        # partial_ok: a push that cannot be planned to the end but moved the articulation counts
+        # as a success (a later stage continues from the new state); progress_fn measures it
+        self.partial_ok, self.progress_fn = partial_ok, progress_fn
         self.extra = list(extra_contact_bodies)
         self.name = label
 
@@ -138,7 +142,8 @@ class PushSkill(Skill):
         sync.sync()
         if self.check_fn():
             return SkillResult(self.name, True, "already_satisfied")
-        pre, rot, path = self.contact_fn()
+        pre, rot, path = self.contact_fn(ctx)
+        progress0 = self.progress_fn() if self.progress_fn is not None else 0.0
         rs = env.robot_state()
         free_cs = sync.free_collision_settings()
         push_cs = sync.grasp_collision_settings(self.body, [(client.robot, b) for b in self.extra])
@@ -146,7 +151,8 @@ class PushSkill(Skill):
         ctx.record(event="ik", label=f"{self.label}_pre", n_solutions=len(sols), request_id=rid, latency_s=lat)
         if not sols:
             return SkillResult(self.name, False, "precontact_unreachable")
-        _, res = _plan_and_execute(ctx, f"{self.label}_precontact", rs.q, pre, rot, free_cs, "ANY", +1.0, 15.0)
+        jl = ctx.params.pop("push_joint_limits", None)   # posture family chosen by the contact selection (if any)
+        _, res = _plan_and_execute(ctx, f"{self.label}_precontact", rs.q, pre, rot, free_cs, "ANY", +1.0, 15.0, joint_limits=jl)
         if not res.ok:
             return SkillResult(self.name, False, f"precontact_exec:{res.reason}")
         # Long straight pushes are split into <= 4 cm segments, each planned after a world sync:
@@ -170,11 +176,16 @@ class PushSkill(Skill):
             try:
                 _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}", rs.q, p_k, rot_k, push_cs, "LINEAR", +1.0, 10.0)
             except IntrinsicRequestError as e:
+                if self.partial_ok and self.progress_fn is not None and self.progress_fn() > progress0 + 0.02:
+                    ctx.record(event="push_partial", segment=k, progress=float(self.progress_fn() - progress0), reason=e.code)
+                    break
                 return SkillResult(self.name, False, f"segment{k}_plan_failed:{e.code}")
             ctx.record(event="push_progress", segment=k, satisfied=bool(self.check_fn()))
             if self.check_fn():
                 break
         ok = bool(self.check_fn())
+        if self.partial_ok and self.progress_fn is not None and not ok:
+            ok = self.progress_fn() > progress0 + 0.02
         rs = env.robot_state()
         sync.sync()
         try:  # withdraw along the negative approach axis (up for top-down pushes, back for side pushes)

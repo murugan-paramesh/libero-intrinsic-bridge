@@ -12,6 +12,8 @@ the object in before closing), knob turns before placing on the stove (LIBERO-10
 """
 from __future__ import annotations
 
+import re
+
 from typing import List
 
 import numpy as np
@@ -19,6 +21,7 @@ from scipy.spatial.transform import Rotation as R
 
 from libero_intrinsic.skills import geometry as geo
 from libero_intrinsic.skills import placement
+from libero_intrinsic.intrinsic.client import IntrinsicRequestError
 from libero_intrinsic.skills.articulation import PushSkill, TurnKnobSkill, joint_world_axis_and_anchor
 from libero_intrinsic.skills.manipulation import PickParams, PickSkill, PlaceParams, PlaceSkill
 from libero_intrinsic.skills.task_spec import TaskSpec
@@ -88,6 +91,7 @@ def support_body_for(env, owner: str) -> str:
 def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
     skills = []
     manip, artic = [], []
+    ctx.params["home_q"] = np.array(env.robot_state().q, dtype=float)   # episode start posture (IK seed diversity)
     for atom in spec.goal:
         (artic if atom.predicate in ("turnon", "close", "open", "turnoff") else manip).append(atom)
     # knob before placing on the stove (task 2); drawer/microwave closing after placing (tasks 3, 9)
@@ -172,7 +176,14 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
             level = target.split("_region")[0].rsplit("_", 1)[1]  # bottom
             drawer_body = f"{cab}_cabinet_{level}"
             joint = f"{cab}_{level}_level"
-            skills.append(PushSkill(drawer_body, *drawer_close_geometry(env, drawer_body, joint), label="close_drawer",
+            ctx.params["push_extra"] = [f"{cab}_base"]
+            # two-stage closing (contact-constrained push along the prismatic axis): stage A pushes
+            # from above as far as the geometry allows (partial progress is a success), stage B
+            # finishes with a horizontal hand chosen by Intrinsic IK feasibility of the whole travel
+            skills.append(PushSkill(drawer_body, *drawer_push_topdown_geometry(env, drawer_body, joint), label="close_drawer_a",
+                                    extra_contact_bodies=[f"{cab}_base"], partial_ok=True,
+                                    progress_fn=lambda joint=joint: float(env.joint_qpos(joint))))
+            skills.append(PushSkill(drawer_body, *drawer_close_geometry(env, drawer_body, joint), label="close_drawer_b",
                                     extra_contact_bodies=[f"{cab}_base"]))
         elif atom.predicate == "close" and "microwave" in target:
             door_body = f"{target}_microdoorroot"
@@ -185,33 +196,109 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
     return skills
 
 
-def drawer_close_geometry(env, drawer_body: str, joint: str):
-    def contact_fn():
-        axis, _ = joint_world_axis_and_anchor(env, joint)  # slide axis (world); open = negative qpos
+def drawer_push_topdown_geometry(env, drawer_body: str, joint: str):
+    """Stage A of the drawer closing: top-down push with the closing axis along the push and the
+    approach tilted 20 deg toward the push direction (IK probe: solvable and collision-free at the
+    contact and mid-travel poses; the last ~3 cm are blocked by the wrist/forearm against the
+    cabinet's upper drawer fronts, which stage B handles with a horizontal hand)."""
+    def contact_fn(ctx=None):
+        axis, _ = joint_world_axis_and_anchor(env, joint)
         q = env.joint_qpos(joint)
         box = geo.object_box(env, drawer_body)
-        # front face: the extreme of the drawer along -axis (it slid out that way)
         pts = geo.body_collision_points_local(env.model, drawer_body) @ box.rot.T + box.pos
         proj = pts @ axis
-        front = pts[np.argmin(proj)]
         center_line = box.center_world - axis * (proj.max() - proj.min()) / 2
         contact = np.array([center_line[0], center_line[1], box.bottom_z + 0.4 * (box.top_z - box.bottom_z)])
-        contact = contact - axis * (0.015)  # fingertips 1.5 cm outside the front face
-        # Push from above with the fingers closed, the closing axis ALONG the push direction (the
-        # thin finger side faces the drawer front) and the approach tilted 20 deg from vertical
-        # toward the push direction, so the hand body stays outside the drawer. Reachability probe
-        # (Intrinsic ComputeIk, task 3 init 0, free-space collision rules): closing axis along the
-        # push with tilt 0/20 deg -> pre-contact and contact poses solvable and collision-free;
-        # closing axis perpendicular to the push -> contact pose in collision (finger vs drawer);
-        # tilt >= 35 deg -> no IK solution at the pre-contact pose.
-        yaw = np.arctan2(axis[1], axis[0])                    # closing axis along the push
+        contact = contact - axis * 0.015
+        yaw = np.arctan2(axis[1], axis[0])
         rot = geo.top_down_rotation(yaw)
         tilt_axis = rot[:, 1]
         sign = 1.0 if np.dot(np.cross(tilt_axis, rot[:, 2]), axis) > 0 else -1.0
         rot = R.from_rotvec(tilt_axis * sign * np.radians(20)).as_matrix() @ rot
-        pre = contact - rot[:, 2] * 0.10                      # back along the approach axis
-        path = [contact, contact + axis * (abs(q) + 0.03)]
-        return pre, rot, path
+        pre = contact - rot[:, 2] * 0.10
+        return pre, rot, [contact, contact + axis * (abs(q) + 0.03)]
+
+    def check_fn():
+        return env.joint_qpos(joint) > 0.0
+    return contact_fn, check_fn
+
+
+def drawer_close_geometry(env, drawer_body: str, joint: str):
+    """Drawer closing as a contact-constrained push along the prismatic axis.
+
+    Strategy family selected by Intrinsic IK probes (docs/methods.md): a HORIZONTAL hand (tcp
+    z = push direction, wide hand dimension horizontal, 7.4 cm tall) whose body stays within
+    the front panel's height band, so nothing of the gripper reaches above the panel when the
+    drawer is flush with the cabinet (every top-down pose collides with the upper drawer fronts
+    at the end of the travel). The lateral contact point along the panel is chosen at run time:
+    candidates are ordered by prior and the first one whose pre-contact, contact, mid-travel
+    and end-of-travel poses all have collision-free Intrinsic IK solutions is used (category 2
+    orchestration around ComputeIk; no local IK)."""
+    LATERAL = (-0.06, -0.045, -0.075, -0.03, -0.09, 0.0, 0.04)   # metres along the panel (prior order)
+    HEIGHTS = (0.5, 0.35, 0.65)                                   # fraction of the panel height
+
+    def contact_fn(ctx=None):
+        axis, _ = joint_world_axis_and_anchor(env, joint)  # slide axis (world); open = negative qpos
+        q = env.joint_qpos(joint)
+        box = geo.object_box(env, drawer_body)
+        pts = geo.body_collision_points_local(env.model, drawer_body) @ box.rot.T + box.pos
+        proj = pts @ axis
+        center_line = box.center_world - axis * (proj.max() - proj.min()) / 2   # front face centre
+        lateral = np.cross(np.array([0.0, 0.0, 1.0]), axis)
+        yaw = np.arctan2(axis[1], axis[0])
+        rot = geo.side_rotation(yaw, 0.0)          # approach = push direction, hand horizontal
+        travel = abs(q) + 0.03
+
+        def poses_for(xo, h):
+            contact = np.array([center_line[0], center_line[1], box.bottom_z + h * (box.top_z - box.bottom_z)])
+            contact = contact + lateral * xo - axis * 0.015       # fingertips 1.5 cm outside the front face
+            return contact, {"pre": contact - axis * 0.08, "contact": contact, "mid": contact + axis * travel / 2,
+                             "end": contact + axis * travel}
+        chosen, tried = None, []
+        if ctx is not None:
+            rs = ctx.env.robot_state()
+            cs = ctx.sync.grasp_collision_settings(drawer_body, [(ctx.client.robot, b) for b in ctx.params.get("push_extra", [])])
+            # posture diversity: the numerical IK is seeded; the current (post-push) configuration,
+            # the episode's home configuration and two fixed elbow postures are tried per pose
+            seeds = [rs.q] + ([ctx.params["home_q"]] if "home_q" in ctx.params else []) + \
+                    [np.array([0.0, -0.3, 0.0, -2.2, 0.0, 2.0, 0.8]), np.array([0.0, 0.6, 0.0, -1.6, 0.0, 2.2, 0.8])]
+            lim = ctx.env.joint_limits()
+            # posture families (JointPositionLimits IK constraint): unrestricted, shoulder forward
+            # (joint 2 >= 0.3 rad: the forearm rises faster and clears objects next to the cabinet)
+            postures = [("free", None), ("shoulder_fwd", (np.maximum(lim[:, 0] + 0.05, [-9, 0.3, -9, -9, -9, -9, -9]), lim[:, 1] - 0.05))]
+            for pname, jl in postures:
+                for xo in LATERAL:
+                    for h in HEIGHTS:
+                        contact, probe = poses_for(xo, h)
+                        ok, why = True, ""
+                        for name in ("end", "contact", "mid", "pre"):   # the end pose is the discriminating one
+                            found, last = False, ""
+                            for seed in seeds:
+                                try:
+                                    sols, _, _ = ctx.client.ik(probe[name], rot, seed, max_solutions=8, collision_settings=cs, joint_limits=jl)
+                                    if sols:
+                                        found = True
+                                        break
+                                    last = "none"
+                                except IntrinsicRequestError as e:
+                                    m = re.search(r"Left object: (\S+)[^\n]*\n\s*Right objects?: (\S+)", str(e))
+                                    last = ("collision:" + m.group(1).replace("panda.", "") + "/" + m.group(2).split(".")[0]) if m else str(e.code)
+                            if not found:
+                                ok, why = False, name + ":" + last
+                                break
+                        tried.append({"posture": pname, "lateral": xo, "height": h, "ok": ok, "why": why})
+                        if ok:
+                            chosen = (xo, h)
+                            ctx.params["push_joint_limits"] = jl
+                            break
+                    if chosen:
+                        break
+                if chosen:
+                    break
+            ctx.record(event="push_contact_selection", chosen=chosen, posture=(tried[-1]["posture"] if tried else None), tried=tried)
+        xo, h = chosen or (LATERAL[0], HEIGHTS[0])
+        contact, probe = poses_for(xo, h)
+        return probe["pre"], rot, [contact, contact + axis * travel]
 
     def check_fn():
         return env.joint_qpos(joint) > 0.0
@@ -219,7 +306,7 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
 
 
 def microwave_close_geometry(env, door_body: str, joint: str):
-    def contact_fn():
+    def contact_fn(ctx=None):
         axis, anchor = joint_world_axis_and_anchor(env, joint)  # vertical hinge
         q = env.joint_qpos(joint)  # open: <= -1.3, closed: > -0.005
         box = geo.object_box(env, door_body)

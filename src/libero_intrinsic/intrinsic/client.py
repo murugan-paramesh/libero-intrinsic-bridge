@@ -392,6 +392,14 @@ class IntrinsicClient:
         _, resp, _ = self._call("ComputeFk", self.planner.ComputeFk, req, {"n_joints": len(q)})
         return tf.proto_to_pose(resp.reference_t_target)
 
+    def _clamped(self, q):
+        """Joint values measured in MuJoCo can sit a fraction of a milliradian outside the MJCF
+        limits (soft limits); Intrinsic rejects such seeds/start configurations (OUT_OF_RANGE)."""
+        q = np.asarray(q, dtype=float)
+        if self.joint_limits is not None:
+            q = np.clip(q, self.joint_limits[:, 0] + 1e-6, self.joint_limits[:, 1] - 1e-6)
+        return q
+
     def pose_target(self, pos, rot, joint_limits=None) -> geometric_constraints_pb2.GeometricConstraint:
         """GeometricConstraint: tcp frame == root_t_target (PoseEquality). With `joint_limits`
         = (lower[7], upper[7]) the pose constraint is intersected with a JointPositionLimits
@@ -425,7 +433,7 @@ class IntrinsicClient:
         req = motion_planner_service_pb2.IkRequest(world_id=self.world_id, max_num_solutions=max_solutions)
         req.robot_reference.object_id.CopyFrom(self.oref(self.robot))
         req.target.CopyFrom(self.pose_target(pos, rot, joint_limits=joint_limits))
-        req.starting_joints.joints.extend([float(v) for v in seed])
+        req.starting_joints.joints.extend([float(v) for v in self._clamped(seed)])
         if collision_settings is not None:
             req.collision_settings.CopyFrom(collision_settings)
         if ensure_same_branch:
@@ -457,7 +465,7 @@ class IntrinsicClient:
         """PlanTrajectory: collision-free, time-parameterized trajectory from q_start to target."""
         req = motion_planner_service_pb2.MotionPlanningRequest(world_id=self.world_id, caller_id=caller_id)
         req.robot_specification.robot_reference.object_id.CopyFrom(self.oref(self.robot))
-        req.robot_specification.start_configuration.joints.extend([float(v) for v in q_start])
+        req.robot_specification.start_configuration.joints.extend([float(v) for v in self._clamped(q_start)])
         seg = req.motion_specification.motion_segments.add()
         seg.target.CopyFrom(target)
         seg.motion_type = motion_specification_pb2.MotionSegment.MotionType.Value(motion_type)
