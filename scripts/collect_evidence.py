@@ -14,7 +14,7 @@ from libero_intrinsic.eval.report import load_episodes, classify  # noqa: E402
 
 def main():
     run_dir = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "runs", "eval")
-    out = os.path.join(ROOT, "evidence", "eval_episodes")
+    out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ROOT, "evidence", "eval_episodes")
     os.makedirs(out, exist_ok=True)
     eps = load_episodes(run_dir)
     manifest = []

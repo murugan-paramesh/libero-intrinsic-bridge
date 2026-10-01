@@ -450,3 +450,57 @@ returned joint samples through Intrinsic `ComputeFk` and commands OSC_POSE delta
 IK or straight-line fallback exists in `src/` (grep for fallback/bypass/mock: only the SDF
 `bypass://` mesh URI scheme and the documented LINEAR re-plan protocol, which re-issues a
 `PlanTrajectory` request).
+
+## 11. Third loop: execution-chain verification, Task 9 sequence change, OSC posture limit (code 9b02207)
+
+### 11.1 Verification of the chain (task logic -> Intrinsic -> execution -> official check)
+Done on the archived records and source, see 10.7. Additional check: the three evaluation sets
+each contain only one source revision (git diff of src/configs between every recorded revision
+pair is empty); the held-out run's later records name a code commit that was never loaded by
+its already-running processes. Provenance is now captured once at process start together with
+a working-tree-dirty flag. All five distinctions the brief asks for are kept apart in the
+records: `ik` events (feasible endpoint), `*_path_check` and `plan` events (feasible path /
+executable trajectory from Intrinsic), `execute` events with tracking errors (physical
+execution), `grasp_verify`/`lift_verify`/`place_verify`/`push_progress` (physical interaction),
+and `success` from LIBERO's own `_check_success` (completed task).
+
+### 11.2 A controller limit found while chasing the "FinePathIK" failures
+Intrinsic validates a LINEAR segment from a specific joint configuration. The benchmark's
+OSC_POSE controller tracks the TCP pose only; its null space drifts, and the configuration
+physically reached after a free-space motion differs from the planned one by 0.6-1.0 rad in
+joint space while the TCP is within 2 cm (records `runs/dev2/task3_settle`, event
+`execute.joint_err_final`). A joint-interpolated "settle" motion does not help because the
+executor can only command TCP deltas. Consequences: (a) a LINEAR plan that is feasible from
+the planned configuration (dry-run `PlanTrajectory`, event `precontact_path_check` /
+`pregrasp_path_check`) is not necessarily feasible from the reached one; (b) the fallback
+added for this case is an ANY (configuration-space, collision-checked) plan to the same
+contact/grasp pose, recorded as `approach_any_fallback`; it is not a straight-line approach and
+is reported as such. This is a limit of the benchmark controller (category 3: no joint-space
+or null-space command is exposed by OSC_POSE), not of Intrinsic.
+
+### 11.3 Task 9: sequence change executed, insertion still open
+Assess-first relocation: when no grasp admits the insertion and the level grasps along the
+opening normal are blocked by a movable non-goal object (the porcelain mug behind the yellow
+mug: 14-17 of the rejected candidates), that object is relocated by real pick-and-place
+(`PickWithRelocation`, events `obstacle_relocation`/`relocation_spot`), after which 8 level
+grasps are placement-compatible and the pick reaches the grasp (pad contacts 6-7, lift 10 cm).
+Remaining blocker: the level, low side grasp sits at the joint-2 limit (1.76 rad), the LINEAR
+approach fails from the reached posture (11.2) and the ANY approach tracks 2-5 cm / 5-11 deg
+off at that posture; the insertion stage was therefore not reached on the dev states.
+Attempted and rejected: pitched grasps (hand above the roof inside the cavity), off-normal
+grasps (fingers against the cavity wall at the release, exact Intrinsic check), staging the mug
+at other spots (no IK). Not yet tried: a pre-grasp above the mug with a vertical descent
+instead of a horizontal approach, or a base-closer staging spot for the yellow mug itself.
+
+### 11.4 Task 3: diagnosis complete, closure still open
+Stage A now reaches the panel through the ANY fallback on init 0 (the LINEAR approach has no
+feasible path from the reached posture on 3/10 protocol states); stage B's horizontal push is
+blocked by the bowl sliding against the panel (hand vs bowl in every probe) after the bottle
+relocation. The depth-ranked grasp selection did not change the chosen grasp (all compatible
+candidates place the bowl at the drawer front because the hand must stay in front of the
+cabinet). Open as in 10.2.
+
+### 11.5 Candidate for the final protocol run
+Code 9b02207 (all of the above; regression 16/16 on dev states 0-1 for tasks 0,1,2,4,5,6,7,8
+at b205f2a, repeated at 9b02207: see 11.6). Expected effect on the protocol: tasks 3 and 9
+unchanged (0), tasks 1/7 possibly affected by the pre-grasp path validation.

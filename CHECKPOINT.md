@@ -121,3 +121,11 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
 ## Session 4 (18:30 UTC) - candidate ce7685b evaluated: 76/100
 - Repeated protocol (inits 10-19): **76/100** (CI 67-83%), per task 10,10,10,0,10,8,9,9,10,0; vs 5b713c6 (73): +1/18, +5/17, +6/15, +7/18, +8/11, +8/15 solved, -5/12, -6/18, -7/11 failed. Records evaluations/candidate_ce7685b; docs/results_ce7685b.md; comparisons; report 10.5-10.6; failure_table 6; methods.md 4; README.
 - Open items and next experiments: docs/methods.md section 4. Everything committed and pushed; raw runs with videos under runs/ (not committed).
+
+## Session 5 (23:45 UTC) - verification, Task 9 sequence change, candidate 9b02207 pending
+- Verified chain (report 10.7/11.1). Recorded-revision caveat documented; provenance now captured at process start.
+- Code 9b02207: process-start provenance; placement-depth + insertion-alignment grasp ranking; pick-stage obstacle relocation (assess-first) for roofed containers; LINEAR dry-run validation of pre-grasp/pre-contact configurations; joint-space re-convergence attempt; ANY approach fallback on FinePathIK (documented controller limit, report 11.2); cheaper push probes.
+- Dev: reg2 (b205f2a) 16/16; reg3 (9b02207) running -> runs/dev2/reg3. Task 9: relocation + grasp reached, approach/pre-grasp tracking fails (0/2). Task 3: 0/1.
+- Recommended candidate so far: ce7685b (76/100, evaluations/candidate_ce7685b). 9b02207 is NOT evaluated on the protocol yet.
+- Evidence for ce7685b committed: evidence/eval_episodes_ce7685b (13 episodes: videos, records, RPC logs, MANIFEST.json).
+- Next: if reg3 is clean, run the protocol on 9b02207: python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/eval_9b02207/A ; --tasks 5 6 7 8 9 --out runs/eval_9b02207/B (about 2.5 h wall: task 3 episodes 10-25 min each). Then report/compare/archive as for ce7685b (docs/results_9b02207, docs/comparison_9b02207.md, evaluations/candidate_9b02207). If interrupted: the partial run is NOT a result; keep ce7685b as the recommended candidate and report 9b02207 as "interrupted before final validation".
