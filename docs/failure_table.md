@@ -87,3 +87,12 @@ fingertip push in this scene with the hand poses probed.
 | 6 | 1/10 | PLACE | goal not reached after a completed place (18) |
 | 7 | 1/10 | TRACK | pre-grasp execution final pose error 2.9 cm / 1.9 deg (11) |
 | 9 | 10/10 | PLACE | pick succeeds on every state (pitched side grasps); no release pose inside the cavity: the hand is wider than the 20.7 cm cavity and a pitched hand rises above the roof |
+
+## 7. Third loop (dev states 0-1; records under runs/dev2/task9_reloc*, task9_anyfb, task3_dryrun, task3_settle, task3_anyfb, reg2, reg3)
+
+| task | stage | observed | change kept | result |
+|---|---|---|---|---|
+| 9 | PLAN (pick): level grasps along the opening normal blocked by the porcelain mug (hand body), pitched grasps blocked at the insertion (roof) | `grasp_candidates.blockers` = porcelain mug 14-17, table 6; 0 placement-compatible of 13-16 | assess-first obstacle relocation of the porcelain mug (real pick/place, ~90 steps) | 8 compatible grasps, pick reaches the grasp |
+| 9 | PLAN/TRACK (approach): LINEAR approach from the reached posture fails ("FinePathIK"), ANY fallback reaches the grasp on init 1 but the pre-grasp tracking error (3-5 cm, 9-11 deg) at the joint-2 limit aborts the attempts | joint error after the free-space motion 0.6-1.0 rad although the TCP is within 2 cm (OSC null-space drift) | LINEAR dry-run validation + ANY fallback (both recorded) | 0/2; insertion stage not reached |
+| 3 | PLAN (stage A approach): same FinePathIK mechanism on init 0 | `precontact_path_check` feasible, `execute.joint_err_final` 0.64-0.99 rad, LINEAR seg0 fails | ANY fallback reaches the panel; segment 1 fails | 0/1 |
+| 0,1,2,4,5,6,7,8 | regression | - | - | 16/16 at b205f2a and 16/16 at 9b02207 |

@@ -49,6 +49,17 @@ T9 door closing arc | Arc path with per-segment orientations (hinge axis from th
 T5 book not resting in the box | Region-box ledge rule (place on an internal horizontal ledge) | (2) | dev 5/5, eval 8/10 | retained earlier (report 9.1) | retain |
 T8 second pot slip | Re-measure the attachment at place start | (2) | dev 4/4 | retained (report 9.7) | retain |
 
+Session 5 additions:
+
+Failure | Candidate method | Intrinsic support | Experiment | Outcome | Retain/reject
+---|---|---|---|---|---
+T9 level grasps blocked at the pick by the porcelain mug (hand body overlap: 14-17 candidates) | Assess-first obstacle relocation (sequence change): relocate the movable non-goal blocker by pick/place before the goal pick | (2) composite; IK/planning (1) | `PickWithRelocation`, dev inits 0-1 (`runs/dev2/task9_reloc*`) | relocation executed (xy error 4 mm), 8 level grasps become placement-compatible, grasp reached and verified (6-7 pad contacts) | retain |
+T9 release pose rejected by the exact check with a 25 deg off-normal grasp (fingers vs cavity wall) | Insertion-alignment term in the grasp ranking (0.1 x approach angle to the opening normal) | (2) | `task9_reloc3` | aligned (yaw 90) grasps ranked first | retain |
+T9 / T3 / T7 "FinePathIK ... excessive change" on the LINEAR approach | Continuity pre-validation: LINEAR dry-run `PlanTrajectory` from each pre-grasp/pre-contact IK solution (several seeds, posture families), free-space motion to the validated configuration, joint-space re-convergence | (1) PlanTrajectory/ComputeIk | `task3_dryrun`, `task3_settle`, `task9_reloc4` | dry run finds a feasible configuration in 1 test, but the reached configuration differs by 0.6-1.0 rad in joint space (OSC null-space drift) and the LINEAR plan fails from it; `ensure_same_branch` IK returns INTERNAL for every solution here although LINEAR plans exist (branch semantics differ from path feasibility) | retain the dry run (cheap, informative); re-convergence cannot work with OSC_POSE (documented limit) |
+same | Collision-checked ANY approach when LINEAR is infeasible from the reached posture | (1) ANY planning | `task3_anyfb`, `task9_anyfb` | executes; T3 stage A reaches the panel on init 0 but the next segment fails; T9 approach reaches the grasp on init 1, pre-grasp tracking 3-5 cm off at the joint-2 limit | retain (explicit event; no regression in reg3 16/16) |
+T3 bowl against the panel | Placement-depth term in the grasp ranking | (2) | `task3_depth` | chosen grasp/placement unchanged (hand clearance forces the front spot for every grasp) | keep the term (neutral), task unsolved |
+Provenance | Revision captured at process start + dirty flag | - | all runs | removes the per-episode mislabelling (report 10.7) | retain |
+
 ## 3. Catalogue of families considered (and why not pursued further)
 
 | family | relevant failure | assessment |
