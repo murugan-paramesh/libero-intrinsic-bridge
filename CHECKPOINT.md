@@ -100,3 +100,9 @@ Commands: python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/eval_5b713c6/A
   python -m libero_intrinsic.eval.report runs/eval_5b713c6 --out docs/results_5b713c6.json ;
   python scripts/compare_evaluations.py evaluations/baseline_76267bf runs/eval_5b713c6 --labels baseline_76267bf candidate_5b713c6 --out docs/comparison_5b713c6.md
 Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines each; if incomplete, rerun the missing half from scratch (never merge partial reruns); then the report/compare commands above; archive records: python scripts/archive_evaluation.py runs/eval_5b713c6 evaluations/candidate_5b713c6 ; update README headline + report 9.4; commit; push.
+
+## Session 3 (01:15 UTC) - repeated evaluation done
+- Candidate 5b713c6, same 100-episode protocol (inits 10-19): **73/100** (CI 64-81%), per task 10,9,10,0,10,8,9,9,8,0; baseline 62/100 unchanged. 13 newly solved, 2 newly failed (6/15, 7/18). Records: evaluations/candidate_5b713c6; tables docs/results_5b713c6.md, docs/comparison_5b713c6.md; report 9.4-9.6; failure_table section 3. Commit ced2635, pushed.
+- Running: held-out check on reserved init states 20-29 -> runs/heldout_5b713c6/{A,B} (A.log/B.log; 50 run_id lines each when done). When finished:
+  PYTHONPATH=src python -m libero_intrinsic.eval.report runs/heldout_5b713c6 --out docs/heldout_5b713c6.json ; python scripts/archive_evaluation.py runs/heldout_5b713c6 evaluations/heldout_5b713c6 ; add the per-task line to docs/report.md 9.6 and README; commit; push. If interrupted, rerun the incomplete half from scratch (do not merge partial reruns).
+- Open blockers: task 3 push last 3 cm (probe tables), task 9 side grasp; task 8 second-pot slip (2/10 both revisions).
