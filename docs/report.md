@@ -408,7 +408,7 @@ Failure stages of the 24 failures: task 3 10x ARTIC (3x stage A LINEAR approach,
 contact selection after the bottle relocation: hand vs the bowl against the panel or no
 solution); task 9 10x PLACE (no release pose: hand vs the cavity/roof); task 5 1x goal not
 reached, 1x no reachable grasp; task 6 1x goal not reached; task 7 1x pre-grasp tracking.
-Cost: task 3 episodes now take 6-11 min wall time (the run-time contact selection issues up
+Cost: task 3 episodes now take 13 min wall time on average (max 26 min; the run-time contact selection issues up
 to 70 x 4 poses x 4 seeds IK requests, each unreachable pose costing the solver's 5 s
 timeout); the simulated-step budget is unaffected (307-534 steps). Every other task is
 unchanged in cost.

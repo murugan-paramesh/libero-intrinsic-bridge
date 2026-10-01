@@ -71,7 +71,7 @@ T8 second pot slip | Re-measure the attachment at place start | (2) | dev 4/4 | 
 |---|---|---|---|---|---|
 | 76267bf baseline | 62/100 | 1,580 | 30 / 110 ms | 17 / 1,017 | - |
 | 5b713c6 | 73/100 | 1,204 | 24 / 121 ms | 11 / 1,204 | evaluated with the cross-episode attachment defect |
-| ce7685b | 76/100 | 1,321 | 22 / 96 ms | 21 / 1,321 | task 3 episodes 6-11 min wall (IK probes), others unchanged |
+| ce7685b | 76/100 | 1,321 | 22 / 96 ms | 21 / 1,321 | task 3 episodes 13 min wall on average, max 26 min (IK probes with 5 s solver timeouts), others unchanged |
 
 Unresolved feasibility questions: (a) task 3: is any single-contact push able to close the last
 3-6 cm with the bowl against the panel, or must the bowl be held back (two contacts) or placed
