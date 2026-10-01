@@ -383,5 +383,46 @@ is now re-parented to the world root at episode start. Candidate 5b713c6 was eva
 this defect; episodes that followed a failed place in the same session (tasks 3 and 9) may
 have been affected. The protocol was therefore re-run on ce7685b (10.5).
 
-### 10.5 Repeated evaluation of candidate ce7685b
-(see below; filled in after the run)
+### 10.5 Repeated evaluation of candidate ce7685b (100 episodes, same protocol)
+Records `evaluations/candidate_ce7685b`, table `docs/results_ce7685b.md`, comparisons
+`docs/comparison_ce7685b.md` (vs the baseline) and `docs/comparison_5b713c6_to_ce7685b.md`
+(vs the first candidate). Same init states 10-19, so again a repeated evaluation.
+
+| task | baseline 76267bf | candidate 5b713c6 | candidate ce7685b | changed episodes (5b713c6 -> ce7685b) |
+|---|---|---|---|---|
+| 0 | 10 | 10 | 10 | - |
+| 1 | 5 | 9 | 10 | +18 |
+| 2 | 10 | 10 | 10 | - |
+| 3 | 0 | 0 | 0 | - |
+| 4 | 10 | 10 | 10 | - |
+| 5 | 2 | 8 | 8 | +17, -12 |
+| 6 | 9 | 9 | 9 | +15, -18 |
+| 7 | 8 | 9 | 9 | +18, -11 |
+| 8 | 8 | 8 | 10 | +11, +15 |
+| 9 | 0 | 0 | 0 | - |
+| **all** | **62** (CI 52-71%) | **73** (CI 64-81%) | **76** (CI 67-83%) | 6 newly solved, 3 newly failed |
+
+Aggregates: 1,321 `PlanTrajectory` calls, mean 22 ms, max 96 ms, 0 timeouts, 0 infrastructure
+errors; 21 of 1,321 executed-path audits in collision; 76/76 successes within 600 steps.
+Failure stages of the 24 failures: task 3 10x ARTIC (3x stage A LINEAR approach, 7x stage B
+contact selection after the bottle relocation: hand vs the bowl against the panel or no
+solution); task 9 10x PLACE (no release pose: hand vs the cavity/roof); task 5 1x goal not
+reached, 1x no reachable grasp; task 6 1x goal not reached; task 7 1x pre-grasp tracking.
+Cost: task 3 episodes now take 6-11 min wall time (the run-time contact selection issues up
+to 70 x 4 poses x 4 seeds IK requests, each unreachable pose costing the solver's 5 s
+timeout); the simulated-step budget is unaffected (307-534 steps). Every other task is
+unchanged in cost.
+
+### 10.6 What was retained, rejected, and what remains open
+Retained (dev- and protocol-verified): placement-aware grasp ranking, release search with
+path validation and roof cap, release separation, start-state recovery, episode-start
+attachment reset, attachment refresh at place start (task 8: 8 -> 10), pitched/low side grasps
+with the opening normal (task 9 pick now succeeds), IK seed clamping, posture-margin and
+same-branch pre-contact selection, the two-stage drawer push with obstacle relocation (correct
+behaviour, no success yet). Rejected with evidence: pendulum/slow transport (task 5), top-down
+end-of-travel pushes under posture constraints (task 3), staging the mug elsewhere (task 9,
+no feasible spot), footprint centring in wide cavities. Open: the task 3 end-of-travel push
+(hand vs the bowl against the panel; the 7.4 cm hand does not fit the 6.9 cm panel band), the
+task 9 insertion (a level grasp 2-4 cm above the mug bottom and the pick plane tolerance for
+side approaches are the next concrete experiment), and task 1 on the held-out states (butter
+against the milk carton: pre-manipulation of the carton would be the next classical step).

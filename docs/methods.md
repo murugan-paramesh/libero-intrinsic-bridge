@@ -64,3 +64,19 @@ T8 second pot slip | Re-measure the attachment at place start | (2) | dev 4/4 | 
 | Cartesian path constraints (RotationCone) during transport | T5 slip hypothesis | available (1); the slip hypothesis was falsified (section 2), so not used. |
 | Impedance / admittance / hybrid force control | T3, T9 contact phases | no force sensing or compliant controller in LIBERO's OSC_POSE setup (3). Contact phases are position-controlled LINEAR segments with contact monitoring from simulator contacts (privileged, documented in report 7). |
 | Swept-volume checks of the pushed door/drawer | T9 door, T3 | the arc/segment poses are re-planned after each sync with the articulated body at its true pose (1: planner collision checking); no separate swept-volume request was needed. |
+
+## 4. Measured benefit and cost (protocol states 10-19)
+
+| revision | success | plans | mean / max plan latency | executed-path collisions | notes |
+|---|---|---|---|---|---|
+| 76267bf baseline | 62/100 | 1,580 | 30 / 110 ms | 17 / 1,017 | - |
+| 5b713c6 | 73/100 | 1,204 | 24 / 121 ms | 11 / 1,204 | evaluated with the cross-episode attachment defect |
+| ce7685b | 76/100 | 1,321 | 22 / 96 ms | 21 / 1,321 | task 3 episodes 6-11 min wall (IK probes), others unchanged |
+
+Unresolved feasibility questions: (a) task 3: is any single-contact push able to close the last
+3-6 cm with the bowl against the panel, or must the bowl be held back (two contacts) or placed
+deeper (unreachable for the hand)? (b) task 9: does a level grasp 2-4 cm above the mug's
+bottom exist that clears the table at the pick and the roof at the insertion (geometry says
+yes, the candidate generator did not produce it)? (c) task 1 held-out: pre-manipulation of the
+milk carton vs a thinner-finger approach; (d) whether Intrinsic's `DynamicCartesianLimits` on
+transport segments reduces the residual slip/goal-not-reached cases (tasks 5, 6).

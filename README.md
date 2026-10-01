@@ -10,17 +10,23 @@ sources), `docs/architecture.md`, `CHECKPOINT.md` (work log).
 
 ## Headline result
 Repeated frozen evaluation (same protocol as the baseline: 100 episodes, 10 official init states
-per task disjoint from development states, budget 1,200 steps, seed 0) of candidate revision
-`5b713c6`: **73/100 successes** (Wilson 95% CI 64-81%); per task 10, 9, 10, 0, 10, 8, 9, 9, 8, 0 of 10.
-Baseline revision `76267bf`: **62/100** (CI 52-71%); per task 10, 5, 10, 0, 10, 2, 9, 8, 8, 0
-(unchanged, archived under `evaluations/baseline_76267bf`). Per-task before/after with the
-episodes that changed: `docs/comparison_5b713c6.md`. Every motion executed was an Intrinsic
-`PlanTrajectory` result (1,204 plans, mean 24 ms, max 121 ms, no timeouts); every success is
-within LIBERO's 600-step horizon. Tasks 3 and 9 remain unsolved (docs/report.md 9.5). A separate held-out run of the same
-candidate on reserved init states 20-29 (never used for development or evaluation) gives
-**65/100** (CI 55-74%; per task 10, 1, 10, 0, 10, 8, 8, 9, 9, 0): the task 1 gain does not
-transfer to those states (butter against the milk carton), the others do (docs/report.md 9.6).
-This is a privileged-state result and is not comparable to vision-only policies.
+per task disjoint from development states, budget 1,200 steps, seed 0):
+
+| revision | result | per task (0-9) |
+|---|---|---|
+| baseline `76267bf` (archived, unchanged) | **62/100** (Wilson 95% CI 52-71%) | 10, 5, 10, 0, 10, 2, 9, 8, 8, 0 |
+| candidate `5b713c6` | **73/100** (CI 64-81%) | 10, 9, 10, 0, 10, 8, 9, 9, 8, 0 |
+| candidate `ce7685b` (current) | **76/100** (CI 67-83%) | 10, 10, 10, 0, 10, 8, 9, 9, 10, 0 |
+
+Per-task before/after with the episodes that changed: `docs/comparison_ce7685b.md`,
+`docs/comparison_5b713c6_to_ce7685b.md`. Every motion executed was an Intrinsic
+`PlanTrajectory` result (candidate ce7685b: 1,321 plans, mean 22 ms, max 96 ms, no timeouts);
+every success is within LIBERO's 600-step horizon. Tasks 3 and 9 remain unsolved
+(docs/report.md 10.2-10.3, docs/methods.md). A separate held-out run of candidate 5b713c6 on
+reserved init states 20-29 gave 65/100 (CI 55-74%; per task 10, 1, 10, 0, 10, 8, 8, 9, 9, 0):
+the task 1 gain did not transfer to those states (docs/report.md 9.6). The method families
+investigated, their Intrinsic support and the experiments are in `docs/methods.md`. This is a
+privileged-state result and is not comparable to vision-only policies.
 
 ## Layout
 ```

@@ -77,3 +77,13 @@ fingertip push in this scene with the hand poses probed.
 | 9 | INFRA (adapter): mug still attached in the Intrinsic world from the previous episode | pre-grasp IK "mug vs microwave" in init 1 | episode-start re-parenting of all bodies | fixed |
 | 9 | PLACE: insertion | every release candidate rejected: hand above the roof (pitched hand) or hand wider than the cavity; earlier runs released the mug on the roof and reported success | roof cap, region-box verification (reports failure) | unsolved (0/2) |
 | 0,1,2,4,5,6,7,8 | regression (inits 0-1) | - | - | 16/16 |
+
+## 6. Candidate ce7685b, repeated evaluation (100 episodes, evaluations/candidate_ce7685b, 76/100)
+
+| task | failures | stage | observed evidence |
+|---|---|---|---|
+| 3 | 10/10 | ARTIC (stage A 3, stage B 7) | stage A: LINEAR approach to the panel rejected (FinePathIK) on 3 states; stage B: after relocating the wine bottle by real manipulation, every probed horizontal contact pose is rejected (hand vs the bowl that slid against the panel, or no solution) |
+| 5 | 2/10 | PLACE (1), REACH (1) | book not resting inside the box after the ledge placement (12); no reachable grasp (18) |
+| 6 | 1/10 | PLACE | goal not reached after a completed place (18) |
+| 7 | 1/10 | TRACK | pre-grasp execution final pose error 2.9 cm / 1.9 deg (11) |
+| 9 | 10/10 | PLACE | pick succeeds on every state (pitched side grasps); no release pose inside the cavity: the hand is wider than the 20.7 cm cavity and a pitched hand rises above the roof |

@@ -1,0 +1,4707 @@
+{
+ "run_id": "t3_i18_1eeb4e3f",
+ "task_index": 3,
+ "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+ "language": "put the black bowl in the bottom drawer of the cabinet and close it",
+ "init_state_index": 18,
+ "seed": 0,
+ "revisions": {
+  "libero_intrinsic_bridge": "b28fb4051f3fbe53f60defc0b9a031459a55ebca",
+  "intrinsic_core": "c61bf075f2335371c6367b61117e8a62bb960c3b",
+  "LIBERO": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+  "robosuite": "1.4.0",
+  "mujoco": "2.3.7",
+  "numpy": "1.23.5"
+ },
+ "observation_mode": "privileged_state",
+ "controller": "OSC_POSE (robosuite 1.4.0 default osc_pose.json, 20 Hz)",
+ "step_budget": 1200,
+ "intrinsic": {
+  "component": "MotionPlannerServiceInProcess + FakeWorldService (intrinsic-core, in-process gRPC)",
+  "binary": "/home/user/bazel_out/execroot/_main/bazel-out/haswell-opt/bin/libero_bridge/libero_planner_server",
+  "world_id": "libero10_task3",
+  "sdf": "runs/eval_ce7685b/A/task3/world/task3.sdf",
+  "addresses": {
+   "world_service": "127.0.0.1:38151",
+   "motion_planner_service": "dns:///localhost:41053",
+   "credentials": "local_tcp"
+  },
+  "n_requests": 2633,
+  "requests_by_rpc": {
+   "CheckCollisions": 21,
+   "ComputeFk": 562,
+   "ComputeIk": 1708,
+   "GetObject": 1,
+   "GetTransform": 8,
+   "ListObjects": 2,
+   "PlanTrajectory": 33,
+   "ReparentObject": 14,
+   "UpdateObjectJoints": 24,
+   "UpdateTransform": 249,
+   "note": 11
+  },
+  "plan_latency_s": [
+   0.02586810299908393,
+   0.044568706000063685,
+   0.04391539400057809,
+   0.014909503999660956,
+   0.02109984699927736,
+   0.04100239000035799,
+   0.049616234999120934,
+   0.013810559999910765,
+   0.06363849000081245,
+   0.016853566999998293,
+   0.01644402099918807,
+   0.07173002600029577,
+   0.048872778001168626,
+   0.013835379000738612,
+   0.04596164599934127,
+   0.04953188599938585,
+   0.014971171000070171,
+   0.04919721900114382,
+   0.01739821800038044,
+   0.04452219199993124,
+   0.02123477900022408,
+   0.042101836999790976,
+   0.035569179999583866,
+   0.018347078999795485,
+   0.016006497000489617,
+   0.03917621900109225,
+   0.018241765999846393,
+   0.034711457999947015,
+   0.018294175999471918,
+   0.03500372599955881,
+   0.016403190000346513,
+   0.02792506599871558,
+   0.015389270000014221
+  ],
+  "plan_failures": 12,
+  "plan_timeouts": 0,
+  "linear_replans": 11
+ },
+ "t_start": 1790876243.860349,
+ "success": false,
+ "error": null,
+ "skills": [
+  {
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 97,
+   "details": {
+    "grasp": "pinch_z0.932_yaw45",
+    "width": 0.009243943227714333,
+    "lifted": 0.09562502935907546,
+    "drift": 0.007418235171480866
+   }
+  },
+  {
+   "skill": "place",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 74,
+   "details": {
+    "xy_err": 0.010795977028174576,
+    "retreat_ok": true
+   }
+  },
+  {
+   "skill": "close_drawer",
+   "ok": false,
+   "reason": "stage_b_after_relocation:intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 341,
+   "details": {}
+  }
+ ],
+ "events": [
+  {
+   "event": "grasp_candidates",
+   "n_total": 68,
+   "n_cleared": 35,
+   "n_tilted": 0,
+   "t_wall": 1790876247.2413468,
+   "env_step": 0
+  },
+  {
+   "event": "grasp_placement_filter",
+   "n_checked": 24,
+   "n_compatible": 24,
+   "first": "pinch_z0.932_yaw45",
+   "first_drop_m": 0.04745588495139352,
+   "incompatible_examples": [],
+   "t_wall": 1790876413.0373735,
+   "env_step": 0
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.932_yaw45",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-01053f80e7",
+   "latency_s": 0.03781062599955476,
+   "t_wall": 1790876413.9968727,
+   "env_step": 13
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z0.932_yaw45",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-0cd86ad05e",
+   "latency_s": 0.033331256001474685,
+   "t_wall": 1790876414.0307963,
+   "env_step": 13
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-431432efee",
+   "latency_s": 0.037614762000885094,
+   "t_wall": 1790876414.0693338,
+   "env_step": 13
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-7c099f6692",
+   "motion_type": "ANY",
+   "n_states": 171,
+   "duration_s": 0.769566508,
+   "latency_s": 0.02586810299908393,
+   "target_pos": [
+    0.05012745616531238,
+    -0.10671883068592097,
+    1.031892545268207
+   ],
+   "t_wall": 1790876414.0963411,
+   "env_step": 13
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-7c099f6692",
+   "ok": true,
+   "reason": "completed",
+   "steps": 42,
+   "pos_err_max": 0.008176106947473012,
+   "pos_err_mean": 0.005204603986580762,
+   "rot_err_max_deg": 1.5250544340067216,
+   "joint_err_max": 0.07140593332165146,
+   "joint_err_final": 0.04638122209460804,
+   "final_pos_err": 0.005500279193771905,
+   "final_rot_err_deg": 0.9872928951915586,
+   "planned_duration_s": 0.769566508,
+   "planning_latency_s": 0.02586810299908393,
+   "n_states": 171,
+   "time_scale": 2.295056414486248,
+   "t_wall": 1790876416.6490943,
+   "env_step": 55
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-7c099f6692",
+   "n_checked": 37,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-242768de39",
+   "t_wall": 1790876416.6581311,
+   "env_step": 55
+  },
+  {
+   "event": "plan",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-a6da5066d1",
+   "motion_type": "LINEAR",
+   "n_states": 30,
+   "duration_s": 0.344965768,
+   "latency_s": 0.044568706000063685,
+   "target_pos": [
+    0.05012745616531238,
+    -0.10671883068592097,
+    0.931892545268207
+   ],
+   "t_wall": 1790876416.703954,
+   "env_step": 55
+  },
+  {
+   "event": "execute",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-a6da5066d1",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.00789026789098482,
+   "pos_err_mean": 0.00460511839746783,
+   "rot_err_max_deg": 0.45449462266470303,
+   "joint_err_max": 0.030534219663762574,
+   "joint_err_final": 0.011290772731889186,
+   "final_pos_err": 0.0014647779015442143,
+   "final_rot_err_deg": 0.13721585980925846,
+   "planned_duration_s": 0.344965768,
+   "planning_latency_s": 0.044568706000063685,
+   "n_states": 30,
+   "time_scale": 1.975195739752253,
+   "t_wall": 1790876417.6756928,
+   "env_step": 70
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-a6da5066d1",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-d46648c0e8",
+   "t_wall": 1790876417.682422,
+   "env_step": 70
+  },
+  {
+   "event": "grasp_verify",
+   "finger_gap": 0.009014253933718417,
+   "pad_contacts": 6,
+   "grasp": "pinch_z0.932_yaw45",
+   "t_wall": 1790876418.2864637,
+   "env_step": 82
+  },
+  {
+   "event": "plan",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-cf21eec3d8",
+   "motion_type": "LINEAR",
+   "n_states": 28,
+   "duration_s": 0.364246509,
+   "latency_s": 0.014909503999660956,
+   "target_pos": [
+    0.05090404796916553,
+    -0.10718685230159704,
+    1.0320555609770883
+   ],
+   "t_wall": 1790876418.3578157,
+   "env_step": 82
+  },
+  {
+   "event": "execute",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-cf21eec3d8",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.0076698226850333865,
+   "pos_err_mean": 0.003683514985407775,
+   "rot_err_max_deg": 0.34523390645044905,
+   "joint_err_max": 0.02349263231219556,
+   "joint_err_final": 0.014564169841841723,
+   "final_pos_err": 0.0014956345351248516,
+   "final_rot_err_deg": 0.3081958962780483,
+   "planned_duration_s": 0.364246509,
+   "planning_latency_s": 0.014909503999660956,
+   "n_states": 28,
+   "time_scale": 1.8530398153361505,
+   "t_wall": 1790876419.350709,
+   "env_step": 97
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-cf21eec3d8",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-6b33224d07",
+   "t_wall": 1790876419.3597987,
+   "env_step": 97
+  },
+  {
+   "event": "lift_verify",
+   "lifted_m": 0.09562502935907546,
+   "tcp_obj_drift_m": 0.007418235171480866,
+   "pad_contacts": 10,
+   "t_wall": 1790876419.360568,
+   "env_step": 97
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "grasp": "pinch_z0.932_yaw45",
+    "width": 0.009243943227714333,
+    "lifted": 0.09562502935907546,
+    "drift": 0.007418235171480866
+   },
+   "t_wall": 1790876419.360827,
+   "env_step": 97
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 97,
+   "t_wall": 1790876419.360829,
+   "env_step": 97
+  },
+  {
+   "event": "place_attachment_refresh",
+   "drift_m": 0.007418235171480866,
+   "t_wall": 1790876419.397291,
+   "env_step": 97
+  },
+  {
+   "event": "place_fit_rotation",
+   "yaw_deg": [
+    0.0,
+    -10.857267326818857,
+    79.14273267318114,
+    90.0
+   ],
+   "overhang_m": 0.0,
+   "t_wall": 1790876419.4049315,
+   "env_step": 97
+  },
+  {
+   "event": "place_rotation_choice",
+   "limit_margin_rad": -1.0,
+   "t_wall": 1790876419.5760117,
+   "env_step": 97
+  },
+  {
+   "event": "place_release_raised",
+   "candidate": 30,
+   "raised_m": 0.04,
+   "blockers": [
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "objwall:white_cabinet_1_cabinet_bottom"
+   ],
+   "t_wall": 1790876420.7827835,
+   "env_step": 97
+  },
+  {
+   "event": "place_transport_rule",
+   "support_checked": true,
+   "tcp_pre": [
+    0.03528206662003745,
+    0.07075668197589662,
+    1.0939701557958597
+   ],
+   "tcp_release": [
+    0.03553040167639385,
+    0.07075269216059693,
+    1.0139705413356563
+   ],
+   "rim_z": 0.9840300000000001,
+   "obj_bottom_at_pre": 1.0554896144602033,
+   "obj_bottom_at_release": 0.97549,
+   "t_wall": 1790876420.7923295,
+   "env_step": 97
+  },
+  {
+   "event": "ik",
+   "label": "place_transport_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-ab932a7e83",
+   "latency_s": 0.03814418799993291,
+   "t_wall": 1790876420.8313537,
+   "env_step": 97
+  },
+  {
+   "event": "plan",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-2c525e9c49",
+   "motion_type": "ANY",
+   "n_states": 47,
+   "duration_s": 0.30842187200000004,
+   "latency_s": 0.02109984699927736,
+   "target_pos": [
+    0.03528206662003745,
+    0.07075668197589662,
+    1.0939701557958597
+   ],
+   "t_wall": 1790876420.8532546,
+   "env_step": 97
+  },
+  {
+   "event": "execute",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-2c525e9c49",
+   "ok": true,
+   "reason": "completed",
+   "steps": 26,
+   "pos_err_max": 0.005074898223436188,
+   "pos_err_mean": 0.00322423475687895,
+   "rot_err_max_deg": 0.38681318668488324,
+   "joint_err_max": 0.06285054736788193,
+   "joint_err_final": 0.05860885758541574,
+   "final_pos_err": 0.00212189033341413,
+   "final_rot_err_deg": 0.3361352774138784,
+   "planned_duration_s": 0.30842187200000004,
+   "planning_latency_s": 0.02109984699927736,
+   "n_states": 47,
+   "time_scale": 4.007901044649722,
+   "t_wall": 1790876422.5604541,
+   "env_step": 123
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-2c525e9c49",
+   "n_checked": 26,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-0df4c06c91",
+   "t_wall": 1790876422.571303,
+   "env_step": 123
+  },
+  {
+   "event": "place_slip_compensation",
+   "drift_m": 0.0030489193761140273,
+   "xy_correction_m": 0.0002695312950376112,
+   "z_correction_m": -0.036109980445320766,
+   "t_wall": 1790876422.5752459,
+   "env_step": 123
+  },
+  {
+   "event": "plan",
+   "label": "place_transport_correct",
+   "trajectory_id": "PlanTrajectory-8dc2649085",
+   "motion_type": "LINEAR",
+   "n_states": 28,
+   "duration_s": 0.065732855,
+   "latency_s": 0.04100239000035799,
+   "target_pos": [
+    0.0351261732036305,
+    0.07097655548891176,
+    1.0939701557958597
+   ],
+   "t_wall": 1790876422.6170125,
+   "env_step": 123
+  },
+  {
+   "event": "execute",
+   "label": "place_transport_correct",
+   "trajectory_id": "PlanTrajectory-8dc2649085",
+   "ok": true,
+   "reason": "completed",
+   "steps": 3,
+   "pos_err_max": 0.0013008358884971092,
+   "pos_err_mean": 0.0006883075684795892,
+   "rot_err_max_deg": 0.22054940536818712,
+   "joint_err_max": 0.008985310245048339,
+   "joint_err_final": 0.008985310245048339,
+   "final_pos_err": 0.0013008358884971092,
+   "final_rot_err_deg": 0.22054940536818712,
+   "planned_duration_s": 0.065732855,
+   "planning_latency_s": 0.04100239000035799,
+   "n_states": 28,
+   "time_scale": 1.0,
+   "t_wall": 1790876422.7625363,
+   "env_step": 126
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport_correct",
+   "trajectory_id": "PlanTrajectory-8dc2649085",
+   "n_checked": 3,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-c3e30cf1ce",
+   "t_wall": 1790876422.7693768,
+   "env_step": 126
+  },
+  {
+   "event": "plan",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-a0f9608ff3",
+   "motion_type": "LINEAR",
+   "n_states": 28,
+   "duration_s": 0.303690362,
+   "latency_s": 0.013810559999910765,
+   "target_pos": [
+    0.03537450825998689,
+    0.07097256567361207,
+    1.0139705413356563
+   ],
+   "t_wall": 1790876422.8344178,
+   "env_step": 126
+  },
+  {
+   "event": "execute",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-a0f9608ff3",
+   "ok": false,
+   "reason": "contact:support_contact",
+   "steps": 11,
+   "pos_err_max": 0.006193417532727561,
+   "pos_err_mean": 0.0027461007483307793,
+   "rot_err_max_deg": 0.1525938406275479,
+   "joint_err_max": 0.012403835021775556,
+   "joint_err_final": 0.004867765202263286,
+   "final_pos_err": 0.00025724830156206093,
+   "final_rot_err_deg": 0.14325495425549523,
+   "planned_duration_s": 0.303690362,
+   "planning_latency_s": 0.013810559999910765,
+   "n_states": 28,
+   "time_scale": 1.5,
+   "t_wall": 1790876423.5114884,
+   "env_step": 137
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-a0f9608ff3",
+   "n_checked": 11,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-680a5900c0",
+   "t_wall": 1790876423.5200295,
+   "env_step": 137
+  },
+  {
+   "event": "place_verify",
+   "obj_pos": [
+    0.006455037696811009,
+    0.09199450257919126,
+    0.946629047539766
+   ],
+   "target": [
+    0.005008203323726534,
+    0.10269309081735307,
+    0.92049
+   ],
+   "xy_err": 0.010795977028174576,
+   "lower_stop": "contact:support_contact",
+   "in_region_box": true,
+   "t_wall": 1790876424.6822565,
+   "env_step": 157
+  },
+  {
+   "event": "plan",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-36dac06ccc",
+   "motion_type": "LINEAR",
+   "n_states": 29,
+   "duration_s": 0.329379749,
+   "latency_s": 0.016853566999998293,
+   "target_pos": [
+    0.03471978006340275,
+    0.07094976462740489,
+    1.1134922323065701
+   ],
+   "t_wall": 1790876424.7861714,
+   "env_step": 157
+  },
+  {
+   "event": "execute",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-36dac06ccc",
+   "ok": true,
+   "reason": "completed",
+   "steps": 14,
+   "pos_err_max": 0.00661131732850759,
+   "pos_err_mean": 0.0031621041949884483,
+   "rot_err_max_deg": 0.2731434360534358,
+   "joint_err_max": 0.013530673809874827,
+   "joint_err_final": 0.01145600598751928,
+   "final_pos_err": 0.001281778083032224,
+   "final_rot_err_deg": 0.2416086739459516,
+   "planned_duration_s": 0.329379749,
+   "planning_latency_s": 0.016853566999998293,
+   "n_states": 29,
+   "time_scale": 1.9176387604105956,
+   "t_wall": 1790876425.678877,
+   "env_step": 171
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-36dac06ccc",
+   "n_checked": 14,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-f642416a42",
+   "t_wall": 1790876425.6864002,
+   "env_step": 171
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "place",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "xy_err": 0.010795977028174576,
+    "retreat_ok": true
+   },
+   "t_wall": 1790876425.6864834,
+   "env_step": 171
+  },
+  {
+   "event": "skill",
+   "skill": "place",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 74,
+   "t_wall": 1790876425.686485,
+   "env_step": 171
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_pre",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-a4c2426515",
+   "latency_s": 0.05413275099999737,
+   "t_wall": 1790876426.188252,
+   "env_step": 179
+  },
+  {
+   "event": "precontact_branch_check",
+   "n_solutions": 8,
+   "n_branch_ok": 0,
+   "t_wall": 1790876426.2528064,
+   "env_step": 179
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_precontact_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-09fcacec25",
+   "latency_s": 0.03979170100137708,
+   "t_wall": 1790876426.2936256,
+   "env_step": 179
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-e43fd46ea5",
+   "motion_type": "ANY",
+   "n_states": 123,
+   "duration_s": 0.512203388,
+   "latency_s": 0.01644402099918807,
+   "target_pos": [
+    0.03927021765629339,
+    0.012488601115989852,
+    1.0368752620785908
+   ],
+   "t_wall": 1790876426.3111677,
+   "env_step": 179
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-e43fd46ea5",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.022555546420637496,
+   "pos_err_mean": 0.013452013906277063,
+   "rot_err_max_deg": 8.309422494616953,
+   "joint_err_max": 0.18219390052320517,
+   "joint_err_final": 0.10501527716562986,
+   "final_pos_err": 0.004606406385989621,
+   "final_rot_err_deg": 2.153126197782197,
+   "planned_duration_s": 0.512203388,
+   "planning_latency_s": 0.01644402099918807,
+   "n_states": 123,
+   "time_scale": 1.1752543599316356,
+   "t_wall": 1790876427.2355886,
+   "env_step": 194
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-e43fd46ea5",
+   "n_checked": 14,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-12751c9383",
+   "t_wall": 1790876427.243326,
+   "env_step": 194
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_seg0",
+   "trajectory_id": "PlanTrajectory-e59ce01f5e",
+   "motion_type": "LINEAR",
+   "n_states": 39,
+   "duration_s": 0.315826793,
+   "latency_s": 0.07173002600029577,
+   "target_pos": [
+    0.005068203323726525,
+    0.012488601115989859,
+    0.942906
+   ],
+   "t_wall": 1790876427.3321888,
+   "env_step": 194
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_seg0",
+   "trajectory_id": "PlanTrajectory-e59ce01f5e",
+   "ok": true,
+   "reason": "completed",
+   "steps": 27,
+   "pos_err_max": 0.034684847129577576,
+   "pos_err_mean": 0.02043198471722864,
+   "rot_err_max_deg": 6.76031774545712,
+   "joint_err_max": 0.5332717991825269,
+   "joint_err_final": 0.061173075604545435,
+   "final_pos_err": 0.005092217196450151,
+   "final_rot_err_deg": 1.214752791591821,
+   "planned_duration_s": 0.315826793,
+   "planning_latency_s": 0.07173002600029577,
+   "n_states": 39,
+   "time_scale": 2.0,
+   "t_wall": 1790876428.934309,
+   "env_step": 221
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_a_seg0",
+   "trajectory_id": "PlanTrajectory-e59ce01f5e",
+   "n_checked": 14,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-803c7a654a",
+   "t_wall": 1790876428.9434633,
+   "env_step": 221
+  },
+  {
+   "event": "push_progress",
+   "segment": 0,
+   "satisfied": false,
+   "t_wall": 1790876428.9436464,
+   "env_step": 221
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_seg1",
+   "trajectory_id": "PlanTrajectory-ef48bd5d07",
+   "motion_type": "LINEAR",
+   "n_states": 26,
+   "duration_s": 0.142796907,
+   "latency_s": 0.013835379000738612,
+   "target_pos": [
+    0.005068203323726525,
+    0.049384701957276664,
+    0.942906
+   ],
+   "t_wall": 1790876429.0235274,
+   "env_step": 221
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_seg1",
+   "trajectory_id": "PlanTrajectory-ef48bd5d07",
+   "ok": true,
+   "reason": "completed",
+   "steps": 16,
+   "pos_err_max": 0.013131753428163697,
+   "pos_err_mean": 0.009821358624815842,
+   "rot_err_max_deg": 2.1499371661555196,
+   "joint_err_max": 0.12378447189049346,
+   "joint_err_final": 0.05116933419459713,
+   "final_pos_err": 0.00492382235971953,
+   "final_rot_err_deg": 0.910709920002504,
+   "planned_duration_s": 0.142796907,
+   "planning_latency_s": 0.013835379000738612,
+   "n_states": 26,
+   "time_scale": 2.0,
+   "t_wall": 1790876429.949193,
+   "env_step": 237
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_a_seg1",
+   "trajectory_id": "PlanTrajectory-ef48bd5d07",
+   "n_checked": 7,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-53ea5a5ae5",
+   "t_wall": 1790876429.956422,
+   "env_step": 237
+  },
+  {
+   "event": "push_progress",
+   "segment": 1,
+   "satisfied": false,
+   "t_wall": 1790876429.9565918,
+   "env_step": 237
+  },
+  {
+   "event": "push_partial",
+   "segment": 2,
+   "progress": 0.033178721030178424,
+   "reason": "NOT_FOUND",
+   "t_wall": 1790876430.0190048,
+   "env_step": 237
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_retreat",
+   "trajectory_id": "PlanTrajectory-4187904246",
+   "motion_type": "LINEAR",
+   "n_states": 28,
+   "duration_s": 0.249673678,
+   "latency_s": 0.014971171000070171,
+   "target_pos": [
+    0.026695861877634137,
+    0.049525667243885046,
+    1.016604674383093
+   ],
+   "t_wall": 1790876430.0987654,
+   "env_step": 237
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_retreat",
+   "trajectory_id": "PlanTrajectory-4187904246",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.007624219655623958,
+   "pos_err_mean": 0.003648921276631289,
+   "rot_err_max_deg": 0.3630221267405373,
+   "joint_err_max": 0.031563077382549265,
+   "joint_err_final": 0.003660811927624019,
+   "final_pos_err": 0.0005158534577340307,
+   "final_rot_err_deg": 0.03127241710629669,
+   "planned_duration_s": 0.249673678,
+   "planning_latency_s": 0.014971171000070171,
+   "n_states": 28,
+   "time_scale": 2.044173376648987,
+   "t_wall": 1790876430.8641775,
+   "env_step": 249
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_a_retreat",
+   "trajectory_id": "PlanTrajectory-4187904246",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-aac5ef41d7",
+   "t_wall": 1790876430.871671,
+   "env_step": 249
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_a",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {},
+   "t_wall": 1790876430.8717372,
+   "env_step": 249
+  },
+  {
+   "event": "skill",
+   "skill": "close_drawer_a",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 78,
+   "t_wall": 1790876430.8717394,
+   "env_step": 249
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    }
+   ],
+   "t_wall": 1790876627.7531724,
+   "env_step": 257
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 0,
+   "ok": false,
+   "reason": "intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "details": {},
+   "t_wall": 1790876632.7691963,
+   "env_step": 257
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-dbe946271f",
+   "motion_type": "LINEAR",
+   "n_states": 28,
+   "duration_s": 0.263728552,
+   "latency_s": 0.01739821800038044,
+   "target_pos": [
+    0.030186687264841548,
+    0.05017049558050027,
+    1.0989757609142046
+   ],
+   "t_wall": 1790876632.8590572,
+   "env_step": 257
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-dbe946271f",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.007075524459070296,
+   "pos_err_mean": 0.0032525130653670246,
+   "rot_err_max_deg": 0.23633202997521208,
+   "joint_err_max": 0.022776908491898284,
+   "joint_err_final": 0.0030817435964039103,
+   "final_pos_err": 0.0005311476535468525,
+   "final_rot_err_deg": 0.04162034358684939,
+   "planned_duration_s": 0.263728552,
+   "planning_latency_s": 0.01739821800038044,
+   "n_states": 28,
+   "time_scale": 2.005973096025452,
+   "t_wall": 1790876633.6892824,
+   "env_step": 269
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-dbe946271f",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-00d7dd770f",
+   "t_wall": 1790876633.696874,
+   "env_step": 269
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    }
+   ],
+   "t_wall": 1790876829.1240325,
+   "env_step": 277
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 1,
+   "ok": false,
+   "reason": "intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "details": {},
+   "t_wall": 1790876834.1410635,
+   "env_step": 277
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-47414584f0",
+   "motion_type": "LINEAR",
+   "n_states": 29,
+   "duration_s": 0.239184257,
+   "latency_s": 0.04452219199993124,
+   "target_pos": [
+    0.0292785911169934,
+    0.05049869910563726,
+    1.1797201099080756
+   ],
+   "t_wall": 1790876834.2079415,
+   "env_step": 277
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-47414584f0",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.005896273907315631,
+   "pos_err_mean": 0.003584157653200949,
+   "rot_err_max_deg": 0.6569209494221262,
+   "joint_err_max": 0.05472306154733109,
+   "joint_err_final": 0.04804901545398077,
+   "final_pos_err": 0.0026465667999963924,
+   "final_rot_err_deg": 0.5734968241134978,
+   "planned_duration_s": 0.239184257,
+   "planning_latency_s": 0.04452219199993124,
+   "n_states": 29,
+   "time_scale": 2.227279984606674,
+   "t_wall": 1790876835.005108,
+   "env_step": 289
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-47414584f0",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-69538070bf",
+   "t_wall": 1790876835.0121312,
+   "env_step": 289
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    }
+   ],
+   "t_wall": 1790877032.0358305,
+   "env_step": 297
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 2,
+   "ok": false,
+   "reason": "intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "details": {},
+   "t_wall": 1790877037.0557292,
+   "env_step": 297
+  },
+  {
+   "event": "skill",
+   "skill": "close_drawer_b",
+   "ok": false,
+   "reason": "intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "attempts": 3,
+   "steps": 48,
+   "t_wall": 1790877037.055736,
+   "env_step": 297
+  },
+  {
+   "event": "obstacle_relocation",
+   "obstacle": "wine_bottle_1_main",
+   "blockers": [
+    "wine_bottle_1_main"
+   ],
+   "t_wall": 1790877037.0557606,
+   "env_step": 297
+  },
+  {
+   "event": "relocation_spot",
+   "spot": [
+    -0.27,
+    -0.07000000000000012
+   ],
+   "t_wall": 1790877037.088909,
+   "env_step": 297
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 8,
+   "n_cleared": 8,
+   "n_tilted": 0,
+   "t_wall": 1790877037.3190033,
+   "env_step": 297
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z1.033_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-a1ea239043",
+   "latency_s": 0.02025241299998015,
+   "t_wall": 1790877038.0975955,
+   "env_step": 310
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z1.033_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-07df83dd5e",
+   "latency_s": 0.017456317000323907,
+   "t_wall": 1790877038.1156654,
+   "env_step": 310
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 7,
+   "request_id": "ComputeIk-52f6559cae",
+   "latency_s": 0.019598937000409933,
+   "t_wall": 1790877038.1360004,
+   "env_step": 310
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-53b578a197",
+   "motion_type": "ANY",
+   "n_states": 241,
+   "duration_s": 0.828425849,
+   "latency_s": 0.02123477900022408,
+   "target_pos": [
+    -0.14947573058222585,
+    0.04920811912374992,
+    1.1333615331903284
+   ],
+   "t_wall": 1790877038.1588862,
+   "env_step": 310
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-53b578a197",
+   "ok": true,
+   "reason": "completed",
+   "steps": 35,
+   "pos_err_max": 0.04952394988689886,
+   "pos_err_mean": 0.02784806238213326,
+   "rot_err_max_deg": 16.86239773244509,
+   "joint_err_max": 0.34680984150664784,
+   "joint_err_final": 0.028123352325021056,
+   "final_pos_err": 0.004565287089819079,
+   "final_rot_err_deg": 0.8027280201698501,
+   "planned_duration_s": 0.828425849,
+   "planning_latency_s": 0.02123477900022408,
+   "n_states": 241,
+   "time_scale": 1.350077762177687,
+   "t_wall": 1790877040.3793325,
+   "env_step": 345
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-53b578a197",
+   "n_checked": 24,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-6f29bf6800",
+   "t_wall": 1790877040.3924806,
+   "env_step": 345
+  },
+  {
+   "event": "plan",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-697a83c7f0",
+   "motion_type": "LINEAR",
+   "n_states": 37,
+   "duration_s": 0.394322388,
+   "latency_s": 0.042101836999790976,
+   "target_pos": [
+    -0.14947573058222585,
+    0.04920811912374992,
+    1.0333615331903283
+   ],
+   "t_wall": 1790877040.4360635,
+   "env_step": 345
+  },
+  {
+   "event": "execute",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-697a83c7f0",
+   "ok": true,
+   "reason": "completed",
+   "steps": 14,
+   "pos_err_max": 0.005811421562306884,
+   "pos_err_mean": 0.0036751380564286175,
+   "rot_err_max_deg": 1.2009777138310835,
+   "joint_err_max": 0.03426925171879125,
+   "joint_err_final": 0.02888604020986474,
+   "final_pos_err": 0.00455325398426974,
+   "final_rot_err_deg": 0.6773935903905629,
+   "planned_duration_s": 0.394322388,
+   "planning_latency_s": 0.042101836999790976,
+   "n_states": 37,
+   "time_scale": 1.590581072660456,
+   "t_wall": 1790877041.3961751,
+   "env_step": 359
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-697a83c7f0",
+   "n_checked": 14,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-cc76547ed7",
+   "t_wall": 1790877041.4043136,
+   "env_step": 359
+  },
+  {
+   "event": "grasp_verify",
+   "finger_gap": 0.014828189854392637,
+   "pad_contacts": 7,
+   "grasp": "pinch_z1.033_yaw0",
+   "t_wall": 1790877042.0924134,
+   "env_step": 371
+  },
+  {
+   "event": "plan",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-4259cdf46e",
+   "motion_type": "LINEAR",
+   "n_states": 39,
+   "duration_s": 0.38822896900000003,
+   "latency_s": 0.018347078999795485,
+   "target_pos": [
+    -0.1551080512285035,
+    0.04895870637675601,
+    1.1288177475381767
+   ],
+   "t_wall": 1790877042.1592147,
+   "env_step": 371
+  },
+  {
+   "event": "execute",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-4259cdf46e",
+   "ok": true,
+   "reason": "completed",
+   "steps": 14,
+   "pos_err_max": 0.0058677584334300885,
+   "pos_err_mean": 0.0030741624837834314,
+   "rot_err_max_deg": 0.4798870504426809,
+   "joint_err_max": 0.019649998748642067,
+   "joint_err_final": 0.0023995645308535346,
+   "final_pos_err": 0.0007567281242309017,
+   "final_rot_err_deg": 0.049999644048226564,
+   "planned_duration_s": 0.38822896900000003,
+   "planning_latency_s": 0.018347078999795485,
+   "n_states": 39,
+   "time_scale": 1.638116440573449,
+   "t_wall": 1790877043.1750922,
+   "env_step": 385
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-4259cdf46e",
+   "n_checked": 14,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-60fc4d4457",
+   "t_wall": 1790877043.1831508,
+   "env_step": 385
+  },
+  {
+   "event": "lift_verify",
+   "lifted_m": 0.1003582701476613,
+   "tcp_obj_drift_m": 0.00012718802687503383,
+   "pad_contacts": 7,
+   "t_wall": 1790877043.1838074,
+   "env_step": 385
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "grasp": "pinch_z1.033_yaw0",
+    "width": 0.014180026566322529,
+    "lifted": 0.1003582701476613,
+    "drift": 0.00012718802687503383
+   },
+   "t_wall": 1790877043.1838775,
+   "env_step": 385
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 88,
+   "t_wall": 1790877043.183879,
+   "env_step": 385
+  },
+  {
+   "event": "place_attachment_refresh",
+   "drift_m": 0.00012718802687503383,
+   "t_wall": 1790877043.2103727,
+   "env_step": 385
+  },
+  {
+   "event": "place_transport_rule",
+   "support_checked": true,
+   "tcp_pre": [
+    -0.2750606429713103,
+    -0.07004365259850642,
+    1.1238678293150057
+   ],
+   "tcp_release": [
+    -0.27536266297363104,
+    -0.07004158726248472,
+    1.0438683994442086
+   ],
+   "rim_z": 0.9,
+   "obj_bottom_at_pre": 0.9949994298707971,
+   "obj_bottom_at_release": 0.915,
+   "t_wall": 1790877043.2858784,
+   "env_step": 385
+  },
+  {
+   "event": "ik",
+   "label": "place_transport_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-6894e1f049",
+   "latency_s": 0.027765561999331112,
+   "t_wall": 1790877043.3144538,
+   "env_step": 385
+  },
+  {
+   "event": "plan",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-29f9287e28",
+   "motion_type": "ANY",
+   "n_states": 63,
+   "duration_s": 0.439206138,
+   "latency_s": 0.016006497000489617,
+   "target_pos": [
+    -0.2750606429713103,
+    -0.07004365259850642,
+    1.1238678293150057
+   ],
+   "t_wall": 1790877043.3312042,
+   "env_step": 385
+  },
+  {
+   "event": "execute",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-29f9287e28",
+   "ok": true,
+   "reason": "completed",
+   "steps": 25,
+   "pos_err_max": 0.007757314388825601,
+   "pos_err_mean": 0.004582577541030411,
+   "rot_err_max_deg": 1.2475307145295733,
+   "joint_err_max": 0.07738822871238236,
+   "joint_err_final": 0.07654590177412798,
+   "final_pos_err": 0.005669351928723493,
+   "final_rot_err_deg": 0.9229554580844788,
+   "planned_duration_s": 0.439206138,
+   "planning_latency_s": 0.016006497000489617,
+   "n_states": 63,
+   "time_scale": 2.500672147178199,
+   "t_wall": 1790877045.032083,
+   "env_step": 410
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-29f9287e28",
+   "n_checked": 23,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-131d10e992",
+   "t_wall": 1790877045.040782,
+   "env_step": 410
+  },
+  {
+   "event": "place_slip_compensation",
+   "drift_m": 0.00010318970659151027,
+   "xy_correction_m": 0.0021618193803871017,
+   "z_correction_m": 2.4123447855517455e-05,
+   "t_wall": 1790877045.045572,
+   "env_step": 410
+  },
+  {
+   "event": "plan",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-ace22c6dc3",
+   "motion_type": "LINEAR",
+   "n_states": 39,
+   "duration_s": 0.413389302,
+   "latency_s": 0.018241765999846393,
+   "target_pos": [
+    -0.27536266297363104,
+    -0.07004158726248472,
+    1.0438683994442086
+   ],
+   "t_wall": 1790877045.1045659,
+   "env_step": 410
+  },
+  {
+   "event": "execute",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-ace22c6dc3",
+   "ok": true,
+   "reason": "completed",
+   "steps": 14,
+   "pos_err_max": 0.004539727909332612,
+   "pos_err_mean": 0.0028839761536862693,
+   "rot_err_max_deg": 0.4389880162360672,
+   "joint_err_max": 0.01911643730508905,
+   "joint_err_final": 0.018667733572097056,
+   "final_pos_err": 0.002863002648884585,
+   "final_rot_err_deg": 0.4389880162360672,
+   "planned_duration_s": 0.413389302,
+   "planning_latency_s": 0.018241765999846393,
+   "n_states": 39,
+   "time_scale": 1.5,
+   "t_wall": 1790877046.013665,
+   "env_step": 424
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-ace22c6dc3",
+   "n_checked": 14,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-09441b88a5",
+   "t_wall": 1790877046.0215614,
+   "env_step": 424
+  },
+  {
+   "event": "place_verify",
+   "obj_pos": [
+    -0.27231260434451404,
+    -0.07063524314787221,
+    0.8988609548408878
+   ],
+   "target": [
+    -0.269369320663841,
+    -0.06980672795684087,
+    0.9
+   ],
+   "xy_err": 0.003057671703549275,
+   "lower_stop": "completed",
+   "in_region_box": null,
+   "t_wall": 1790877047.580107,
+   "env_step": 449
+  },
+  {
+   "event": "plan",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-a34b143dbb",
+   "motion_type": "LINEAR",
+   "n_states": 51,
+   "duration_s": 0.44016226700000005,
+   "latency_s": 0.018294175999471918,
+   "target_pos": [
+    -0.27805475579544725,
+    -0.07043481617860405,
+    1.1410488695362242
+   ],
+   "t_wall": 1790877047.6633904,
+   "env_step": 449
+  },
+  {
+   "event": "execute",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-a34b143dbb",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.0056816850221378815,
+   "pos_err_mean": 0.003214800258577648,
+   "rot_err_max_deg": 0.6051478984088443,
+   "joint_err_max": 0.02614294307405496,
+   "joint_err_final": 0.0063392778419526785,
+   "final_pos_err": 0.0009865652088266678,
+   "final_rot_err_deg": 0.14874813676303542,
+   "planned_duration_s": 0.44016226700000005,
+   "planning_latency_s": 0.018294175999471918,
+   "n_states": 51,
+   "time_scale": 1.5054474137164515,
+   "t_wall": 1790877048.5489528,
+   "env_step": 464
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-a34b143dbb",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-dfc381bf3f",
+   "t_wall": 1790877048.5567002,
+   "env_step": 464
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "place",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "xy_err": 0.003057671703549275,
+    "retreat_ok": true
+   },
+   "t_wall": 1790877048.5567892,
+   "env_step": 464
+  },
+  {
+   "event": "skill",
+   "skill": "place",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 79,
+   "t_wall": 1790877048.556791,
+   "env_step": 464
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    }
+   ],
+   "t_wall": 1790877245.7016938,
+   "env_step": 472
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 0,
+   "ok": false,
+   "reason": "intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "details": {},
+   "t_wall": 1790877250.7186213,
+   "env_step": 472
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-f50d2a9e3d",
+   "motion_type": "LINEAR",
+   "n_states": 37,
+   "duration_s": 0.31345161400000005,
+   "latency_s": 0.016403190000346513,
+   "target_pos": [
+    -0.27670078763937134,
+    -0.07067819428575098,
+    1.2230379515732088
+   ],
+   "t_wall": 1790877250.7904537,
+   "env_step": 472
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-f50d2a9e3d",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.006048135268954074,
+   "pos_err_mean": 0.0032203376023714485,
+   "rot_err_max_deg": 0.47181472677471964,
+   "joint_err_max": 0.01936944387444417,
+   "joint_err_final": 0.007157830468646154,
+   "final_pos_err": 0.0014768718360940306,
+   "final_rot_err_deg": 0.21976870166974677,
+   "planned_duration_s": 0.31345161400000005,
+   "planning_latency_s": 0.016403190000346513,
+   "n_states": 37,
+   "time_scale": 1.6217202833716315,
+   "t_wall": 1790877251.581027,
+   "env_step": 484
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-f50d2a9e3d",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-7a914f85f5",
+   "t_wall": 1790877251.5884464,
+   "env_step": 484
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    }
+   ],
+   "t_wall": 1790877450.1016636,
+   "env_step": 492
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 1,
+   "ok": false,
+   "reason": "intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "details": {},
+   "t_wall": 1790877455.1226008,
+   "env_step": 492
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-5ea4a3bce1",
+   "motion_type": "LINEAR",
+   "n_states": 34,
+   "duration_s": 0.262447197,
+   "latency_s": 0.015389270000014221,
+   "target_pos": [
+    -0.27580189665237587,
+    -0.07080972564101086,
+    1.3049932651256648
+   ],
+   "t_wall": 1790877455.1881616,
+   "env_step": 492
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-5ea4a3bce1",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.0053931850925649895,
+   "pos_err_mean": 0.003058456575785695,
+   "rot_err_max_deg": 0.659634420740623,
+   "joint_err_max": 0.018485784301412178,
+   "joint_err_final": 0.002414228867820188,
+   "final_pos_err": 0.0005407986162748954,
+   "final_rot_err_deg": 0.05205456107571173,
+   "planned_duration_s": 0.262447197,
+   "planning_latency_s": 0.015389270000014221,
+   "n_states": 34,
+   "time_scale": 2.0118950218449725,
+   "t_wall": 1790877456.0033503,
+   "env_step": 504
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_b_recover_up",
+   "trajectory_id": "PlanTrajectory-5ea4a3bce1",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-c60bb7693c",
+   "t_wall": 1790877456.010964,
+   "env_step": 504
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.45,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.35,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.6,
+     "ok": false,
+     "why": "end:collision:gripper0_right_gripper/akita_black_bowl_1_main"
+    }
+   ],
+   "t_wall": 1790877654.6549609,
+   "env_step": 512
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 2,
+   "ok": false,
+   "reason": "intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "details": {},
+   "t_wall": 1790877659.6706188,
+   "env_step": 512
+  },
+  {
+   "event": "skill",
+   "skill": "close_drawer_b",
+   "ok": false,
+   "reason": "intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "attempts": 3,
+   "steps": 48,
+   "t_wall": 1790877659.6706274,
+   "env_step": 512
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer",
+   "attempt": 0,
+   "ok": false,
+   "reason": "stage_b_after_relocation:intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "details": {},
+   "t_wall": 1790877659.6706731,
+   "env_step": 512
+  },
+  {
+   "event": "skill",
+   "skill": "close_drawer",
+   "ok": false,
+   "reason": "stage_b_after_relocation:intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+   "attempts": 1,
+   "steps": 341,
+   "t_wall": 1790877659.670675,
+   "env_step": 512
+  }
+ ],
+ "world_sync": {
+  "n_objects": 8,
+  "max_pose_error_m": 0.0,
+  "max_rot_error_deg": 0.0
+ },
+ "goal": [
+  {
+   "predicate": "close",
+   "args": [
+    "white_cabinet_1_bottom_region"
+   ],
+   "subgoal_index": 0
+  },
+  {
+   "predicate": "in",
+   "args": [
+    "akita_black_bowl_1",
+    "white_cabinet_1_bottom_region"
+   ],
+   "subgoal_index": 1
+  }
+ ],
+ "plan": [
+  "pick:akita_black_bowl_1_main",
+  "place:akita_black_bowl_1_main",
+  "close_drawer:white_cabinet_1_cabinet_bottom"
+ ],
+ "failure_stage": "close_drawer:white_cabinet_1_cabinet_bottom",
+ "failure_reason": "stage_b_after_relocation:intrinsic:ComputeIk:NOT_FOUND:IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region wa",
+ "video": "runs/eval_ce7685b/A/task3/episodes/t3_i18_1eeb4e3f/agentview.mp4",
+ "steps": 512,
+ "t_end": 1790877659.712556,
+ "wall_time_s": 1415.8522069454193
+}
