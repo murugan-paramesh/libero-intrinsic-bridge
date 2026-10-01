@@ -337,6 +337,11 @@ class PlaceSkill(Skill):
         targets = self.target_fn(rs.tcp_rot[:, 0])
         if not isinstance(targets, list):
             targets = [targets]
+        # use the attachment as measured now (the object may have shifted in the fingers during
+        # the lift: 1.5-2.3 cm for the moka-pot handle grasp), not the one captured at attach time;
+        # otherwise the release search predicts the object 1-2 cm off and raises the release
+        drift0 = sync.refresh_attachment(self.body)
+        ctx.record(event="place_attachment_refresh", drift_m=float(drift0))
         tcp_t_obj_p, tcp_t_obj_R = sync.attached[self.body]
         box = geo.object_box(env, self.body)
         obj_origin_above_bottom = env.body_pose(self.body)[0][2] - box.bottom_z
