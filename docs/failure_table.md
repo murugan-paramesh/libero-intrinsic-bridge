@@ -36,3 +36,20 @@ Revisions: 0b28d05 = previous session's post-baseline commit, 5b713c6 = candidat
 
 Probe scripts (not part of the pipeline; they only issue ComputeIk requests against the synced
 world): scratch `probe_push*.py`; their tables are summarised above and in docs/report.md 9.
+
+## 3. Candidate 5b713c6, repeated evaluation (100 episodes, evaluations/candidate_5b713c6)
+
+| task | failures | stage | observed evidence |
+|---|---|---|---|
+| 1 | 1/10 | REACH | init 18: butter, no reachable grasp after the clearance filter (neighbours) |
+| 3 | 10/10 | ARTIC/REACH (7), PLAN (3) | push segments 1-2: only colliding IK solutions (wrist/link5 vs cabinet top, hand vs middle drawer front); inits 10/17/18: lowering LINEAR path invalid (bowl/hand vs cabinet along the path for an extended placement candidate) |
+| 5 | 2/10 | REACH (1), PLACE (1) | init 18: no reachable grasp; init 17: ledge placement executed (ledge z 0.986) but the book slid off and stands on the floor (origin z 0.899 < box 0.912, xy error 3.5 cm) |
+| 6 | 1/10 | PLACE | init 15 (baseline solved): pudding lost during the lowering, final position 0.67 m from the target |
+| 7 | 1/10 | PLAN | init 18 (baseline solved): second pick, LINEAR approach rejected: start configuration in collision |
+| 8 | 2/10 | GRASP slip + PLACE | second pot: lift drift 1.5-2.3 cm, released 7.6 cm off (inits 11, 15) |
+| 9 | 10/10 | REACH (9), IK (1) | no reachable horizontal grasp of the mug next to the open door (unchanged) |
+
+Probe 5 (strongly tilted-away top-down pushes, tilt -45/-60 deg, yaw 0/90, two lateral offsets,
+two heights, end-of-travel poses): every pose has only colliding IK solutions (link5/6 vs the
+cabinet top or middle, link5 vs the wine bottle). The drawer's last 3 cm are unreachable for a
+fingertip push in this scene with the hand poses probed.

@@ -248,3 +248,49 @@ is generated outside Intrinsic.
 - Task 9: unchanged blocker (open microwave door between the robot and the mug).
 - The region-box ledge rule depends on the container's internal geometry being available as
   collision boxes (true for LIBERO's caddy). Where no ledge exists the rule is a no-op.
+
+### 9.4 Repeated evaluation of the candidate (100 episodes, revision 5b713c6)
+Same protocol as 8.1 (`configs/eval_frozen.yaml`: tasks 0-9, official init states 10-19, seed 0,
+budget 1,200 steps, same retry accounting and predicates), run after the inspection above, so it
+is a *repeated* evaluation of the same states, not a held-out one. Records are archived under
+`evaluations/candidate_5b713c6` (generated table `docs/results_5b713c6.md`); the per-episode
+before/after table is `docs/comparison_5b713c6.md`.
+
+| task | baseline 76267bf | candidate 5b713c6 | delta | newly solved (init) | newly failed (init) |
+|---|---|---|---|---|---|
+| 0 soup + sauce in basket | 10/10 | 10/10 | 0 | - | - |
+| 1 cream cheese + butter in basket | 5/10 | 9/10 | +4 | 10, 11, 12, 16 | - |
+| 2 stove knob + moka pot | 10/10 | 10/10 | 0 | - | - |
+| 3 bowl in drawer + close | 0/10 | 0/10 | 0 | - | - |
+| 4 two mugs on plates | 10/10 | 10/10 | 0 | - | - |
+| 5 book in caddy | 2/10 | 8/10 | +6 | 10, 11, 12, 13, 15, 16 | - |
+| 6 mug on plate + pudding | 9/10 | 9/10 | 0 | 16 | 15 |
+| 7 soup + cream cheese in basket | 8/10 | 9/10 | +1 | 11, 16 | 18 |
+| 8 two moka pots on stove | 8/10 | 8/10 | 0 | - | - |
+| 9 mug in microwave + close | 0/10 | 0/10 | 0 | - | - |
+| **all** | **62/100** (CI 52-71%) | **73/100** (CI 64-81%) | **+11** | 13 | 2 |
+
+Aggregates (candidate): 1,204 `PlanTrajectory` calls, mean latency 24 ms, max 121 ms (task 3's
+IK-limited push segments reach 5.0 s in `ComputeIk`), 0 timeouts, 0 infrastructure errors;
+executed-path audits: 11 of 1,204 in collision (tasks 1, 5, 7, 9; finger/hand contact with a
+neighbour after OSC null-space drift); max TCP tracking error per task 1.0-7.1 cm (task 5:
+43 cm, one aborted execution); 73/73 successes within 600 steps.
+
+Failure stages of the 27 candidate failures (from the records): task 3: 7x ARTIC/REACH (push
+segment IK: wrist/forearm vs cabinet fronts), 3x PLAN (lowering LINEAR path through the cabinet
+with an extended placement candidate, "a point along the planned trajectory is invalid");
+task 9: 9x REACH (no reachable side grasp), 1x IK; task 1: 1x REACH (butter, no reachable grasp);
+task 5: 1x REACH (no reachable grasp), 1x PLACE (book slid off the ledge and stands on the
+floor, origin outside the box); task 6: 1x PLACE (pudding lost during the lowering, ended
+0.67 m away); task 7: 1x PLAN (second pick: LINEAR approach start configuration in collision);
+task 8: 2x GRASP/PLACE (second pot slipped 1.5-2.3 cm in the grasp and was released 7.6 cm off).
+
+Two episodes that the baseline solved failed with the candidate (6/15, 7/18); both are
+single-episode effects of changed grasp/placement choices on the same states, not of a changed
+rule, and are listed as regressions. The net change is +11 with 13 newly solved episodes.
+
+### 9.6 Held-out check
+A separate run of the candidate on reserved official init states 20-29 (never used for
+development or for the evaluation above) is reported in `docs/heldout_5b713c6.md` when it
+finished before the end of the session; it is labelled held-out and is not merged with the
+100-episode protocol numbers.

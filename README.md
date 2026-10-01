@@ -5,11 +5,19 @@ kinematics, collision checking and motion planning are computed by **Intrinsic C
 (`intrinsic-ai/intrinsic-core`), executed in the unmodified LIBERO/MuJoCo environment.
 
 Status, evidence and honest limitations: see `docs/report.md` (technical report),
-`docs/results.md` (generated results table), `docs/contract.md` (facts verified from the pinned
+`docs/results.md` (baseline results table), `docs/results_5b713c6.md` (candidate results table), `docs/comparison_5b713c6.md` (before/after), `docs/failure_table.md` (failure stages with evidence), `docs/contract.md` (facts verified from the pinned
 sources), `docs/architecture.md`, `CHECKPOINT.md` (work log).
 
 ## Headline result
-Frozen evaluation (100 episodes, 10 official init states per task disjoint from development states): **62/100 successes** (Wilson 95% CI 52-71%); per task 10, 5, 10, 0, 10, 2, 9, 8, 8, 0 of 10. Every motion executed was an Intrinsic `PlanTrajectory` result (1,580 plans, mean 30 ms, no timeouts). Tasks 3 and 9 are not solved (see docs/report.md 8.2). This is a privileged-state result and is not comparable to vision-only policies.
+Repeated frozen evaluation (same protocol as the baseline: 100 episodes, 10 official init states
+per task disjoint from development states, budget 1,200 steps, seed 0) of candidate revision
+`5b713c6`: **73/100 successes** (Wilson 95% CI 64-81%); per task 10, 9, 10, 0, 10, 8, 9, 9, 8, 0 of 10.
+Baseline revision `76267bf`: **62/100** (CI 52-71%); per task 10, 5, 10, 0, 10, 2, 9, 8, 8, 0
+(unchanged, archived under `evaluations/baseline_76267bf`). Per-task before/after with the
+episodes that changed: `docs/comparison_5b713c6.md`. Every motion executed was an Intrinsic
+`PlanTrajectory` result (1,204 plans, mean 24 ms, max 121 ms, no timeouts); every success is
+within LIBERO's 600-step horizon. Tasks 3 and 9 remain unsolved (docs/report.md 9.5). This is
+a privileged-state result and is not comparable to vision-only policies.
 
 ## Layout
 ```
@@ -55,6 +63,9 @@ python scripts/run_task.py --task 3 --inits 25                # any task / init 
 python scripts/evaluate.py --config configs/eval_frozen.yaml  # frozen evaluation suite (all tasks, eval init states)
 python scripts/evaluate.py --tasks 0 1 --inits 0 1 --out runs/dev/x   # subset / dev states (reported as such)
 python -m libero_intrinsic.eval.report runs/eval --out docs/results.json   # results table from saved episode records
+python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/eval_<rev>/A ; python scripts/evaluate.py --tasks 5 6 7 8 9 --out runs/eval_<rev>/B   # repeated evaluation of a new candidate (same protocol)
+python scripts/compare_evaluations.py evaluations/baseline_76267bf runs/eval_<rev> --out docs/comparison_<rev>.md   # per-task before/after
+python scripts/archive_evaluation.py runs/eval_<rev> evaluations/candidate_<rev>   # commit the episode records (no videos)
 ```
 
 ## Exact Intrinsic Core integration
