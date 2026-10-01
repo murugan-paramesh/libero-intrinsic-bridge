@@ -37,10 +37,29 @@ def git_rev(path: str) -> str:
         return "unknown"
 
 
+def _git_dirty(path: str) -> bool:
+    try:
+        import subprocess
+        out = subprocess.run(["git", "status", "--porcelain", "--", "src", "configs", "scripts"], cwd=path,
+                             capture_output=True, text=True, timeout=10).stdout.strip()
+        return bool(out)
+    except Exception:
+        return True
+
+
+# Captured ONCE when the evaluation process starts: Python keeps the modules loaded at that
+# moment, so a commit made while an evaluation runs does not change the executed code, and a
+# per-episode git lookup would mislabel later episodes (this happened for parts of the first
+# candidate and held-out runs: their later records name docs-only commits made during the run;
+# the held-out run's later records even name a code commit whose code was NOT loaded).
+_PROCESS_REVISION = {"libero_intrinsic_bridge": git_rev(ROOT), "working_tree_dirty_at_start": _git_dirty(ROOT)}
+
+
 def software_revisions() -> Dict[str, str]:
     import mujoco, robosuite
     return {
-        "libero_intrinsic_bridge": git_rev(ROOT),
+        "libero_intrinsic_bridge": _PROCESS_REVISION["libero_intrinsic_bridge"],
+        "working_tree_dirty_at_start": _PROCESS_REVISION["working_tree_dirty_at_start"],
         "intrinsic_core": git_rev(os.path.join(ROOT, "third_party", "intrinsic-core")),
         "LIBERO": git_rev(os.path.join(ROOT, "third_party", "LIBERO")),
         "robosuite": robosuite.__version__,

@@ -161,6 +161,8 @@ class PickSkill(Skill):
         self.p = params
         self._tried: List[str] = []
         self.place_skill = None   # the PlaceSkill that follows (placement-aware grasp ranking), set by the planner
+        self.assess_only = False  # when True, attempt() stops after candidate generation/ranking (no motion)
+        self.last_assessment = {}
 
     def preconditions(self, ctx):
         if ctx.sync.attached_bodies():
@@ -210,6 +212,7 @@ class PickSkill(Skill):
         plane_z = max((geo.object_box(env, b).top_z for b in supports), default=-np.inf)
 
         obj_top = geo.object_box(env, self.body).top_z
+        blockers = {}
 
         def clear(cs):
             out = []
@@ -232,6 +235,8 @@ class PickSkill(Skill):
                     ok, blocker = geo.hand_clearance(env, pre, c.rot, opening, 0.0, others)
                 if ok:
                     out.append(c)
+                elif blocker:
+                    blockers[blocker] = blockers.get(blocker, 0) + 1
             return out
         cleared = clear(cands)
         n_tilted = 0
@@ -241,7 +246,9 @@ class PickSkill(Skill):
                       if c.label not in self._tried and "tilt" in c.label]
             n_tilted = len(tilted)
             cleared = clear(tilted)
-        ctx.record(event="grasp_candidates", n_total=len(cands), n_cleared=len(cleared), n_tilted=n_tilted)
+        ctx.record(event="grasp_candidates", n_total=len(cands), n_cleared=len(cleared), n_tilted=n_tilted,
+                   blockers=dict(sorted(blockers.items(), key=lambda kv: -kv[1])[:6]))
+        ctx.params["last_pick_blockers"] = [b for b, _ in sorted(blockers.items(), key=lambda kv: -kv[1])]
         cands = cleared or cands
         if self.place_skill is not None and len(cands) > 1:
             # placement-aware ranking: grasps that admit a geometrically valid release pose at the
@@ -261,11 +268,21 @@ class PickSkill(Skill):
             # feasible grasps first, ordered by the drop height after release (1 cm bins: a grasp
             # that lets the object hang deeper into a container is released closer to the floor),
             # ties keep the grasp score order
-            good = sorted([t for t in compat if t[1]], key=lambda t: round(max(t[2], 0.0), 2))
+            def rank_cost(t):
+                c, _, d = t
+                cost = round(max(d, 0.0), 2)
+                if self.p.approach_dir is not None:   # insertion: prefer approaches aligned with the opening normal
+                    a = np.asarray(c.approach[:2]); a = a / (np.linalg.norm(a) + 1e-9)
+                    cost += 0.1 * float(np.arccos(np.clip(np.dot(a, np.asarray(self.p.approach_dir[:2])), -1, 1)))
+                return cost
+            good = sorted([t for t in compat if t[1]], key=rank_cost)
             cands = [c for c, _, _ in good] + [c for c, ok, _ in compat if not ok] + rest
             ctx.record(event="grasp_placement_filter", n_checked=len(compat), n_compatible=len(good),
                        first=cands[0].label if cands else "", first_drop_m=float(good[0][2]) if good else None,
-                       incompatible_examples=whys[:6])
+                       incompatible_examples=whys[:6], ranked=[(c.label, round(float(d), 3)) for c, _, d in good[:8]])
+            self.last_assessment = {"n_cleared": len(cleared), "n_compatible": len(good), "blockers": dict(blockers)}
+        if self.assess_only:
+            return SkillResult(self.name, False, "assessed", details=dict(self.last_assessment))
         rs = env.robot_state()
         free_cs = sync.free_collision_settings()
         grasp_cs = sync.grasp_collision_settings(self.body, support_bodies=support_of(env, sync, self.body))
@@ -292,18 +309,56 @@ class PickSkill(Skill):
                 ctx.record(event="ik", label="grasp", grasp=c.label, n_solutions=0, request_id=e.request_id, error=str(e)[:160])
                 continue
             ctx.record(event="ik", label="grasp", grasp=c.label, n_solutions=len(sols2), request_id=rid2, latency_s=lat2)
-            if sols2:
-                chosen = (c, pre)
-                break
+            if not sols2:
+                continue
+            # Continuity: a feasible grasp endpoint is not a feasible approach path. Among the
+            # pre-grasp solutions (plus a home-seeded set), take the first whose LINEAR plan to
+            # the grasp pose Intrinsic can produce (dry run, not executed); the free-space motion
+            # then targets that joint configuration. (Observed: "FinePathIK ... excessive change
+            # in joint config" on the approach when the nearest pre-grasp solution was used.)
+            pool = list(sols)
+            if "home_q" in ctx.params:
+                try:
+                    more, _, _ = client.ik(pre, c.rot, ctx.params["home_q"], max_solutions=4, collision_settings=free_cs)
+                    pool += [q for q in more if not any(np.allclose(q, s0, atol=1e-3) for s0 in pool)]
+                except IntrinsicRequestError:
+                    pass
+            q_pre, n_tested = None, 0
+            for q in pool:
+                n_tested += 1
+                try:
+                    client.plan_to_pose(q, c.pos, c.rot, collision_settings=grasp_cs, motion_type="LINEAR", timeout_s=5.0,
+                                        caller_id="pick_approach_dryrun")
+                    q_pre = q
+                    break
+                except IntrinsicRequestError:
+                    continue
+            ctx.record(event="pregrasp_path_check", grasp=c.label, n_solutions=len(pool), n_tested=n_tested, feasible=q_pre is not None)
+            if q_pre is None:
+                continue
+            chosen = (c, pre, q_pre)
+            break
         if chosen is None:
             return SkillResult(self.name, False, "no_reachable_grasp")
-        c, pre = chosen
+        c, pre, q_pre = chosen
         self._tried.append(c.label)
-        # 1. free-space motion to the pre-grasp
+        # 1. free-space motion to the pre-grasp configuration validated above
         self._last_width = c.width
-        traj, res = _plan_and_execute(ctx, "pick_pregrasp", rs.q, pre, c.rot, free_cs, "ANY", 0.0, self.p.plan_timeout_s)
+        traj = client.plan_to_joints(rs.q, q_pre, collision_settings=free_cs, motion_type="ANY", timeout_s=self.p.plan_timeout_s,
+                                     caller_id="pick_pregrasp")
+        ctx.record(event="plan", label="pick_pregrasp", trajectory_id=traj.request_id, motion_type="ANY", n_states=int(len(traj.t)),
+                   duration_s=traj.duration, latency_s=traj.planning_latency_s, target_pos=[float(v) for v in pre])
+        res = ctx.execute(traj, ExecutionConfig(gripper=0.0), "pick_pregrasp")
         if not res.ok:
             return SkillResult(self.name, False, f"pregrasp_exec:{res.reason}", details={"grasp": c.label})
+        # 1b. execution feedback: re-converge in joint space if the reached configuration drifted
+        rs = env.robot_state()
+        if float(np.max(np.abs(rs.q - q_pre))) > 0.02:
+            try:
+                traj = client.plan_to_joints(rs.q, q_pre, collision_settings=free_cs, motion_type="JOINT", timeout_s=5.0, caller_id="pick_pregrasp_settle")
+                ctx.execute(traj, ExecutionConfig(gripper=0.0), "pick_pregrasp_settle")
+            except IntrinsicRequestError as e:
+                ctx.record(event="pregrasp_settle_failed", reason=str(e)[:120])
         # 2. linear approach; only contact with the target object is permitted
         rs = env.robot_state()
         traj, res = _plan_and_execute(ctx, "pick_approach", rs.q, c.pos, c.rot, grasp_cs, "LINEAR", 0.0, self.p.plan_timeout_s)
@@ -739,7 +794,8 @@ class PlaceSkill(Skill):
         """Placement-aware grasp selection: would this grasp (tcp pose on the object at its
         current pose) admit a valid release pose at the placement target, and how far would the
         object drop after release? Pure geometry (the same release search as at place time,
-        every fit rotation considered); no IK. Returns (feasible, drop_height_m)."""
+        every fit rotation considered); no IK. Returns (feasible, cost) with cost = drop height
+        + 0.5 x distance of the accepted placement candidate from the preferred slot."""
         obj_p, obj_R = env.body_pose(self.body)
         T_rel = tf.inv_T(tf.make_T(grasp_pos, grasp_rot)) @ tf.make_T(obj_p, obj_R)
         tcp_t_obj_p = T_rel[:3, 3]
@@ -767,8 +823,13 @@ class PlaceSkill(Skill):
             target_origin, support_z, tcp_release, _, _ = found
             bottom = float((obj_local @ Rc.T + tcp_release)[:, 2].min())
             drop = bottom - support_z          # how far the object falls after release
-            if best is None or drop < best:
-                best = drop
+            # distance of the accepted placement candidate from the preferred slot: a grasp that
+            # forces the object to the edge of the region (e.g. the front of a drawer, where it
+            # later blocks the closing push) ranks below one that admits the preferred spot
+            slot_dist = float(np.linalg.norm(np.asarray(target_origin)[:2] - np.asarray(targets[0][0])[:2]))
+            score = drop + 0.5 * slot_dist
+            if best is None or score < best:
+                best = score
         return best is not None, (best if best is not None else float("inf"))
 
     def _retreat(self, ctx, result: SkillResult) -> SkillResult:

@@ -149,34 +149,67 @@ class PushSkill(Skill):
         free_cs = sync.free_collision_settings()
         push_cs = sync.grasp_collision_settings(self.body, [(client.robot, b) for b in self.extra])
         jl = ctx.params.pop("push_joint_limits", None)   # posture family chosen by the contact selection (if any)
-        sols, rid, lat = client.ik(pre, rot, rs.q, max_solutions=8, collision_settings=free_cs, joint_limits=jl)
-        ctx.record(event="ik", label=f"{self.label}_pre", n_solutions=len(sols), request_id=rid, latency_s=lat)
+        lim = env.joint_limits()
+        # posture families for the pre-contact (IK JointPositionLimits): the chosen one, unrestricted,
+        # shoulder forward (joint 2 >= 0.3 rad), elbow bent (joint 4 <= -1.9 rad)
+        families = [jl, None,
+                    (np.maximum(lim[:, 0] + 0.05, [-9, 0.3, -9, -9, -9, -9, -9]), lim[:, 1] - 0.05),
+                    (lim[:, 0] + 0.05, np.minimum(lim[:, 1] - 0.05, [9, 9, 9, -1.9, 9, 9, 9]))]
+        sols = []
+        for fam in families:
+            try:
+                sols, rid, lat = client.ik(pre, rot, rs.q, max_solutions=8, collision_settings=free_cs, joint_limits=fam)
+            except IntrinsicRequestError:
+                sols = []
+            ctx.record(event="ik", label=f"{self.label}_pre", n_solutions=len(sols), request_id=rid if sols else "", latency_s=lat if sols else 0.0)
+            if sols:
+                break
         if not sols:
             return SkillResult(self.name, False, "precontact_unreachable")
-        # Continuity pre-validation: the pre-contact configuration must admit the first contact
-        # pose on the SAME kinematic branch (Intrinsic `ensure_same_branch`), otherwise the LINEAR
-        # approach fails with "FinePathIK ... excessive change in joint config"; among the
-        # branch-consistent solutions the one with the largest joint-limit margin is used.
-        lim = env.joint_limits()
+        # Continuity pre-validation ("feasible endpoint" is not "feasible continuous path"): for
+        # each pre-contact IK solution (several seeds and posture families), ask Intrinsic for the
+        # LINEAR plan to the first contact pose WITHOUT executing it; the first solution with a
+        # feasible plan, preferring the largest joint-limit margin, becomes the free-space goal.
+        # (Observed: the nearest/margin-best solution alone failed with "FinePathIK ... excessive
+        # change in joint config" on 3/10 protocol states although other solutions admit the path.)
         p0 = path[0] if not isinstance(path[0], tuple) else path[0][0]
-        good = []
-        for q in sols:
+        seeds = [rs.q] + ([ctx.params["home_q"]] if "home_q" in ctx.params else [])
+        pool = list(sols)
+        for seed in seeds:
+            for fam in families[1:]:
+                try:
+                    more, _, _ = client.ik(pre, rot, seed, max_solutions=8, collision_settings=free_cs, joint_limits=fam)
+                    pool += [q for q in more if not any(np.allclose(q, s0, atol=1e-3) for s0 in pool)]
+                except IntrinsicRequestError:
+                    pass
+        pool.sort(key=lambda q: -float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q)))))
+        q_goal, n_tested = None, 0
+        for q in pool[:12]:
+            n_tested += 1
             try:
-                s2, _, _ = client.ik(p0, rot, q, max_solutions=1, collision_settings=push_cs, ensure_same_branch=True)
-                if s2:
-                    good.append(q)
+                client.plan_to_pose(q, p0, rot, collision_settings=push_cs, motion_type="LINEAR", timeout_s=5.0,
+                                    caller_id=f"{self.label}_precontact_dryrun")
+                q_goal = q
+                break
             except IntrinsicRequestError:
                 continue
-        ctx.record(event="precontact_branch_check", n_solutions=len(sols), n_branch_ok=len(good))
-        q_goal = None
-        if good:
-            q_goal = max(good, key=lambda q: float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q)))))
+        ctx.record(event="precontact_path_check", n_solutions=len(pool), n_tested=n_tested, feasible=q_goal is not None)
         if q_goal is not None:
             traj = client.plan_to_joints(rs.q, q_goal, collision_settings=free_cs, motion_type="ANY", timeout_s=15.0,
                                          caller_id=f"{self.label}_precontact")
             ctx.record(event="plan", label=f"{self.label}_precontact", trajectory_id=traj.request_id, motion_type="ANY",
                        n_states=int(len(traj.t)), duration_s=traj.duration, latency_s=traj.planning_latency_s, target_pos=[float(v) for v in pre])
             res = ctx.execute(traj, ExecutionConfig(gripper=+1.0), f"{self.label}_precontact")
+            rs2 = env.robot_state()
+            if res.ok and float(np.max(np.abs(rs2.q - q_goal))) > 0.02:
+                # execution feedback: the LINEAR path was validated from q_goal; converge to it in
+                # joint space (the OSC controller leaves a few centiradians of error) before pushing
+                try:
+                    traj2 = client.plan_to_joints(rs2.q, q_goal, collision_settings=free_cs, motion_type="JOINT", timeout_s=5.0,
+                                                  caller_id=f"{self.label}_precontact_settle")
+                    ctx.execute(traj2, ExecutionConfig(gripper=+1.0), f"{self.label}_precontact_settle")
+                except IntrinsicRequestError as e:
+                    ctx.record(event="precontact_settle_failed", reason=str(e)[:120])
         else:
             _, res = _plan_and_execute(ctx, f"{self.label}_precontact", rs.q, pre, rot, free_cs, "ANY", +1.0, 15.0, joint_limits=jl,
                                        posture="margin")

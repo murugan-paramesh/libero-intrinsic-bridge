@@ -129,7 +129,17 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
             params = _dc.replace(params, side_grasp=True, approach_dir=geo.region_opening_normal(env, atom.args[1], owner_b))
             ctx.record(event="opening_normal", region=atom.args[1], normal=[float(v) for v in params.approach_dir])
         pick = PickSkill(body, params)
-        skills.append(pick)
+        if params.side_grasp:
+            # a roofed-container pick may be blocked by a neighbouring non-goal object (the hand
+            # must come in level along the opening normal): allow one obstacle relocation
+            table_b = next(n for n in ("table", "kitchen_table", "study_table", "living_room_table_col")
+                           if n in [env.model.body_id2name(i) for i in range(env.model.nbody)])
+            goal_b = [root_body(env, a.args[0]) for a in manip]
+            region_b = atom.args[1]
+            keep = lambda body=body, region_b=region_b: [env.body_pose(body)[0], geo.site_box_world(env, region_b)[0]]
+            skills.append(PickWithRelocation(env, pick, goal_b, table_b, all_movable, keep, PICK_PARAMS["default"]))
+        else:
+            skills.append(pick)
         if atom.predicate == "in":
             region = atom.args[1]
             owner = support_body_for(env, region_owner_body(env, region, spec))
@@ -205,6 +215,88 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
     return skills
 
 
+def free_table_spot(env, ctx, obstacle, table_body, all_movable, keep_away_xy, keep_away_r=0.25, record=True):
+    """Grid search on the table top: >= 8 cm from every other object's footprint, inside the table
+    minus 8 cm, 0.35-0.70 m from the robot base, >= keep_away_r from each point in keep_away_xy
+    (the manipulation corridor), >= 15 cm from the obstacle's current spot; nearest such spot."""
+    from scipy.spatial import cKDTree
+    tb = geo.object_box(env, table_body)
+    base = env.robot_state().base_pos[:2]
+    obj_xy = env.body_pose(obstacle)[0][:2]
+    trees = [cKDTree(geo.object_point_cloud(env, b, spacing=0.01)[:, :2]) for b in all_movable if b != obstacle]
+    fixed = [b for b in ctx.sync.bodies if b not in all_movable and b != table_body]
+    trees += [cKDTree(geo.object_point_cloud(env, b, spacing=0.02)[:, :2]) for b in fixed]
+    r_obj = float(np.max(geo.object_box(env, obstacle).half_extents_world[:2]))
+    best, best_d = None, np.inf
+    for gx in np.arange(tb.center_world[0] - tb.half_extents_world[0] + 0.08, tb.center_world[0] + tb.half_extents_world[0] - 0.08, 0.05):
+        for gy in np.arange(tb.center_world[1] - tb.half_extents_world[1] + 0.08, tb.center_world[1] + tb.half_extents_world[1] - 0.08, 0.05):
+            xy = np.array([gx, gy])
+            reach = np.linalg.norm(xy - base)
+            if not (0.35 <= reach <= 0.70) or np.linalg.norm(xy - obj_xy) < 0.15:
+                continue
+            if any(np.linalg.norm(xy - np.asarray(k)[:2]) < keep_away_r for k in keep_away_xy):
+                continue
+            if any(t.query(xy)[0] < r_obj + 0.08 for t in trees):
+                continue
+            d = np.linalg.norm(xy - obj_xy)
+            if d < best_d:
+                best, best_d = xy, d
+    if record:
+        ctx.record(event="relocation_spot", obstacle=obstacle, spot=None if best is None else [float(v) for v in best])
+    return best
+
+
+class PickWithRelocation(Skill):
+    """Bounded task-level replanning for a blocked pick: when the pick fails because every grasp
+    candidate is blocked by ONE movable, non-goal object (the geometric clearance filter and the
+    IK collision reports name it), that object is relocated by real manipulation (pick, place on
+    a free table spot away from the goal object and its target region) and the pick is retried
+    once. Everything is counted in the episode budget."""
+    name = "pick"
+    max_attempts = 1
+
+    def __init__(self, env, pick, goal_bodies, table_body, all_movable, keep_away_xy_fn, pick_params):
+        self.env, self.pick, self.goal_bodies, self.table_body, self.all_movable = env, pick, set(goal_bodies), table_body, all_movable
+        self.keep_away_xy_fn, self.pick_params = keep_away_xy_fn, pick_params
+        self.body = pick.body
+
+    def preconditions(self, ctx):
+        return self.pick.preconditions(ctx)
+
+    def attempt(self, ctx, i):
+        # Assess first (geometry only, no motion): if no grasp admits the later insertion and the
+        # candidates blocked at the pick are blocked by one movable non-goal object, relocate it
+        # BEFORE picking (a pickable grasp that cannot be inserted is not accepted).
+        ctx.sync.sync()
+        self.pick.assess_only = True
+        try:
+            self.pick.attempt(ctx, 0)
+        finally:
+            self.pick.assess_only = False
+        a = self.pick.last_assessment
+        blockers = [b for b, n in sorted(a.get("blockers", {}).items(), key=lambda kv: -kv[1])
+                    if b in self.all_movable and b not in self.goal_bodies]
+        if a.get("n_compatible", 1) > 0 or not blockers:
+            r = self.pick.run(ctx)
+            if r.ok or not blockers:
+                return r
+        obstacle = blockers[0]
+        ctx.record(event="obstacle_relocation", obstacle=obstacle, blockers=blockers, stage="pick", assessment=a)
+        spot = free_table_spot(self.env, ctx, obstacle, self.table_body, self.all_movable, self.keep_away_xy_fn())
+        if spot is None:
+            return SkillResult(self.name, False, "no_relocation_spot:" + r.reason)
+        rp = PickSkill(obstacle, self.pick_params).run(ctx)
+        if not rp.ok:
+            return SkillResult(self.name, False, "relocate_pick:" + rp.reason)
+        top = geo.object_box(self.env, self.table_body).top_z
+        rpl = PlaceSkill(obstacle, lambda closing_axis, spot=spot, top=top: (np.array([spot[0], spot[1], top]), top), [self.table_body]).run(ctx)
+        if not rpl.ok:
+            return SkillResult(self.name, False, "relocate_place:" + rpl.reason)
+        self.pick._tried = []
+        r2 = self.pick.run(ctx)
+        return SkillResult(self.name, r2.ok, "" if r2.ok else "pick_after_relocation:" + r2.reason, details=r2.details)
+
+
 class DrawerCloseComposite(Skill):
     """Two-stage drawer closing with obstacle relocation (bounded task-level replanning).
 
@@ -235,7 +327,8 @@ class DrawerCloseComposite(Skill):
             return SkillResult(self.name, False, "stage_b:" + rb.reason)
         obstacle = blockers[0]
         ctx.record(event="obstacle_relocation", obstacle=obstacle, blockers=blockers)
-        spot = self._free_table_spot(ctx, obstacle)
+        spot = free_table_spot(self.env, ctx, obstacle, self.table_body, self.all_movable,
+                               [geo.object_box(self.env, self.drawer_body).center_world])
         if spot is None:
             return SkillResult(self.name, False, "no_relocation_spot:" + rb.reason)
         pick = PickSkill(obstacle, self.pick_params)
@@ -367,6 +460,8 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
                                 except IntrinsicRequestError as e:
                                     m = re.search(r"Left object: (\S+)[^\n]*\n\s*Right objects?: (\S+)", str(e))
                                     last = ("collision:" + m.group(1).replace("panda.", "") + "/" + m.group(2).split(".")[0]) if m else str(e.code)
+                                    if not m:
+                                        break   # no solution at all (solver timeout, 5 s): more seeds never rescued such a pose in any probe
                             if not found:
                                 ok, why = False, name + ":" + last
                                 break
