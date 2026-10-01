@@ -361,7 +361,16 @@ class PickSkill(Skill):
                 ctx.record(event="pregrasp_settle_failed", reason=str(e)[:120])
         # 2. linear approach; only contact with the target object is permitted
         rs = env.robot_state()
-        traj, res = _plan_and_execute(ctx, "pick_approach", rs.q, c.pos, c.rot, grasp_cs, "LINEAR", 0.0, self.p.plan_timeout_s)
+        try:
+            traj, res = _plan_and_execute(ctx, "pick_approach", rs.q, c.pos, c.rot, grasp_cs, "LINEAR", 0.0, self.p.plan_timeout_s)
+        except IntrinsicRequestError as e0:
+            if "FinePathIK" not in str(e0):
+                raise
+            # see PushSkill: the OSC null-space drift leaves the arm on a branch from which the
+            # linear path IK fails; fall back to a collision-checked configuration-space approach
+            ctx.record(event="approach_any_fallback", label="pick_approach", reason=str(e0)[:120])
+            rs = env.robot_state()
+            traj, res = _plan_and_execute(ctx, "pick_approach_any", rs.q, c.pos, c.rot, grasp_cs, "ANY", 0.0, self.p.plan_timeout_s)
         if not res.ok:
             return SkillResult(self.name, False, f"approach_exec:{res.reason}", details={"grasp": c.label})
         # 3. close and verify

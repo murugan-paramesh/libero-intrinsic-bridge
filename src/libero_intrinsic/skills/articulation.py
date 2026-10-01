@@ -234,8 +234,22 @@ class PushSkill(Skill):
             sync.sync()
             p_k, rot_k = p
             try:
-                _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}", rs.q, p_k, rot_k, push_cs, "LINEAR", +1.0, 10.0,
-                                           time_scale=self.time_scale)
+                try:
+                    _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}", rs.q, p_k, rot_k, push_cs, "LINEAR", +1.0, 10.0,
+                                               time_scale=self.time_scale)
+                except IntrinsicRequestError as e0:
+                    if k != 0 or "FinePathIK" not in str(e0):
+                        raise
+                    # The benchmark's OSC_POSE controller tracks the TCP pose only; its null space
+                    # drifts, so the posture Intrinsic validated for the LINEAR segment is not the
+                    # one physically reached (joint error 0.6-1.0 rad observed) and the linear path
+                    # IK fails from the reached branch. Fallback for the APPROACH segment only: a
+                    # configuration-space (ANY) plan to the same contact pose, collision-checked
+                    # with nothing excluded (the contact pose is 1.5 cm outside the panel), i.e. a
+                    # non-straight but collision-free approach. Recorded explicitly.
+                    ctx.record(event="approach_any_fallback", label=f"{self.label}_seg0", reason=str(e0)[:120])
+                    _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}_any", rs.q, p_k, rot_k, free_cs, "ANY", +1.0, 10.0,
+                                               time_scale=self.time_scale)
             except IntrinsicRequestError as e:
                 if self.partial_ok and self.progress_fn is not None and self.progress_fn() > progress0 + 0.02:
                     ctx.record(event="push_partial", segment=k, progress=float(self.progress_fn() - progress0), reason=e.code)
