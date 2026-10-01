@@ -166,3 +166,85 @@ after OSC null-space drift), none in tasks 0/2/3/8/9.
    objects; 4. re-grasp after fit rotations; 5. a JOINT_POSITION-controller condition to
    quantify how much the OSC null-space drift costs; 6. the simple Cartesian servo baseline
    on the same init states (not run: out of time, listed as not evaluated).
+
+## 9. Improvement loop after the baseline (candidate revision 5b713c6)
+
+The baseline (62/100, revision 76267bf, archived under `evaluations/baseline_76267bf`) was left
+unchanged. The loop was: read the baseline episode records and RPC payloads -> hypothesis ->
+smallest classical change -> dev runs on the development init states (0-4, disjoint from the
+evaluation states 10-19) -> regression runs on the tasks sharing the component -> keep only
+with evidence. Every row of `docs/failure_table.md` section 2 carries the observed evidence
+(record events, RPC error payloads, video frames) separately from the hypothesis.
+
+### 9.1 Root causes found and the changes kept
+1. **Transport collision rule (task 5, affects every container placement).** The baseline
+   excluded the carried object from collision checking against its *future* support for the
+   whole transport (needed only for the final contact). Intrinsic's planner therefore swept the
+   book through the caddy wall and the book was knocked out of the fingers; the baseline
+   records had classified this as "grasp slip" (13-26 cm offsets). Fix: the exclusion is
+   applied only to the contact-monitored lowering (and to retries that start inside the
+   container); the transport is planned with the carried object fully checked. The "pendulum
+   slip / slow transport" hypothesis was tested (0/3) and dropped.
+2. **Release-pose search** (`PlaceSkill._release_search`, pure geometry before any RPC):
+   hand/finger clearance, carried-object clearance against non-support bodies (8 mm) and
+   container walls (5 mm), the object above the rim at the pre-place pose (3 cm, Intrinsic's
+   exact check rejected 1 cm), footprint centring (the book's origin is 8 mm off its footprint
+   centre). The same search ranks grasp candidates in `PickSkill` (placement-aware grasp
+   selection: feasible release first, smallest drop height next). For the bowl/drawer task this
+   is what makes the hand stay in front of the cabinet.
+3. **Fit rotations by principal axis.** A diagonally held object is yawed by the angle that
+   aligns its footprint's PCA axis with the region box; all equally fitting angles are probed
+   with Intrinsic IK and the one with the largest joint-limit margin is used.
+4. **Region-box ledge rule (task 5).** LIBERO's `In` tests the object *origin* against the
+   region box. The book's origin is its bottom face and the back-compartment box starts
+   1.2 cm above the caddy floor, so a book standing on the floor can never satisfy the goal
+   (verified from the pinned LIBERO source and the MJCF; clean insertions failed 0/2). The
+   valid resting states are on the container's internal structure. The rule finds the lowest
+   horizontal ledge (top face of a collision box of the support) inside the box whose long
+   side follows the region's long axis (the 6.7 cm divider), places the object's bottom on it
+   with a 4 mm outward offset, lowers under the contact monitor and releases; the object tips
+   onto the outer wall. Dev 5/5. This is a benchmark-specific but legitimate consequence of
+   the predicate; it is reported as such.
+5. **Drawer push geometry and segmentation (task 3).** IK probe tables (Intrinsic ComputeIk,
+   scratch scripts) showed that only a closing axis *along* the push with a tilt <= 20 deg has
+   collision-free solutions at the contact pose. Long pushes are split into <= 4 cm segments,
+   each planned after a world sync so that objects carried by the drawer (the bowl) are at
+   their true poses. The bowl placement, which blocked every baseline episode of this task
+   after the push, now succeeds (2/2 dev); the push closes 13 of the 16 cm.
+6. **Pick robustness (task 1 regression introduced by the previous session's exact
+   support-plane test).** The conservative gripper zones carry 3-5 mm margins, so 4 mm of zone
+   below the plane is tolerated and dipping candidates are lifted while the pads still overlap
+   the object; a candidate whose grasp IK is in collision no longer aborts the attempt.
+
+### 9.2 Intrinsic involvement in the new pieces
+All kinematics, collision checking and planning remain Intrinsic RPCs: the release search and
+grasp ranking are geometric pre-filters whose chosen poses are then solved by `ComputeIk`
+(nearest-IK joint targets) and planned by `PlanTrajectory` under the per-phase
+`CollisionSettings` (the only change to those settings is *fewer* exclusions during transport).
+Push segments are LINEAR `PlanTrajectory` requests after `UpdateObjectJoints`/`UpdateTransform`
+world syncs; the probe tables are `ComputeIk` calls with the real collision rules. No motion
+is generated outside Intrinsic.
+
+### 9.3 Development results (before -> after, dev init states; records in runs/dev2)
+| task | 0b28d05 (post-baseline, previous session) | 5b713c6 | shared component |
+|---|---|---|---|
+| 0 | - | 2/2 | regression check (Pick/Place) |
+| 1 | 0/2 (76267bf: 1/2) | 3/3 | pick plane test + candidate loop |
+| 2 | - | 2/2 | regression check (knob + Place) |
+| 3 | 0/2 (place blocked) | 0/2 (place OK, push 13/16 cm) | release search, grasp ranking, push |
+| 4 | - | 2/2 | regression check |
+| 5 | 1/3 | 5/5 | transport rule, fit rotations, centring, ledge rule |
+| 6 | - | 2/2 | regression check |
+| 7 | - | 2/2 | regression check |
+| 8 | - | 2/2 | regression check (slip compensation) |
+| 9 | - | not run (blocked, see 8.2) | - |
+
+### 9.5 Regressions and blockers
+- Task 3: the last ~3 cm of the drawer travel are unreachable for every probed hand pose
+  (the closed drawer front is flush with the upper drawer fronts; the wrist/forearm or the
+  hand collides with them, and horizontal pushes put link 5 into the wine rack). A different
+  strategy is needed (e.g. a posture-constrained IK with the elbow out, or pushing the drawer
+  front with the side of a horizontally held hand from the right where the rack is not).
+- Task 9: unchanged blocker (open microwave door between the robot and the mug).
+- The region-box ledge rule depends on the container's internal geometry being available as
+  collision boxes (true for LIBERO's caddy). Where no ledge exists the rule is a no-op.

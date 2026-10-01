@@ -86,3 +86,17 @@ Key generalizations added today: partial gripper pre-opening (1 cm/step), neighb
 - 100 episodes (tasks 0-9 x init states 10-19) at revision 76267bf: 62/100 success (CI 52-71%); per task 10,5,10,0,10,2,9,8,8,0. docs/results.md (generated), docs/results.json, evidence/eval_episodes (videos + records + RPC logs per task, MANIFEST.json), docs/report.md sections 8.1-8.3.
 - Not done: servo baseline comparison; posture-constrained IK for tasks 3/9; joint clamp bug (task 5).
 Commands: python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/eval/frozen_A ; --tasks 5 6 7 8 9 --out runs/eval/frozen_B ; python -m libero_intrinsic.eval.report runs/eval --out docs/results.json ; python scripts/collect_evidence.py runs/eval
+
+## Session 3 (2026-10-01 00:20 UTC) - improvement loop on the frozen baseline
+Baseline preserved: commit 4f58be6/ec18bb3 results, evaluations/baseline_76267bf, docs/results.md unchanged.
+Candidate commit 5b713c6 (dev-verified; details in docs/failure_table.md section 2 and docs/report.md section 9):
+- Task 5 root cause was NOT grasp slip: the transport excluded the carried object vs its future support, so the Intrinsic plan swept the book through the caddy wall (video frames). Transport rule fixed; principal-axis fit rotations; footprint centring; region-box ledge rule (the book standing on the caddy floor can never satisfy LIBERO's In predicate: origin below the region box; verified in LIBERO source + MJCF). Dev 5/5.
+- Task 3: placement now works (placement-aware grasp ranking, extended candidates, carried-object clearance); the drawer push (closing axis along the push, 20 deg tilt, 4 cm synced segments) closes 13/16 cm; every probed end-of-travel pose has only colliding IK solutions (scratch probe tables in docs/failure_table.md). Still 0 on dev.
+- Task 1 regression from 0b28d05's exact support-plane test fixed (3/3 dev).
+- Regression checks (inits 0-1): tasks 0,2,4,6,7,8 all 2/2.
+- scripts/compare_evaluations.py: per-task before/after table with Wilson CIs.
+Running now: repeated 100-episode protocol of 5b713c6 -> runs/eval_5b713c6/{A,B} (same configs/eval_frozen.yaml, inits 10-19, budget 1200, seed 0).
+Commands: python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/eval_5b713c6/A ; --tasks 5 6 7 8 9 --out runs/eval_5b713c6/B ;
+  python -m libero_intrinsic.eval.report runs/eval_5b713c6 --out docs/results_5b713c6.json ;
+  python scripts/compare_evaluations.py evaluations/baseline_76267bf runs/eval_5b713c6 --labels baseline_76267bf candidate_5b713c6 --out docs/comparison_5b713c6.md
+Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines each; if incomplete, rerun the missing half from scratch (never merge partial reruns); then the report/compare commands above; archive records: python scripts/archive_evaluation.py runs/eval_5b713c6 evaluations/candidate_5b713c6 ; update README headline + report 9.4; commit; push.
