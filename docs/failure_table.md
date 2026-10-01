@@ -65,3 +65,15 @@ fingertip push in this scene with the hand poses probed.
 | 7 | 1/10 | PLAN | pick LINEAR plan rejected |
 | 8 | 1/10 | GRASP slip + PLACE | second pot (see 9.7 follow-up) |
 | 9 | 10/10 | REACH (8), IK/PLAN (2) | unchanged |
+
+## 5. Second improvement loop (dev states 0-1; records under runs/dev2/task3_*, task9_*, reg)
+
+| task | stage | observed (dev) | change kept | result |
+|---|---|---|---|---|
+| 3 | PLACE: bowl rim hooked on a finger after release, lifted out with the retreat (video frames) | finger contacts 2 after opening; the next plan's start state in collision with the bowl | release separation (move 2.5 cm away while contacts persist), start-state recovery (retreat with the pair excluded) | bowl stays in the drawer |
+| 3 | ARTIC: top-down push ends ~6 cm short | IK probes: no collision-free top-down end pose (4 seeds, elbow-up limits) | stage A with partial progress + stage B horizontal hand with run-time IK contact selection | 10/16 cm closed |
+| 3 | ARTIC/PLAN: stage B blocked | init 1: link5 vs wine bottle for all 70 probes; after relocating the bottle: hand vs bowl (bowl against the panel) or no solution; init 0: stage A LINEAR approach "FinePathIK excessive change" (0 of 8 pre-contact solutions branch-consistent) | obstacle relocation composite (executed, 165 steps), same-branch pre-contact check | unsolved (0/2) |
+| 9 | PLAN: level side grasp, wrist vs porcelain mug | probes at 6 spots | pitched side grasps, low heights, opening-normal yaws | pick 2/2 |
+| 9 | INFRA (adapter): mug still attached in the Intrinsic world from the previous episode | pre-grasp IK "mug vs microwave" in init 1 | episode-start re-parenting of all bodies | fixed |
+| 9 | PLACE: insertion | every release candidate rejected: hand above the roof (pitched hand) or hand wider than the cavity; earlier runs released the mug on the roof and reported success | roof cap, region-box verification (reports failure) | unsolved (0/2) |
+| 0,1,2,4,5,6,7,8 | regression (inits 0-1) | - | - | 16/16 |

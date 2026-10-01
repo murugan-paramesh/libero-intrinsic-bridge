@@ -323,3 +323,65 @@ more change after the evaluation: the attachment is re-measured at the start of 
 (and pushed to the Intrinsic world). Dev: task 8 inits 0-3 4/4, tasks 0 and 5 inits 0-1 2/2
 each. The 100-episode protocol was not re-run for it, so the evaluated candidate remains
 5b713c6 and this change is reported as unevaluated.
+
+## 10. Second improvement loop: method families, Tasks 3 and 9, adapter integrity (candidate ce7685b)
+
+The method catalogue, what the pinned Intrinsic release verifiably exposes for each family, and
+the method-selection table (failure | candidate method | Intrinsic support | experiment |
+outcome | retain/reject) are in `docs/methods.md`. This section summarises what changed.
+
+### 10.1 Verified Intrinsic capabilities used in this loop (category 1)
+`JointPositionLimits` IK constraints (posture families), IK seed diversity with
+`max_num_solutions`, `ensure_same_branch` (continuity between the pre-contact solution and the
+contact pose), per-pair collision exclusion rules for bounded recoveries, and `ReparentObject`
+for the episode-start reset. Not exposed and therefore not used: planner algorithm selection,
+force/impedance control (no force sensing in LIBERO's OSC_POSE setup).
+
+### 10.2 Task 3 (drawer): what was established
+1. The bowl placement works (release search with path validation, release separation when the
+   bowl's rim is hooked on a finger after opening: dev 2/2).
+2. Stage A (top-down push) closes ~10 of 16 cm (partial progress is a success; an IK probe
+   with 4 seeds and elbow-up limits confirms no collision-free top-down pose exists at the end
+   of travel).
+3. Stage B (horizontal hand) has collision-free end-of-travel IK solutions when the bowl is
+   not against the front panel (6-8 solutions, probes), and the run-time contact selection
+   (7 lateral offsets x 5 heights x 4 seeds x 2 posture families, each pose checked by Intrinsic
+   IK) names the blocker when it fails: on init 1 the wine bottle (forearm), after relocating
+   the bottle the bowl, which slides against the panel while stage A pushes.
+4. Obstacle relocation (task-level replanning by real manipulation: pick the named movable
+   non-goal blocker, place it on a free table spot, retry) executed correctly on init 1
+   (165 steps) but did not unblock the push because of the bowl.
+5. Open: the 7.4 cm hand does not fit the 6.9 cm panel height band once the bowl rests
+   against the panel. Candidates not tried: pushing with the finger tips only at a lower height
+   with a tilted-up hand (geometry says the hand extends further), or holding the bowl back
+   while pushing (two contacts), which the single gripper cannot do.
+
+### 10.3 Task 9 (microwave): what was established
+1. Pick: the level side hand collides with the neighbouring porcelain mug (wrist) at every
+   probed spot; oblique (20/35 deg pitched) side grasps and low grasp heights were added and
+   the pick now succeeds on both dev states, including a slip detected by lift verification
+   with a successful second candidate.
+2. The region's opening normal is derived from the owner geometry (`region_opening_normal`)
+   and side grasps are restricted to approaches within 25 deg of it (the earlier runs grasped
+   along +x and tried to enter the opening sideways).
+3. Insertion: the cavity is 20.7 cm wide and 15 cm high; the 21.8 cm hand cannot enter and a
+   pitched hand holding the mug 5-8 cm above its bottom rises above the roof. The release
+   search now rejects such poses (and the place skill verifies the origin against the region
+   box instead of reporting a success with the mug on the roof). No candidate among the
+   cleared grasps is placement-compatible on the dev states; a level grasp 2-4 cm above the
+   mug's bottom would fit by geometry but was not among the cleared candidates (the hand
+   would dip below the table plane at the pick).
+4. Door closing: the arc push works once reached (dev init 0, segment 4 satisfied).
+5. Open: a level, low side grasp with the fingertips just above the table (needs the pick
+   plane tolerance for side approaches), then the insertion with the hand outside the opening.
+
+### 10.4 Adapter integrity fix (affects the evaluated candidate)
+The Intrinsic world persists across the episodes of a task session. An object left attached
+to the flange by a failed place in episode N kept moving with the robot in episode N+1
+(observed: task 9 init 1, pre-grasp IK rejected with "mug vs microwave"). Every movable body
+is now re-parented to the world root at episode start. Candidate 5b713c6 was evaluated with
+this defect; episodes that followed a failed place in the same session (tasks 3 and 9) may
+have been affected. The protocol was therefore re-run on ce7685b (10.5).
+
+### 10.5 Repeated evaluation of candidate ce7685b
+(see below; filled in after the run)
