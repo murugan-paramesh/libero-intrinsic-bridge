@@ -80,3 +80,13 @@ bottom exist that clears the table at the pick and the roof at the insertion (ge
 yes, the candidate generator did not produce it)? (c) task 1 held-out: pre-manipulation of the
 milk carton vs a thinner-finger approach; (d) whether Intrinsic's `DynamicCartesianLimits` on
 transport segments reduces the residual slip/goal-not-reached cases (tasks 5, 6).
+
+## 5. Ranked work queue (end of session 4, evidence-based)
+
+| rank | item | failures affected | evidence strength | reusable fix? | cost | risk |
+|---|---|---|---|---|---|---|
+| 1 | Task 9 insertion with a level, low side grasp (H9a) | 10/100 protocol + 10/100 held-out | geometry diagnosis (cavity 20.7 x 15 cm, hand 21.8 cm; level low hand fits) | side-grasp family | 1 dev run | low (task 9 only) |
+| 2 | Task 3: place the bowl deeper (grasp ranked by placement depth) so it does not reach the panel during stage A; posture families for the stage-A pre-contact | 10/100 (+ 10 held-out) | run-time probes name the bowl/panel blocker; 3/10 stage-A LINEAR failures | ranking shared by all picks (regression suite required) | 2 dev runs (13 min each) | medium |
+| 3 | Task 1 held-out: butter against the milk carton | 9/100 held-out (protocol 10/10) | IK collision pairs (finger/hand vs carton 95x) | pre-manipulation skill (push carton) | high | medium |
+| 4 | Tasks 5/6 goal-not-reached after a completed place (2-3/100) | 3/100 | records only (no video review yet) | unknown | low to diagnose | low |
+| 5 | Task 7 pre-grasp tracking error (1/100) | 1/100 | tracking log | executor gains | low | medium (all tasks) |

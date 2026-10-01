@@ -426,3 +426,27 @@ no feasible spot), footprint centring in wide cavities. Open: the task 3 end-of-
 task 9 insertion (a level grasp 2-4 cm above the mug bottom and the pick plane tolerance for
 side approaches are the next concrete experiment), and task 1 on the held-out states (butter
 against the milk carton: pre-manipulation of the carton would be the next classical step).
+
+### 10.7 Provenance of the recorded revisions (verification of the execution chain)
+Each episode record stores `revisions.libero_intrinsic_bridge`; until commit after ce7685b
+this was read from git at episode start, while the evaluation process keeps the modules it
+imported at process start. Docs-only commits made during a run therefore appear in later
+records of the same run: baseline records name 76267bf/43832fc/010e62d, the 5b713c6 records
+name 5b713c6/5e99911, the ce7685b records name 50773df; `git diff <a> <b> -- src configs` is
+empty for every such pair (verified), so the executed code is the candidate's. One run is
+mislabelled in the other direction: the held-out run of 5b713c6 (states 20-29) was started at
+01:12 from the 5b713c6 code; the follow-up code commit 25249ae (attachment refresh at place
+start) was made at 01:20 while it ran and later records name it, but that code was never
+loaded by the running processes (both halves started before the edit). The held-out result
+is therefore the 5b713c6 code. The runner now captures the revision once at process start
+and records whether the working tree (src/configs/scripts) was dirty at that moment.
+
+Chain checks performed on the archived records and source: every `execute` event references
+the `trajectory_id` of a `PlanTrajectory` response of the same episode (13/13 in t0_i10 of
+ce7685b, set inclusion checked); the executor builds per-step TCP references from the
+returned joint samples through Intrinsic `ComputeFk` and commands OSC_POSE deltas; the server
+(`intrinsic_stack/cc/libero_planner_server.cc`) hosts upstream `FakeWorldService` and
+`MotionPlannerServiceInProcess` over a world built by `sdf::WorldFromSdf`; no local planner,
+IK or straight-line fallback exists in `src/` (grep for fallback/bypass/mock: only the SDF
+`bypass://` mesh URI scheme and the documented LINEAR re-plan protocol, which re-issues a
+`PlanTrajectory` request).
