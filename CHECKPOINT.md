@@ -106,3 +106,8 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
 - Running: held-out check on reserved init states 20-29 -> runs/heldout_5b713c6/{A,B} (A.log/B.log; 50 run_id lines each when done). When finished:
   PYTHONPATH=src python -m libero_intrinsic.eval.report runs/heldout_5b713c6 --out docs/heldout_5b713c6.json ; python scripts/archive_evaluation.py runs/heldout_5b713c6 evaluations/heldout_5b713c6 ; add the per-task line to docs/report.md 9.6 and README; commit; push. If interrupted, rerun the incomplete half from scratch (do not merge partial reruns).
 - Open blockers: task 3 push last 3 cm (probe tables), task 9 side grasp; task 8 second-pot slip (2/10 both revisions).
+
+## Session 3 (02:05 UTC) - held-out check done, session end
+- Held-out (init states 20-29, candidate 5b713c6): **65/100** (CI 55-74%), per task 10,1,10,0,10,8,8,9,9,0; records evaluations/heldout_5b713c6, table docs/heldout_5b713c6.md, report 9.6, failure_table section 4. Task 1 gain does not transfer (butter against the milk carton on 9/10 states).
+- Follow-up commit 25249ae (attachment refresh at place start; task 8 slip) is dev-verified only, NOT evaluated on the protocol; the evaluated candidate stays 5b713c6 (73/100).
+- Resume: everything is committed and pushed on claude/youthful-galileo-0wtslh. To evaluate the follow-up, rerun the two evaluate.py halves at HEAD into runs/eval_<rev>, then report/compare/archive as in the session-3 commands. Open: task 3 last 3 cm of the drawer push (probe tables), task 9 side grasp, task 1 cluttered butter (pre-manipulation / push-aside skill), task 5 ledge placement robustness (2 slips in 20 eval episodes).

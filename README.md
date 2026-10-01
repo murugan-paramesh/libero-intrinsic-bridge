@@ -16,8 +16,11 @@ Baseline revision `76267bf`: **62/100** (CI 52-71%); per task 10, 5, 10, 0, 10, 
 (unchanged, archived under `evaluations/baseline_76267bf`). Per-task before/after with the
 episodes that changed: `docs/comparison_5b713c6.md`. Every motion executed was an Intrinsic
 `PlanTrajectory` result (1,204 plans, mean 24 ms, max 121 ms, no timeouts); every success is
-within LIBERO's 600-step horizon. Tasks 3 and 9 remain unsolved (docs/report.md 9.5). This is
-a privileged-state result and is not comparable to vision-only policies.
+within LIBERO's 600-step horizon. Tasks 3 and 9 remain unsolved (docs/report.md 9.5). A separate held-out run of the same
+candidate on reserved init states 20-29 (never used for development or evaluation) gives
+**65/100** (CI 55-74%; per task 10, 1, 10, 0, 10, 8, 8, 9, 9, 0): the task 1 gain does not
+transfer to those states (butter against the milk carton), the others do (docs/report.md 9.6).
+This is a privileged-state result and is not comparable to vision-only policies.
 
 ## Layout
 ```

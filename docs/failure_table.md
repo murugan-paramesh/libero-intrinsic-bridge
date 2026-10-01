@@ -53,3 +53,15 @@ Probe 5 (strongly tilted-away top-down pushes, tilt -45/-60 deg, yaw 0/90, two l
 two heights, end-of-travel poses): every pose has only colliding IK solutions (link5/6 vs the
 cabinet top or middle, link5 vs the wine bottle). The drawer's last 3 cm are unreachable for a
 fingertip push in this scene with the hand poses probed.
+
+## 4. Candidate 5b713c6, held-out init states 20-29 (evaluations/heldout_5b713c6, 65/100)
+
+| task | failures | stage | observed evidence |
+|---|---|---|---|
+| 1 | 9/10 | PLAN (grasp IK collision) / REACH | butter (8) or cream cheese (1): every cleared or raw candidate rejected by ComputeIk; collision pairs over all rejected solutions: finger/hand vs milk carton 95, fingers vs basket 12, hand vs orange juice 3 |
+| 3 | 10/10 | ARTIC/REACH (7), PLAN (3) | push segment IK as in section 3 (7), push start configuration invalid (2), lowering path (1) |
+| 5 | 2/10 | PLACE (1), REACH (1) | book not resting inside the box after the ledge placement (1); no grasp candidate after the clearance filter (1) |
+| 6 | 2/10 | PLACE (1), PLAN (1) | goal not reached after a completed place (1); pick plan: IK collision (1) |
+| 7 | 1/10 | PLAN | pick LINEAR plan rejected |
+| 8 | 1/10 | GRASP slip + PLACE | second pot (see 9.7 follow-up) |
+| 9 | 10/10 | REACH (8), IK/PLAN (2) | unchanged |

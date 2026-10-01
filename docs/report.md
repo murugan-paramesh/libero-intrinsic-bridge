@@ -289,8 +289,37 @@ Two episodes that the baseline solved failed with the candidate (6/15, 7/18); bo
 single-episode effects of changed grasp/placement choices on the same states, not of a changed
 rule, and are listed as regressions. The net change is +11 with 13 newly solved episodes.
 
-### 9.6 Held-out check
-A separate run of the candidate on reserved official init states 20-29 (never used for
-development or for the evaluation above) is reported in `docs/heldout_5b713c6.md` when it
-finished before the end of the session; it is labelled held-out and is not merged with the
-100-episode protocol numbers.
+### 9.6 Held-out check (reserved init states 20-29, candidate 5b713c6)
+A separate run on official init states 20-29, never used for development (0-4) or for the
+frozen evaluation (10-19), with the same protocol otherwise (budget 1,200, seed 0). Records:
+`evaluations/heldout_5b713c6`, table `docs/heldout_5b713c6.md`. It is reported separately and
+is not merged with the 100-episode protocol numbers above.
+
+| task | held-out 20-29 | protocol 10-19 (candidate) | failure stages on 20-29 |
+|---|---|---|---|
+| 0 | 10/10 | 10/10 | - |
+| 1 | **1/10** | 9/10 | 9x REACH/PLAN: no reachable grasp for the butter (8) or the cream cheese (1); the IK collision pairs are finger/hand vs the milk carton (95 of 110 rejected solutions), fingers vs basket (12) - the cluttered-thin-object case of 8.2, much more frequent on these states |
+| 2 | 10/10 | 10/10 | - |
+| 3 | 0/10 | 0/10 | 9x push segments (IK/plan), 1x lowering path |
+| 4 | 10/10 | 10/10 | - |
+| 5 | 8/10 | 8/10 | 1x goal not reached (book not resting in the box), 1x no grasp candidate |
+| 6 | 8/10 | 9/10 | 1x goal not reached, 1x pick plan (IK collision) |
+| 7 | 9/10 | 9/10 | 1x pick LINEAR plan |
+| 8 | 9/10 | 8/10 | 1x goal not reached (second pot) |
+| 9 | 0/10 | 0/10 | 8x no reachable side grasp, 2x place IK/plan |
+| **all** | **65/100** (CI 55-74%) | **73/100** (CI 64-81%) | 1,152 plans, mean 25 ms, max 114 ms, 0 timeouts; 13/1,152 executed-path audits in collision; 65/65 within 600 steps |
+
+Reading: the gains on tasks 5, 7 and 8 and the unchanged tasks 0, 2, 4 transfer to unseen
+states; the task 1 gain does not (1/10 vs 9/10): on states 20-29 the butter lies against the
+milk carton in nine of ten states and no top-down or tilted pinch is collision-free, which the
+baseline also could not do (the baseline was not run on 20-29, so no before/after is claimed
+for this set). The overall held-out estimate (65/100) is inside the protocol CI; the two
+sets differ mainly through task 1.
+
+### 9.7 Follow-up after the evaluation (commit 25249ae, dev-verified only)
+The task 8 failures (second moka pot slipping 1.5-2.3 cm in the handle grasp during the lift,
+release raised 5 cm because the search used the attachment captured at attach time) led to one
+more change after the evaluation: the attachment is re-measured at the start of every place
+(and pushed to the Intrinsic world). Dev: task 8 inits 0-3 4/4, tasks 0 and 5 inits 0-1 2/2
+each. The 100-episode protocol was not re-run for it, so the evaluated candidate remains
+5b713c6 and this change is reported as unevaluated.
