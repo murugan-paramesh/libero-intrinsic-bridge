@@ -35,6 +35,7 @@ class PickParams:
     lift_height: float = 0.10
     yaws: Sequence[float] = ()
     max_candidates: int = 8
+    approach_dir: Optional[np.ndarray] = None   # side grasps: required insertion direction (roofed container opening)
     close_steps: int = 12
     min_finger_gap: float = 0.004      # summed |finger q| after closing must exceed this
     min_pad_contacts: int = 1
@@ -59,7 +60,7 @@ def support_of(env, sync, body: str) -> List[str]:
     return out
 
 
-def nearest_ik(ctx: SkillContext, pos, rot, q_now, cs, n: int = 8, joint_limits=None):
+def nearest_ik(ctx: SkillContext, pos, rot, q_now, cs, n: int = 8, joint_limits=None, posture: str = "nearest"):
     """Intrinsic IK solutions for the pose (collision checked with `cs`), sorted by weighted
     joint distance to q_now (proximal joints weigh more: less arm reconfiguration, which the
     OSC controller tracks far better). `joint_limits` (lo, hi) adds a JointPositionLimits
@@ -69,7 +70,13 @@ def nearest_ik(ctx: SkillContext, pos, rot, q_now, cs, n: int = 8, joint_limits=
     safe = [q for q in sols if np.all(np.asarray(q) > lim[:, 0] + 0.06) and np.all(np.asarray(q) < lim[:, 1] - 0.06)]
     sols = safe or sols
     w = np.array([3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.5])
-    sols.sort(key=lambda q: float(np.sum(w * (np.asarray(q) - q_now) ** 2)))
+    if posture == "margin":
+        # posture quality: largest distance to the joint limits first (a following LINEAR segment
+        # needs room; Intrinsic's linear planner fails near limits/singularities with
+        # "Could not solve FinePathIK without excessive change in joint config")
+        sols.sort(key=lambda q: -float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q)))))
+    else:
+        sols.sort(key=lambda q: float(np.sum(w * (np.asarray(q) - q_now) ** 2)))
     return sols, rid, lat
 
 
@@ -107,11 +114,11 @@ def _recover_start_state(ctx: SkillContext, label: str, err: IntrinsicRequestErr
 
 def _plan_and_execute(ctx: SkillContext, label: str, q_start, pos, rot, cs, motion_type="ANY",
                       gripper=-1.0, timeout_s=15.0, contact_monitor=None, time_scale=1.0, joint_limits=None,
-                      _retry=True):
+                      _retry=True, posture: str = "nearest"):
     try:
         if motion_type == "ANY":
             # free-space motion: plan to the IK solution nearest the current configuration (joint target)
-            sols, rid, lat = nearest_ik(ctx, pos, rot, np.asarray(q_start), cs, joint_limits=joint_limits)
+            sols, rid, lat = nearest_ik(ctx, pos, rot, np.asarray(q_start), cs, joint_limits=joint_limits, posture=posture)
             ctx.record(event="ik", label=label + "_goal", n_solutions=len(sols), request_id=rid, latency_s=lat)
             if not sols:
                 raise IntrinsicRequestError("ComputeIk", "NOT_FOUND", f"no collision-free IK for {label}", rid)
@@ -124,7 +131,7 @@ def _plan_and_execute(ctx: SkillContext, label: str, q_start, pos, rot, cs, moti
         if _retry and "Invalid initial joint configuration" in str(e) and _recover_start_state(ctx, label, e, cs):
             rs = ctx.env.robot_state()
             return _plan_and_execute(ctx, label, rs.q, pos, rot, cs, motion_type, gripper, timeout_s, contact_monitor,
-                                     time_scale, joint_limits, _retry=False)
+                                     time_scale, joint_limits, _retry=False, posture=posture)
         raise
     ctx.record(event="plan", label=label, trajectory_id=traj.request_id, motion_type=motion_type,
                n_states=int(len(traj.t)), duration_s=traj.duration, latency_s=traj.planning_latency_s,
@@ -181,7 +188,7 @@ class PickSkill(Skill):
         env, client, sync = ctx.env, ctx.client, ctx.sync
         sync.sync()
         if self.p.side_grasp:
-            cands = [c for c in geo.side_grasp_candidates(env, self.body) if c.label not in self._tried]
+            cands = [c for c in geo.side_grasp_candidates(env, self.body, approach_dir=self.p.approach_dir) if c.label not in self._tried]
             # reachability ordering: horizontal approaches pointing away from the robot base are the
             # ones the Panda can realise (probe: approach directions facing the base have no IK)
             base = env.robot_state().base_pos
@@ -240,10 +247,12 @@ class PickSkill(Skill):
             # placement-aware ranking: grasps that admit a geometrically valid release pose at the
             # placement target come first (e.g. a bowl going into a drawer under a cabinet must be
             # held so that the wide hand stays in front of the cabinet), ties keep the grasp score
-            compat = []
-            for c in cands[: max(self.p.max_candidates, 24)]:
+            compat, whys = [], []
+            for c in cands[: max(self.p.max_candidates, 48 if self.p.side_grasp else 24)]:
                 try:
                     ok, drop = self.place_skill.grasp_compatible(env, sync, c.pos, c.rot)
+                    if not ok:
+                        whys.append((c.label, getattr(self.place_skill, "last_compat_why", "")))
                 except Exception as e:   # geometry failure must not block picking
                     ctx.record(event="grasp_placement_check_error", reason=str(e)[:200])
                     ok, drop = True, 0.0
@@ -255,7 +264,8 @@ class PickSkill(Skill):
             good = sorted([t for t in compat if t[1]], key=lambda t: round(max(t[2], 0.0), 2))
             cands = [c for c, _, _ in good] + [c for c, ok, _ in compat if not ok] + rest
             ctx.record(event="grasp_placement_filter", n_checked=len(compat), n_compatible=len(good),
-                       first=cands[0].label if cands else "", first_drop_m=float(good[0][2]) if good else None)
+                       first=cands[0].label if cands else "", first_drop_m=float(good[0][2]) if good else None,
+                       incompatible_examples=whys[:6])
         rs = env.robot_state()
         free_cs = sync.free_collision_settings()
         grasp_cs = sync.grasp_collision_settings(self.body, support_bodies=support_of(env, sync, self.body))
@@ -556,7 +566,7 @@ class PlaceSkill(Skill):
         floor_z = max(floors) if floors else None
         support_z = float(targets[0][1]) if floor_z is None else min(float(targets[0][1]), floor_z)
         rest_origin_z = support_z + obj_origin_above_bottom
-        if rest_origin_z >= box_bottom + 0.002:
+        if rest_origin_z >= box_bottom - 0.002:   # resting on the floor keeps the origin inside the box
             return targets
         # region xy rectangle (site frame is axis aligned up to a yaw; use the world AABB of its corners)
         corners = np.array([[sx * half_r[0], sy * half_r[1], 0.0] for sx in (-1, 1) for sy in (-1, 1)]) @ rot_r.T + c_r
@@ -721,7 +731,8 @@ class PlaceSkill(Skill):
                 last_blockers[k] = blocker
         if record:
             for k, target_origin, support_z, tcp_release, _ in prepared:
-                record(event="place_spot_rejected", candidate=k, blocker=last_blockers.get(k, ""), tcp=[float(v) for v in tcp_release])
+                record(event="place_spot_rejected", candidate=k, blocker=last_blockers.get(k, ""),
+                       first_blocker=(traces[k][0] if traces[k] else ""), tcp=[float(v) for v in tcp_release])
         return None
 
     def grasp_compatible(self, env, sync, grasp_pos, grasp_rot) -> Tuple[bool, float]:
@@ -745,9 +756,13 @@ class PlaceSkill(Skill):
             angles = [a for a, cost in fits if cost <= fits[0][1] + 0.005][:4]
             rots = [R.from_euler("z", a).as_matrix() @ grasp_rot for a in angles]
         best = None
+        self.last_compat_why = ""
         for Rc in rots:
-            found = self._release_search(env, sync, targets, tcp_t_obj_p, Rc, obj_local, width, obj_origin_above_bottom)
+            why = []
+            found = self._release_search(env, sync, targets, tcp_t_obj_p, Rc, obj_local, width, obj_origin_above_bottom,
+                                         record=lambda **kw: why.append(kw.get("first_blocker", "")) if kw.get("event") == "place_spot_rejected" else None)
             if found is None:
+                self.last_compat_why = next((w for w in why if w), "")
                 continue
             target_origin, support_z, tcp_release, _, _ = found
             bottom = float((obj_local @ Rc.T + tcp_release)[:, 2].min())
@@ -763,6 +778,27 @@ class PlaceSkill(Skill):
         sync.sync()
         rs = env.robot_state()
         cs_retreat = sync.grasp_collision_settings(self.body, support_bodies=self.support)
+        # Release separation (observation-based): a rim/edge grasp can leave the object hooked on
+        # a finger after opening (observed: the bowl lifted out of the drawer with the retreat).
+        # If finger contacts with the released object persist, move the hand 2.5 cm horizontally
+        # away from the object's centre (contact with the object allowed) before withdrawing.
+        for k in range(2):
+            if env.gripper_contacts_with(self.body) == 0:
+                break
+            obj_c = geo.object_box(env, self.body).center_world
+            away = rs.tcp_pos - obj_c
+            away[2] = 0.0
+            if np.linalg.norm(away) < 1e-3:
+                break
+            away = away / np.linalg.norm(away)
+            ctx.record(event="release_separation", attempt=k, contacts=int(env.gripper_contacts_with(self.body)))
+            try:
+                _plan_and_execute(ctx, "place_separate", rs.q, rs.tcp_pos + away * 0.025, rs.tcp_rot, cs_retreat, "LINEAR", 0.0, 5.0)
+            except IntrinsicRequestError as e:
+                ctx.record(event="release_separation_failed", reason=str(e)[:160])
+                break
+            sync.sync()
+            rs = env.robot_state()
         back = -rs.tcp_rot[:, 2]          # withdraw along the negative approach axis (up, or out of a front opening)
         try:
             traj, res = _plan_and_execute(ctx, "place_retreat", rs.q, rs.tcp_pos + back * self.p.retreat_height, rs.tcp_rot,

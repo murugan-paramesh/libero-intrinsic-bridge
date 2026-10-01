@@ -22,6 +22,7 @@ from scipy.spatial.transform import Rotation as R
 from libero_intrinsic.skills import geometry as geo
 from libero_intrinsic.skills import placement
 from libero_intrinsic.intrinsic.client import IntrinsicRequestError
+from libero_intrinsic.skills.base import Skill, SkillResult
 from libero_intrinsic.skills.articulation import PushSkill, TurnKnobSkill, joint_world_axis_and_anchor
 from libero_intrinsic.skills.manipulation import PickParams, PickSkill, PlaceParams, PlaceSkill
 from libero_intrinsic.skills.task_spec import TaskSpec
@@ -123,7 +124,10 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
         body = root_body(env, obj)
         params = PICK_PARAMS.get(category(obj), PICK_PARAMS["default"])
         if atom.predicate == "in" and geo.is_roofed_region(env, atom.args[1], support_body_for(env, region_owner_body(env, atom.args[1], spec))):
-            params = _dc.replace(params, side_grasp=True)   # must enter a front-loading container
+            owner_b = support_body_for(env, region_owner_body(env, atom.args[1], spec))
+            # must enter a front-loading container: side grasps whose approach is the opening normal
+            params = _dc.replace(params, side_grasp=True, approach_dir=geo.region_opening_normal(env, atom.args[1], owner_b))
+            ctx.record(event="opening_normal", region=atom.args[1], normal=[float(v) for v in params.approach_dir])
         pick = PickSkill(body, params)
         skills.append(pick)
         if atom.predicate == "in":
@@ -180,11 +184,16 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
             # two-stage closing (contact-constrained push along the prismatic axis): stage A pushes
             # from above as far as the geometry allows (partial progress is a success), stage B
             # finishes with a horizontal hand chosen by Intrinsic IK feasibility of the whole travel
-            skills.append(PushSkill(drawer_body, *drawer_push_topdown_geometry(env, drawer_body, joint), label="close_drawer_a",
-                                    extra_contact_bodies=[f"{cab}_base"], partial_ok=True,
-                                    progress_fn=lambda joint=joint: float(env.joint_qpos(joint))))
-            skills.append(PushSkill(drawer_body, *drawer_close_geometry(env, drawer_body, joint), label="close_drawer_b",
-                                    extra_contact_bodies=[f"{cab}_base"]))
+            stage_a = PushSkill(drawer_body, *drawer_push_topdown_geometry(env, drawer_body, joint), label="close_drawer_a",
+                                extra_contact_bodies=[f"{cab}_base"], partial_ok=True,
+                                progress_fn=lambda joint=joint: float(env.joint_qpos(joint)), time_scale=2.0)
+            geom_b, check_b = drawer_close_geometry(env, drawer_body, joint)
+            stage_b = PushSkill(drawer_body, geom_b, check_b, label="close_drawer_b", extra_contact_bodies=[f"{cab}_base"])
+            goal_bodies = [root_body(env, a.args[0]) for a in manip]
+            table = next(n for n in ("table", "kitchen_table", "study_table", "living_room_table_col")
+                         if n in [env.model.body_id2name(i) for i in range(env.model.nbody)])
+            skills.append(DrawerCloseComposite(env, stage_a, stage_b, check_b, drawer_body, goal_bodies, table, all_movable,
+                                               PICK_PARAMS["default"]))
         elif atom.predicate == "close" and "microwave" in target:
             door_body = f"{target}_microdoorroot"
             joint = f"{target}_microjoint"
@@ -194,6 +203,81 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
             raise NotImplementedError(f"no skill for goal atom {atom}")
     ctx.params["support_bodies"] = sorted(support_bodies)
     return skills
+
+
+class DrawerCloseComposite(Skill):
+    """Two-stage drawer closing with obstacle relocation (bounded task-level replanning).
+
+    stage A (top-down push, partial progress allowed) -> stage B (horizontal push chosen by IK
+    feasibility). If stage B finds no feasible contact because a MOVABLE, non-goal object blocks
+    the arm (the wine bottle next to the cabinet: forearm collisions in the IK probes), that
+    object is relocated by real manipulation (pick, place on a free table spot away from the
+    push corridor) and stage B is retried once. Everything is counted in the episode budget."""
+    name = "close_drawer"
+    max_attempts = 1
+
+    def __init__(self, env, stage_a, stage_b, check_fn, drawer_body, goal_bodies, table_body, all_movable, pick_params):
+        self.env, self.a, self.b, self.check_fn = env, stage_a, stage_b, check_fn
+        self.drawer_body, self.goal_bodies, self.table_body, self.all_movable, self.pick_params = drawer_body, set(goal_bodies), table_body, all_movable, pick_params
+        self.body = drawer_body
+
+    def attempt(self, ctx, i):
+        ra = self.a.run(ctx)
+        if not ra.ok:
+            return SkillResult(self.name, False, "stage_a:" + ra.reason)
+        if self.check_fn():
+            return SkillResult(self.name, True)
+        rb = self.b.run(ctx)
+        if rb.ok:
+            return SkillResult(self.name, True)
+        blockers = [b for b in ctx.params.get("last_push_blockers", []) if b not in self.goal_bodies and b != self.drawer_body]
+        if not blockers:
+            return SkillResult(self.name, False, "stage_b:" + rb.reason)
+        obstacle = blockers[0]
+        ctx.record(event="obstacle_relocation", obstacle=obstacle, blockers=blockers)
+        spot = self._free_table_spot(ctx, obstacle)
+        if spot is None:
+            return SkillResult(self.name, False, "no_relocation_spot:" + rb.reason)
+        pick = PickSkill(obstacle, self.pick_params)
+        rp = pick.run(ctx)
+        if not rp.ok:
+            return SkillResult(self.name, False, "relocate_pick:" + rp.reason)
+        top = geo.object_box(self.env, self.table_body).top_z
+        place = PlaceSkill(obstacle, lambda closing_axis, spot=spot, top=top: (np.array([spot[0], spot[1], top]), top), [self.table_body])
+        rpl = place.run(ctx)
+        if not rpl.ok:
+            return SkillResult(self.name, False, "relocate_place:" + rpl.reason)
+        rb2 = self.b.run(ctx)
+        return SkillResult(self.name, rb2.ok, "" if rb2.ok else "stage_b_after_relocation:" + rb2.reason)
+
+    def _free_table_spot(self, ctx, obstacle):
+        """Grid search on the table top: >= 8 cm from every other object's footprint, inside the
+        table minus 8 cm, 0.35-0.70 m from the robot base, >= 25 cm from the drawer front, and
+        >= 15 cm from the obstacle's current spot; nearest such spot to the obstacle."""
+        from scipy.spatial import cKDTree
+        env = self.env
+        tb = geo.object_box(env, self.table_body)
+        base = env.robot_state().base_pos[:2]
+        obj_xy = env.body_pose(obstacle)[0][:2]
+        drawer_xy = geo.object_box(env, self.drawer_body).center_world[:2]
+        trees = [cKDTree(geo.object_point_cloud(env, b, spacing=0.01)[:, :2]) for b in self.all_movable if b != obstacle]
+        fixed = [b for b in ctx.sync.bodies if b not in self.all_movable and b != self.table_body]
+        trees += [cKDTree(geo.object_point_cloud(env, b, spacing=0.02)[:, :2]) for b in fixed]
+        r_obj = float(np.max(geo.object_box(env, obstacle).half_extents_world[:2]))
+        best, best_d = None, np.inf
+        for gx in np.arange(tb.center_world[0] - tb.half_extents_world[0] + 0.08, tb.center_world[0] + tb.half_extents_world[0] - 0.08, 0.05):
+            for gy in np.arange(tb.center_world[1] - tb.half_extents_world[1] + 0.08, tb.center_world[1] + tb.half_extents_world[1] - 0.08, 0.05):
+                xy = np.array([gx, gy])
+                reach = np.linalg.norm(xy - base)
+                if not (0.35 <= reach <= 0.70) or np.linalg.norm(xy - drawer_xy) < 0.25 or np.linalg.norm(xy - obj_xy) < 0.15:
+                    continue
+                if any(t.query(xy)[0] < r_obj + 0.08 for t in trees):
+                    continue
+                d = np.linalg.norm(xy - obj_xy)
+                if d < best_d:
+                    best, best_d = xy, d
+        ctx.record(event="relocation_spot", spot=None if best is None else [float(v) for v in best])
+        return best
 
 
 def drawer_push_topdown_geometry(env, drawer_body: str, joint: str):
@@ -235,7 +319,7 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
     and end-of-travel poses all have collision-free Intrinsic IK solutions is used (category 2
     orchestration around ComputeIk; no local IK)."""
     LATERAL = (-0.06, -0.045, -0.075, -0.03, -0.09, 0.0, 0.04)   # metres along the panel (prior order)
-    HEIGHTS = (0.5, 0.35, 0.65)                                   # fraction of the panel height
+    HEIGHTS = (0.4, 0.45, 0.35, 0.5, 0.6)                          # fraction of the panel height (7.4 cm hand vs 6.9 cm panel: ~0.4 keeps it between table and panel top)
 
     def contact_fn(ctx=None):
         axis, _ = joint_world_axis_and_anchor(env, joint)  # slide axis (world); open = negative qpos
@@ -296,6 +380,10 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
                 if chosen:
                     break
             ctx.record(event="push_contact_selection", chosen=chosen, posture=(tried[-1]["posture"] if tried else None), tried=tried)
+            # movable objects that blocked the probed poses (for obstacle relocation by the composite skill)
+            from collections import Counter
+            partners = Counter(t["why"].split("/")[-1] for t in tried if "collision:" in t["why"])
+            ctx.params["last_push_blockers"] = [b for b, _ in partners.most_common() if b in ctx.sync.bodies]
         xo, h = chosen or (LATERAL[0], HEIGHTS[0])
         contact, probe = poses_for(xo, h)
         return probe["pre"], rot, [contact, contact + axis * travel]

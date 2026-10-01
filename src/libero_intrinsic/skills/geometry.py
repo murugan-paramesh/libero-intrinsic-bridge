@@ -397,8 +397,32 @@ def side_rotation(approach_yaw: float, roll: float = 0.0) -> np.ndarray:
     return R.from_rotvec(z * roll).as_matrix() @ R0
 
 
+def region_opening_normal(env, region: str, owner: str):
+    """Horizontal unit vector (world) pointing INTO a roofed container through its open side:
+    of the four side directions of the region box, the one whose outward extension (5 cm beyond
+    the box face, at the box height) contains the fewest owner collision points."""
+    c, rot, half = site_box_world(env, region)
+    pts = object_point_cloud(env, owner, spacing=0.01)
+    local = (pts - c) @ rot
+    best, best_n = None, None
+    for axis in (0, 1):
+        for sign in (-1.0, 1.0):
+            other = 1 - axis
+            sel = (sign * local[:, axis] > half[axis]) & (sign * local[:, axis] < half[axis] + 0.05) & \
+                  (np.abs(local[:, other]) < half[other]) & (np.abs(local[:, 2]) < half[2])
+            n = int(sel.sum())
+            if best_n is None or n < best_n:
+                best_n = n
+                d = np.zeros(3)
+                d[axis] = -sign                   # into the container = opposite to the open side
+                best = rot @ d
+    best[2] = 0.0
+    return best / (np.linalg.norm(best) + 1e-9)
+
+
 def side_grasp_candidates(env, body: str, n_yaw: int = 16, rolls=(0.0, np.pi / 2),
-                          pitches=(0.0, np.radians(20), np.radians(35))) -> List[GraspCandidate]:
+                          pitches=(0.0, np.radians(20), np.radians(35)), approach_dir=None,
+                          approach_tol=np.radians(25)) -> List[GraspCandidate]:
     """Horizontal and oblique (pitched-down) approach pinch grasps (e.g. a mug handle or a thin
     rim from the side). The tcp is positioned on every geom centre and on the object's outer
     surface points at several heights; the candidate is kept if the object's own geometry admits
@@ -413,7 +437,13 @@ def side_grasp_candidates(env, body: str, n_yaw: int = 16, rolls=(0.0, np.pi / 2
     centres = [rot @ np.array(m.geom_pos[gi]) + pos for gi in range(m.ngeom)
                if int(m.geom_bodyid[gi]) == root and (int(m.geom_contype[gi]) or int(m.geom_conaffinity[gi]))]
     out, seen = [], set()
-    for yaw in np.linspace(0, 2 * np.pi, n_yaw, endpoint=False):
+    yaws = list(np.linspace(0, 2 * np.pi, n_yaw, endpoint=False))
+    if approach_dir is not None:
+        # the object will be inserted along `approach_dir` (a roofed container's opening normal):
+        # only grasps whose approach already points that way admit the insertion
+        a0 = float(np.arctan2(approach_dir[1], approach_dir[0]))
+        yaws = [a0 + d for d in (0.0, -approach_tol, approach_tol)]
+    for yaw in yaws:
         for roll in rolls:
             for pitch in pitches:
                 R0 = side_rotation(yaw, roll)
@@ -421,7 +451,10 @@ def side_grasp_candidates(env, body: str, n_yaw: int = 16, rolls=(0.0, np.pi / 2
                 R_ = R.from_rotvec(R0[:, 0] * pitch).as_matrix() @ R0 if pitch else R0
                 if R_[2, 2] > 0:          # keep the approach pointing down, never up
                     R_ = R.from_rotvec(-R0[:, 0] * pitch).as_matrix() @ R0
-                for c in centres:
+                # grasp heights: every geom centre plus low grasps (2.5 / 4.5 cm above the bottom):
+                # for insertion under a roof the hand must stay low (placement-aware ranking decides)
+                heights = [np.array([c[0], c[1], z]) for c in centres for z in (c[2], box.bottom_z + 0.025, box.bottom_z + 0.045)]
+                for c in heights:
                     p = np.array(c, dtype=float)
                     p[2] = min(max(p[2], box.bottom_z + 0.02), box.top_z - 0.01)
                     ok, w, n, why = evaluate_grasp(pts, p, R_)

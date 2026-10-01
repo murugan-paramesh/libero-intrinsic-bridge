@@ -118,8 +118,9 @@ class PushSkill(Skill):
 
     def __init__(self, body: str, contact_fn: Callable[[], Tuple[np.ndarray, np.ndarray, List[np.ndarray]]],
                  check_fn: Callable[[], bool], label: str = "push", extra_contact_bodies: Sequence[str] = (),
-                 partial_ok: bool = False, progress_fn: Callable[[], float] = None):
+                 partial_ok: bool = False, progress_fn: Callable[[], float] = None, time_scale: float = 1.0):
         self.body, self.contact_fn, self.check_fn, self.label = body, contact_fn, check_fn, label
+        self.time_scale = time_scale          # > 1 slows the push segments (objects riding on the pushed body slide less)
         # partial_ok: a push that cannot be planned to the end but moved the articulation counts
         # as a success (a later stage continues from the new state); progress_fn measures it
         self.partial_ok, self.progress_fn = partial_ok, progress_fn
@@ -147,12 +148,38 @@ class PushSkill(Skill):
         rs = env.robot_state()
         free_cs = sync.free_collision_settings()
         push_cs = sync.grasp_collision_settings(self.body, [(client.robot, b) for b in self.extra])
-        sols, rid, lat = client.ik(pre, rot, rs.q, max_solutions=4, collision_settings=free_cs)
+        jl = ctx.params.pop("push_joint_limits", None)   # posture family chosen by the contact selection (if any)
+        sols, rid, lat = client.ik(pre, rot, rs.q, max_solutions=8, collision_settings=free_cs, joint_limits=jl)
         ctx.record(event="ik", label=f"{self.label}_pre", n_solutions=len(sols), request_id=rid, latency_s=lat)
         if not sols:
             return SkillResult(self.name, False, "precontact_unreachable")
-        jl = ctx.params.pop("push_joint_limits", None)   # posture family chosen by the contact selection (if any)
-        _, res = _plan_and_execute(ctx, f"{self.label}_precontact", rs.q, pre, rot, free_cs, "ANY", +1.0, 15.0, joint_limits=jl)
+        # Continuity pre-validation: the pre-contact configuration must admit the first contact
+        # pose on the SAME kinematic branch (Intrinsic `ensure_same_branch`), otherwise the LINEAR
+        # approach fails with "FinePathIK ... excessive change in joint config"; among the
+        # branch-consistent solutions the one with the largest joint-limit margin is used.
+        lim = env.joint_limits()
+        p0 = path[0] if not isinstance(path[0], tuple) else path[0][0]
+        good = []
+        for q in sols:
+            try:
+                s2, _, _ = client.ik(p0, rot, q, max_solutions=1, collision_settings=push_cs, ensure_same_branch=True)
+                if s2:
+                    good.append(q)
+            except IntrinsicRequestError:
+                continue
+        ctx.record(event="precontact_branch_check", n_solutions=len(sols), n_branch_ok=len(good))
+        q_goal = None
+        if good:
+            q_goal = max(good, key=lambda q: float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q)))))
+        if q_goal is not None:
+            traj = client.plan_to_joints(rs.q, q_goal, collision_settings=free_cs, motion_type="ANY", timeout_s=15.0,
+                                         caller_id=f"{self.label}_precontact")
+            ctx.record(event="plan", label=f"{self.label}_precontact", trajectory_id=traj.request_id, motion_type="ANY",
+                       n_states=int(len(traj.t)), duration_s=traj.duration, latency_s=traj.planning_latency_s, target_pos=[float(v) for v in pre])
+            res = ctx.execute(traj, ExecutionConfig(gripper=+1.0), f"{self.label}_precontact")
+        else:
+            _, res = _plan_and_execute(ctx, f"{self.label}_precontact", rs.q, pre, rot, free_cs, "ANY", +1.0, 15.0, joint_limits=jl,
+                                       posture="margin")
         if not res.ok:
             return SkillResult(self.name, False, f"precontact_exec:{res.reason}")
         # Long straight pushes are split into <= 4 cm segments, each planned after a world sync:
@@ -174,7 +201,8 @@ class PushSkill(Skill):
             sync.sync()
             p_k, rot_k = p
             try:
-                _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}", rs.q, p_k, rot_k, push_cs, "LINEAR", +1.0, 10.0)
+                _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}", rs.q, p_k, rot_k, push_cs, "LINEAR", +1.0, 10.0,
+                                           time_scale=self.time_scale)
             except IntrinsicRequestError as e:
                 if self.partial_ok and self.progress_fn is not None and self.progress_fn() > progress0 + 0.02:
                     ctx.record(event="push_partial", segment=k, progress=float(self.progress_fn() - progress0), reason=e.code)

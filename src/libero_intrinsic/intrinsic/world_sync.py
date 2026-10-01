@@ -45,6 +45,12 @@ class WorldSync:
         missing = [b for b in self.bodies + list(self.fingers.values()) if b not in self._intrinsic_objects]
         if missing:
             raise RuntimeError(f"objects missing in Intrinsic world {client.world_id}: {missing}")
+        # Episode-start reset: the Intrinsic world persists across the episodes of a task session,
+        # so an object left attached to the flange by a failed place in the previous episode would
+        # still move with the robot (observed: task 9 pre-grasp IK rejected with "mug vs
+        # microwave" after a failed place). Every movable body is re-parented to the world root.
+        for b in self.bodies:
+            client.reparent_to_root(b)
         # fingers ride on the flange frame; their offset follows the finger joints (see sync)
         for obj in self.fingers.values():
             client.reparent_to_frame(obj, client.robot, client.tcp_frame)
