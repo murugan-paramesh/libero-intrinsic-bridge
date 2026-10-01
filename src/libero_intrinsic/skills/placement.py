@@ -154,17 +154,46 @@ def free_spots(env, region: str, body: str, preferred_local_xy: np.ndarray, all_
                 top = max(otop for t, otop in trees if t.query(shifted, k=1)[0].min() < MARGIN)
                 ranked.append((d + 1.0, w, top + 0.01))
     ranked.sort(key=lambda t: t[0])
-    return [(w, mb) for _, w, mb in ranked[:n]]
+    if is_container_region(env, region):
+        # Extended candidates: the `In` predicate only tests the object ORIGIN against the region
+        # box, so the origin may use the whole box even where the footprint overhangs it (e.g. the
+        # front part of an open drawer whose region box reaches under the cabinet). These come
+        # after the footprint-inside spots and are validated geometrically by the place skill.
+        ext_lim = [REGION_USE * half[i] for i in range(2)]
+        extra = []
+        for gx in np.linspace(-ext_lim[0], ext_lim[0], 9):
+            for gy in np.linspace(-ext_lim[1], ext_lim[1], 9):
+                if abs(gx) <= lim[0] + 1e-9 and abs(gy) <= lim[1] + 1e-9:
+                    continue
+                w = (c + rot @ np.array([gx, gy, 0.0]))[:2]
+                shifted = body_pts + w
+                dmin = min((t.query(shifted, k=1)[0].min() for t, _ in trees), default=np.inf)
+                if dmin >= MARGIN:
+                    extra.append((np.linalg.norm(np.array([gx, gy]) - preferred_local_xy), w, -np.inf))
+        extra.sort(key=lambda t: t[0])
+        ranked = ranked[:n] + extra
+    return [(w, mb) for _, w, mb in ranked[:n + 24]]
 
 
-def fit_rotation(env, region: str, body: str, angles=(0.0, np.pi / 2, -np.pi / 2, np.pi)) -> float:
-    """Yaw (about world z) to apply to the carried object so that its footprint fits the
-    container region best (smallest overhang beyond the region box). Returns 0 when the
-    current orientation already fits."""
+def fit_rotations(env, region: str, body: str) -> List[Tuple[float, float]]:
+    """Candidate yaws (about world z) for the carried object so that its footprint fits the
+    container region, as (angle, overhang_cost) sorted by cost. Candidates: the identity and
+    quarter turns, plus the rotations aligning the footprint's principal axis (PCA of the xy
+    points) with each region axis (a diagonally held book must be turned by an arbitrary angle
+    to enter a narrow compartment). Ties prefer the smallest rotation."""
     c, rot, half = geo.site_box_world(env, region)
     pts = xy_points_local(env, body)
     ax = [rot[:, i][:2] / (np.linalg.norm(rot[:, i][:2]) + 1e-9) for i in range(2)]
-    best, best_cost = 0.0, np.inf
+    q0 = pts - pts.mean(0)
+    _, _, vt = np.linalg.svd(q0, full_matrices=False)
+    principal = float(np.arctan2(vt[0][1], vt[0][0]))
+    angles = [0.0, np.pi / 2, -np.pi / 2, np.pi]
+    for i in range(2):
+        target = float(np.arctan2(ax[i][1], ax[i][0]))
+        for k in range(4):
+            a = target + k * np.pi / 2 - principal
+            angles.append(float(np.arctan2(np.sin(a), np.cos(a))))
+    out = []
     for a in angles:
         R2 = np.array([[np.cos(a), -np.sin(a)], [np.sin(a), np.cos(a)]])
         q = pts @ R2.T
@@ -173,7 +202,15 @@ def fit_rotation(env, region: str, body: str, angles=(0.0, np.pi / 2, -np.pi / 2
             proj = q @ ax[i]
             ext = proj.max() - proj.min()
             over += max(0.0, ext - 2 * half[i] + 0.006)
-        cost = over + 0.002 * abs(a)
-        if cost < best_cost - 1e-9:
-            best, best_cost = a, cost
-    return float(best)
+        out.append((float(a), float(over)))
+    # de-duplicate (same angle within 1 deg), sort by overhang then by rotation magnitude
+    uniq = []
+    for a, cost in sorted(out, key=lambda t: (round(t[1], 3), abs(t[0]))):
+        if all(abs(np.arctan2(np.sin(a - b), np.cos(a - b))) > np.radians(1.0) for b, _ in uniq):
+            uniq.append((a, cost))
+    return uniq
+
+
+def fit_rotation(env, region: str, body: str) -> float:
+    """Best single yaw from fit_rotations (0 when the current orientation already fits best)."""
+    return fit_rotations(env, region, body)[0][0]

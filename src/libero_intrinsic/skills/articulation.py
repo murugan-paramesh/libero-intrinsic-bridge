@@ -149,10 +149,24 @@ class PushSkill(Skill):
         _, res = _plan_and_execute(ctx, f"{self.label}_precontact", rs.q, pre, rot, free_cs, "ANY", +1.0, 15.0)
         if not res.ok:
             return SkillResult(self.name, False, f"precontact_exec:{res.reason}")
+        # Long straight pushes are split into <= 4 cm segments, each planned after a world sync:
+        # objects carried along by the pushed body (a bowl inside the drawer) are then at their
+        # true poses in the Intrinsic world instead of the stale pre-push poses (observed: the
+        # end-pose IK of a one-segment 20 cm drawer push reported finger vs bowl collisions).
+        expanded, prev = [], None
+        for p in path:
+            p_k, rot_k = (p if isinstance(p, tuple) else (p, rot))
+            if prev is not None and not isinstance(p, tuple):
+                n = int(np.ceil(np.linalg.norm(p_k - prev) / 0.04))
+                for j in range(1, n):
+                    expanded.append((prev + (p_k - prev) * j / n, rot_k))
+            expanded.append((p_k, rot_k))
+            prev = p_k
+        path = expanded
         for k, p in enumerate(path):
             rs = env.robot_state()
             sync.sync()
-            p_k, rot_k = (p if isinstance(p, tuple) else (p, rot))   # path points may carry their own orientation
+            p_k, rot_k = p
             try:
                 _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}", rs.q, p_k, rot_k, push_cs, "LINEAR", +1.0, 10.0)
             except IntrinsicRequestError as e:

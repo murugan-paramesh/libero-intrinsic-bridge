@@ -120,7 +120,8 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
         params = PICK_PARAMS.get(category(obj), PICK_PARAMS["default"])
         if atom.predicate == "in" and geo.is_roofed_region(env, atom.args[1], support_body_for(env, region_owner_body(env, atom.args[1], spec))):
             params = _dc.replace(params, side_grasp=True)   # must enter a front-loading container
-        skills.append(PickSkill(body, params))
+        pick = PickSkill(body, params)
+        skills.append(pick)
         if atom.predicate == "in":
             region = atom.args[1]
             owner = support_body_for(env, region_owner_body(env, region, spec))
@@ -136,6 +137,7 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
                 spots = placement.free_spots(env, region, body, slot, all_movable, exclude=[owner])
                 return [(np.array([xy[0], xy[1], max(floor, mb)]), max(floor, mb)) for xy, mb in spots]
             skills.append(PlaceSkill(body, target_fn, support, region=region))
+            pick.place_skill = skills[-1]
         elif atom.predicate == "on":
             tgt = atom.args[1]
             if is_site(env, tgt):
@@ -159,6 +161,7 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
                     ob = geo.object_box(env, owner)
                     return np.array([ob.pos[0], ob.pos[1], ob.top_z]), ob.top_z
             skills.append(PlaceSkill(body, target_fn, support, region=region_for_place))
+            pick.place_skill = skills[-1]
         support_bodies.update(support)
 
     for atom in closes:
@@ -194,15 +197,18 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
         center_line = box.center_world - axis * (proj.max() - proj.min()) / 2
         contact = np.array([center_line[0], center_line[1], box.bottom_z + 0.4 * (box.top_z - box.bottom_z)])
         contact = contact - axis * (0.015)  # fingertips 1.5 cm outside the front face
-        # Push from above with the fingers closed: tcp z (approach) tilted 50 deg from vertical
-        # TOWARD the push direction, so the hand body sits outside the drawer (away from the
-        # cabinet and from objects inside the drawer) while the fingertips touch the front face.
-        # (A horizontal push from the front is blocked by fixtures in front of the cabinet.)
-        yaw = np.arctan2(axis[1], axis[0]) + np.pi / 2       # closing axis perpendicular to the push
+        # Push from above with the fingers closed, the closing axis ALONG the push direction (the
+        # thin finger side faces the drawer front) and the approach tilted 20 deg from vertical
+        # toward the push direction, so the hand body stays outside the drawer. Reachability probe
+        # (Intrinsic ComputeIk, task 3 init 0, free-space collision rules): closing axis along the
+        # push with tilt 0/20 deg -> pre-contact and contact poses solvable and collision-free;
+        # closing axis perpendicular to the push -> contact pose in collision (finger vs drawer);
+        # tilt >= 35 deg -> no IK solution at the pre-contact pose.
+        yaw = np.arctan2(axis[1], axis[0])                    # closing axis along the push
         rot = geo.top_down_rotation(yaw)
-        tilt_axis = rot[:, 0]
+        tilt_axis = rot[:, 1]
         sign = 1.0 if np.dot(np.cross(tilt_axis, rot[:, 2]), axis) > 0 else -1.0
-        rot = R.from_rotvec(tilt_axis * sign * np.radians(50)).as_matrix() @ rot
+        rot = R.from_rotvec(tilt_axis * sign * np.radians(20)).as_matrix() @ rot
         pre = contact - rot[:, 2] * 0.10                      # back along the approach axis
         path = [contact, contact + axis * (abs(q) + 0.03)]
         return pre, rot, path
