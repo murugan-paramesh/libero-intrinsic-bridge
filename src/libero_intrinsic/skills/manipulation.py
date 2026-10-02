@@ -388,23 +388,32 @@ class PickSkill(Skill):
             return SkillResult(self.name, False, "no_reachable_grasp")
         c, pre, q_pre = chosen
         self._tried.append(c.label)
-        # 1. free-space motion to the pre-grasp configuration validated above
+        # 1. free-space motion to the pre-grasp pose
         self._last_width = c.width
-        traj = client.plan_to_joints(rs.q, q_pre, collision_settings=free_cs, motion_type="ANY", timeout_s=self.p.plan_timeout_s,
-                                     caller_id="pick_pregrasp")
-        ctx.record(event="plan", label="pick_pregrasp", trajectory_id=traj.request_id, motion_type="ANY", n_states=int(len(traj.t)),
-                   duration_s=traj.duration, latency_s=traj.planning_latency_s, target_pos=[float(v) for v in pre])
-        res = ctx.execute(traj, ExecutionConfig(gripper=0.0), "pick_pregrasp")
-        if not res.ok:
-            return SkillResult(self.name, False, f"pregrasp_exec:{res.reason}", details={"grasp": c.label})
-        # 1b. execution feedback: re-converge in joint space if the reached configuration drifted
-        rs = env.robot_state()
-        if float(np.max(np.abs(rs.q - q_pre))) > 0.02:
-            try:
-                traj = client.plan_to_joints(rs.q, q_pre, collision_settings=free_cs, motion_type="JOINT", timeout_s=5.0, caller_id="pick_pregrasp_settle")
-                ctx.execute(traj, ExecutionConfig(gripper=0.0), "pick_pregrasp_settle")
-            except IntrinsicRequestError as e:
-                ctx.record(event="pregrasp_settle_failed", reason=str(e)[:120])
+        if not self.p.side_grasp:
+            # top-down picks: the ce7685b path (ANY plan to the IK solution nearest the current
+            # configuration, no joint-space settle). The validated-configuration path below was
+            # measured to cost tasks 1/7 episodes (4c20556, C2 protocol runs: approach tracking
+            # errors of 8 cm after the pre-grasp), while it helps side grasps (task 9).
+            traj, res = _plan_and_execute(ctx, "pick_pregrasp", rs.q, pre, c.rot, free_cs, "ANY", 0.0, self.p.plan_timeout_s)
+            if not res.ok:
+                return SkillResult(self.name, False, f"pregrasp_exec:{res.reason}", details={"grasp": c.label})
+        else:
+            traj = client.plan_to_joints(rs.q, q_pre, collision_settings=free_cs, motion_type="ANY", timeout_s=self.p.plan_timeout_s,
+                                         caller_id="pick_pregrasp")
+            ctx.record(event="plan", label="pick_pregrasp", trajectory_id=traj.request_id, motion_type="ANY", n_states=int(len(traj.t)),
+                       duration_s=traj.duration, latency_s=traj.planning_latency_s, target_pos=[float(v) for v in pre])
+            res = ctx.execute(traj, ExecutionConfig(gripper=0.0), "pick_pregrasp")
+            if not res.ok:
+                return SkillResult(self.name, False, f"pregrasp_exec:{res.reason}", details={"grasp": c.label})
+            # 1b. execution feedback: re-converge in joint space if the reached configuration drifted
+            rs = env.robot_state()
+            if float(np.max(np.abs(rs.q - q_pre))) > 0.02:
+                try:
+                    traj = client.plan_to_joints(rs.q, q_pre, collision_settings=free_cs, motion_type="JOINT", timeout_s=5.0, caller_id="pick_pregrasp_settle")
+                    ctx.execute(traj, ExecutionConfig(gripper=0.0), "pick_pregrasp_settle")
+                except IntrinsicRequestError as e:
+                    ctx.record(event="pregrasp_settle_failed", reason=str(e)[:120])
         # 2. linear approach; only contact with the target object is permitted
         rs = env.robot_state()
         try:
