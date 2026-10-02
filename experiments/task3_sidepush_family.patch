@@ -1,0 +1,103 @@
+diff --git a/src/libero_intrinsic/skills/planner.py b/src/libero_intrinsic/skills/planner.py
+index 38b42e3..add25b4 100644
+--- a/src/libero_intrinsic/skills/planner.py
++++ b/src/libero_intrinsic/skills/planner.py
+@@ -347,8 +347,14 @@ class DrawerCloseComposite(Skill):
+             return SkillResult(self.name, False, "stage_b:" + rb.reason)
+         obstacle = blockers[0]
+         ctx.record(event="obstacle_relocation", obstacle=obstacle, blockers=blockers)
+-        spot = free_table_spot(self.env, ctx, obstacle, self.table_body, self.all_movable,
+-                               [geo.object_box(self.env, self.drawer_body).center_world])
++        # keep the relocated object out of the arm's corridor between the robot base and the drawer
++        # (observed: a bottle relocated beside the corridor blocked the wrist at the end of the
++        # side push, link 5/6 vs bottle), not only away from the drawer itself
++        dc = geo.object_box(self.env, self.drawer_body).center_world
++        names = [self.env.model.body_id2name(i) for i in range(self.env.model.nbody)]
++        base = self.env.body_pose("robot0_link0")[0] if "robot0_link0" in names else np.array([-0.6, 0.0, 0.9])
++        corridor = [base + (dc - base) * t for t in np.linspace(0.3, 1.0, 6)]
++        spot = free_table_spot(self.env, ctx, obstacle, self.table_body, self.all_movable, [dc] + corridor, keep_away_r=0.22)
+         if spot is None:
+             return SkillResult(self.name, False, "no_relocation_spot:" + rb.reason)
+         pick = PickSkill(obstacle, self.pick_params)
+@@ -448,11 +454,27 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
+         rot = geo.side_rotation(yaw, 0.0)          # approach = push direction, hand horizontal
+         travel = abs(q) + 0.03
+ 
+-        def poses_for(xo, h):
++        def poses_for_h(xo, h):
+             contact = np.array([center_line[0], center_line[1], box.bottom_z + h * (box.top_z - box.bottom_z)])
+             contact = contact + lateral * xo - axis * 0.015       # fingertips 1.5 cm outside the front face
+             return contact, {"pre": contact - axis * 0.08, "contact": contact, "mid": contact + axis * travel / 2,
+                              "end": contact + axis * travel}
++        # Side-push family: the hand points along the robot's reach direction (perpendicular to the
++        # push axis, away from the robot base) and lies flat; its wide side face (10.9 cm from the
++        # tcp along the closing axis) pushes the panel while the tcp moves along the push axis.
++        # Observed: with the hand pointing along the push axis the forearm passes over a tall
++        # fixture (link 5 vs the wine rack) for every lateral offset, height and posture.
++        base_xy = env.body_pose("robot0_link0")[0][:2] if "robot0_link0" in [env.model.body_id2name(i) for i in range(env.model.nbody)] else np.zeros(2)
++        sgn = 1.0 if np.dot(lateral[:2], center_line[:2] - base_xy) > 0 else -1.0
++        appr_s = lateral * sgn                       # from the robot toward the drawer, perpendicular to the push
++        rot_s = geo.side_rotation(np.arctan2(appr_s[1], appr_s[0]), 0.0)
++        side_sign = 1.0 if np.dot(rot_s[:, 0], axis) > 0 else -1.0   # which closing-axis side faces the panel
++
++        def poses_for_s(xo, h):
++            z = box.bottom_z + h * (box.top_z - box.bottom_z)
++            tcp = np.array([center_line[0], center_line[1], z]) + appr_s * (0.078 + xo) - axis * (geo.HAND_HALF_X + 0.01)
++            return tcp, {"pre": tcp - axis * 0.08, "contact": tcp, "mid": tcp + axis * travel / 2, "end": tcp + axis * travel}
++        families = [("horizontal", rot, poses_for_h), ("side_push", rot_s, poses_for_s)]
+         chosen, tried = None, []
+         if ctx is not None:
+             rs = ctx.env.robot_state()
+@@ -477,16 +499,17 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
+                         # base turned toward the drawer side (joint 1 >= 0.15 rad): keeps the forearm away
+                         # from fixtures on the other side (observed: link 5 vs the wine rack)
+                         ("base_left", (np.maximum(lim[:, 0] + 0.05, [0.15, -9, -9, -9, -9, -9, -9]), lim[:, 1] - 0.05))]
+-            for pname, jl in postures:
++            for fname, rot_f, poses_f in families:
++              for pname, jl in postures:
+                 for xo in LATERAL:
+                     for h in HEIGHTS:
+-                        contact, probe = poses_for(xo, h)
++                        contact, probe = poses_f(xo, h)
+                         ok, why = True, ""
+                         for name in ("end", "contact", "mid", "pre"):   # the end pose is the discriminating one
+                             found, last = False, ""
+                             for seed in seeds:
+                                 try:
+-                                    sols, _, _ = ctx.client.ik(probe[name], rot, seed, max_solutions=8, collision_settings=cs, joint_limits=jl)
++                                    sols, _, _ = ctx.client.ik(probe[name], rot_f, seed, max_solutions=8, collision_settings=cs, joint_limits=jl)
+                                     if sols:
+                                         found = True
+                                         break
+@@ -499,23 +522,26 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
+                             if not found:
+                                 ok, why = False, name + ":" + last
+                                 break
+-                        tried.append({"posture": pname, "lateral": xo, "height": h, "ok": ok, "why": why})
++                        tried.append({"family": fname, "posture": pname, "lateral": xo, "height": h, "ok": ok, "why": why})
+                         if ok:
+-                            chosen = (xo, h)
++                            chosen = (fname, xo, h)
+                             ctx.params["push_joint_limits"] = jl
+                             break
+                     if chosen:
+                         break
+                 if chosen:
+                     break
++              if chosen:
++                  break
+             ctx.record(event="push_contact_selection", chosen=chosen, posture=(tried[-1]["posture"] if tried else None), tried=tried)
+             # movable objects that blocked the probed poses (for obstacle relocation by the composite skill)
+             from collections import Counter
+             partners = Counter(t["why"].split("/")[-1] for t in tried if "collision:" in t["why"])
+             ctx.params["last_push_blockers"] = [b for b, _ in partners.most_common() if b in ctx.sync.bodies]
+-        xo, h = chosen or (LATERAL[0], HEIGHTS[0])
+-        contact, probe = poses_for(xo, h)
+-        return probe["pre"], rot, [contact, contact + axis * travel]
++        fname, xo, h = chosen or ("horizontal", LATERAL[0], HEIGHTS[0])
++        rot_f, poses_f = {"horizontal": (rot, poses_for_h), "side_push": (rot_s, poses_for_s)}[fname]
++        contact, probe = poses_f(xo, h)
++        return probe["pre"], rot_f, [contact, contact + axis * travel]
+ 
+     def check_fn():
+         return env.joint_qpos(joint) > 0.0

@@ -189,3 +189,13 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
   t9_i3 goal at step 1084, t9_i4 at step 870; both atoms true, door qpos > 0). States 0-2 fail at
   the pick after relocation (pre-grasp posture, joint-2 limit); fix under test (pool ordering).
 - Resume: `python scripts/run_task.py --task 9 --inits 0 1 2`; regression `scripts/evaluate.py --tasks 0 1 2 4 5 6 7 8 --inits 0 1`.
+
+### 2026-10-02 22:15 UTC (session 6): candidate C3 = 5e236de under the protocol (half B done, half A running)
+- C2 (8e24149) half B: 5: 9, 6: 10, 7: 7, 8: 10, 9: 4 -> task 7 regression traced to the validated-configuration
+  pre-grasp path; C3 restores ce7685b's nearest-IK pre-grasp for top-down picks (dev gate tasks 1/7: 9/10).
+- C3 half B (runs/eval_c3/B, complete): 5: 9/10, 6: 10/10, 7: 9/10, 8: 10/10, 9: 4/10 (official done-at-any-step
+  accounting; task 9 successes at states 13, 15, 16, 17). Half A so far: 0: 10, 1: 8, 2: 10, 3 running.
+- Experimental worktree patches kept: experiments/task3_sidepush_family.patch (not merged). Partial archives:
+  evaluations/partial_4c20556, evaluations/partial_c2.
+- Resume if interrupted: the missing (task, init) pairs of runs/eval_c3/A only (same protocol), then
+  scratchpad finish script (report/compare/archive), README/report 12.6, commit, push.
