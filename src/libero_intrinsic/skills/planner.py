@@ -473,10 +473,9 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
             lim = ctx.env.joint_limits()
             # posture families (JointPositionLimits IK constraint): unrestricted, shoulder forward
             # (joint 2 >= 0.3 rad: the forearm rises faster and clears objects next to the cabinet)
-            postures = [("free", None), ("shoulder_fwd", (np.maximum(lim[:, 0] + 0.05, [-9, 0.3, -9, -9, -9, -9, -9]), lim[:, 1] - 0.05)),
-                        # base turned toward the drawer side (joint 1 >= 0.15 rad): keeps the forearm away
-                        # from fixtures on the other side (observed: link 5 vs the wine rack)
-                        ("base_left", (np.maximum(lim[:, 0] + 0.05, [0.15, -9, -9, -9, -9, -9, -9]), lim[:, 1] - 0.05))]
+            # (a third family, base turned toward the drawer side, was tested in the final pass and
+            # rejected every pose for the same reasons: link 5 vs the wine rack, wrist vs table)
+            postures = [("free", None), ("shoulder_fwd", (np.maximum(lim[:, 0] + 0.05, [-9, 0.3, -9, -9, -9, -9, -9]), lim[:, 1] - 0.05))]
             for pname, jl in postures:
                 for xo in LATERAL:
                     for h in HEIGHTS:

@@ -189,7 +189,8 @@ class PushSkill(Skill):
         # joint-5 limit, from which no LINEAR push segment could be planned.
         w = np.array([3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.5])
         margin_of = lambda q: float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q))))
-        pool.sort(key=lambda q: (margin_of(q) < 0.12, float(np.sum(w * (np.asarray(q) - rs.q) ** 2))))
+        dist_of = lambda q: float(np.sum(w * (np.asarray(q) - rs.q) ** 2))
+        pool.sort(key=lambda q: (dist_of(q) > 4.0, margin_of(q) < 0.12, -margin_of(q)))   # same branch first, then margin
         q_goal, n_tested = None, 0
         for q in pool[:12]:
             n_tested += 1

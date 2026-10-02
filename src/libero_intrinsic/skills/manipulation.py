@@ -18,6 +18,10 @@ import os
 import re
 from typing import Callable, List, Optional, Sequence, Tuple
 
+# Task-3 experiment switch (off: the protocol evaluation of 4c20556 showed pick regressions on
+# tasks 1 and 7 while the wider yaw assessment and tilted-for-placement candidates were on)
+TILTED_FOR_PLACEMENT = False
+
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 
@@ -270,7 +274,7 @@ class PickSkill(Skill):
             def assess(pool):
                 for c in pool:
                     try:
-                        ok, drop = self.place_skill.grasp_compatible(env, sync, c.pos, c.rot, finger_gap=float(c.width))
+                        ok, drop = self.place_skill.grasp_compatible(env, sync, c.pos, c.rot)
                         if not ok:
                             whys.append((c.label, getattr(self.place_skill, "last_compat_why", "")))
                     except Exception as e:   # geometry failure must not block picking
@@ -279,10 +283,10 @@ class PickSkill(Skill):
                     compat.append((c, ok, drop))
             # assess enough candidates to cover every yaw family (the score order prefers yaws near 0,
             # but the placement may need the wide hand axis along one direction: task 3 yaw-90 family)
-            n_assess = max(self.p.max_candidates, 48 if self.p.side_grasp else 64)
+            n_assess = max(self.p.max_candidates, 48 if self.p.side_grasp else 24)
             assess(cands[:n_assess])
             rest = cands[n_assess:]
-            if not self.p.side_grasp and not any(ok for _, ok, _ in compat) and not any("tilt" in c.label for c, _, _ in compat):
+            if TILTED_FOR_PLACEMENT and not self.p.side_grasp and not any(ok for _, ok, _ in compat) and not any("tilt" in c.label for c, _, _ in compat):
                 # no level grasp admits a valid release at the target (e.g. the hand would hit the
                 # cabinet above the drawer): a pitched hand carries the object level but keeps the
                 # palm away from the obstacle, so tilted pinch grasps join the assessment
@@ -355,7 +359,16 @@ class PickSkill(Skill):
             lim_ = env.joint_limits()
             w_ = np.array([3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.5])
             margin_ = lambda q: float(min(np.min(np.asarray(q) - lim_[:, 0]), np.min(lim_[:, 1] - np.asarray(q))))
-            pool.sort(key=lambda q: (margin_(q) < 0.12, float(np.sum(w_ * (np.asarray(q) - rs.q) ** 2))))
+            # margin-best first, but only among configurations within reach of the controller (weighted
+            # joint distance <= 4.0, i.e. the same branch); observed: pure nearest-first ordering made
+            # the OSC controller leave the LINEAR approach by 8 cm on task 7, pure margin-first chose
+            # a branch 2.3 rad away on task 9
+            # Pure nearest-first (the selection ce7685b used through nearest_ik, 10/10 on task 1):
+            # a margin preference, even within the branch, chose pre-grasp configurations the OSC
+            # controller could not track (task 1 dev state 4: 8 cm tracking error, 0.93 rad joint
+            # error). The LINEAR dry-run below only skips infeasible configurations.
+            dist_ = lambda q: float(np.sum(w_ * (np.asarray(q) - rs.q) ** 2))
+            pool.sort(key=dist_)
             q_pre, n_tested = None, 0
             for q in pool:
                 n_tested += 1
