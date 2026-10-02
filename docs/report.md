@@ -504,3 +504,102 @@ cabinet). Open as in 10.2.
 Code 9b02207 (all of the above; regression 16/16 on dev states 0-1 for tasks 0,1,2,4,5,6,7,8
 at b205f2a, repeated at 9b02207: see 11.6). Expected effect on the protocol: tasks 3 and 9
 unchanged (0), tasks 1/7 possibly affected by the pre-grasp path validation.
+
+### 11.6 Protocol result of candidate 9b02207: 74/100 (repeated evaluation, archived, not recommended)
+
+Same protocol as every table above (tasks 0-9 in order, init states 10-19, seed 0, budget 1,200,
+same retry accounting). Records: `evaluations/candidate_9b02207` (100 episode.json, protocol files,
+`resume_manifest.json`); table `docs/results_9b02207.md`; comparisons `docs/comparison_9b02207.md`
+(vs baseline) and `docs/comparison_ce7685b_to_9b02207.md` (vs the previous candidate).
+
+**Interruption and resume (disclosed).** The run started 23:47 UTC on 2026-10-01 in two halves
+(tasks 0-4, tasks 5-9). The session container restarted at ~23:56 UTC while the session was idle;
+both processes died after 26 completed episodes (task 0 inits 10-16, task 5 inits 10-19, task 6
+inits 10-18). One episode (task 0 init 17) was in progress and had no record; its directory was
+removed from the run and the state was run once in the resume. At 00:55 UTC the remaining 74
+(task, init) pairs were run with the same config, the same task order and the same source
+(`git diff 9b02207 HEAD -- src configs` empty before and after; every record names the docs-only
+HEAD ae2d539 with a clean tree). No completed episode was re-run and no episode was selected.
+The only difference from an uninterrupted run is that tasks 0 and 6 finished their last 3 / 1 init
+states in a fresh `TaskSession` (new planner-server process). Details: `resume_manifest.json`.
+
+| task | ce7685b | 9b02207 | changed episodes (init) |
+|---|---|---|---|
+| 0 | 10/10 | 10/10 | - |
+| 1 | 10/10 | 9/10 | lost 17 |
+| 2 | 10/10 | 10/10 | - |
+| 3 | 0/10 | 0/10 | - |
+| 4 | 10/10 | 9/10 | lost 11 |
+| 5 | 8/10 | 8/10 | - (same two failures, 12 and 18) |
+| 6 | 9/10 | 9/10 | gained 18, lost 19 |
+| 7 | 9/10 | 9/10 | - (same failure, 11) |
+| 8 | 10/10 | 10/10 | - |
+| 9 | 0/10 | 0/10 | - |
+| all | **76/100** (CI 67-83%) | **74/100** (CI 65-82%) | -2 |
+
+Integration numbers for the run: 1,388 `PlanTrajectory` calls, mean 22 ms, max 92 ms, no
+timeouts; 30 of 1,175 executed-path audits report a collision; 72 of the 74 successes are within
+600 steps. Wall time 2.33 h of simulation in total; task 3 episodes now take 3.4-10.5 min
+(mean 6.6 min, down from 13 min at ce7685b because run-time contact probes stop at the first
+kinematic failure instead of trying more seeds).
+
+**The 26 failures by stage** (observed evidence from the records; hypotheses marked):
+
+- Task 3 (10, ARTIC): stage A reaches the drawer panel with the ANY approach fallback on 4 states
+  and the next LINEAR push segment is then NOT_FOUND (10, 13, 14, 18); stage A pre-contact
+  unreachable on 1 state (12); on 5 states stage A makes partial progress, the wine bottle is
+  relocated by real manipulation and every probed horizontal contact pose for stage B is
+  rejected (11, 15, 16, 17, 19). Same blocker as 10.2/11.4 (bowl against the panel).
+- Task 9 (7 PLACE, 3 TRACK): the sequence change executes on all 10 states (porcelain mug
+  relocated, 2-8 placement-compatible level grasps found). The mug is grasped on 7 states and a
+  release target inside the cavity is found (object bottom at the cavity floor, origin inside the
+  region box), but Intrinsic's IK reports `panda.gripper0_right_gripper` vs
+  `microwave_1_main.link` for every solution at the pre-place/release configuration
+  (`PlanTrajectory`/`ComputeIk` NOT_FOUND on 11, 13, 15, 16, 17, 18, 19). The adapter's own
+  hand-clearance check accepted those targets, so the check is less conservative than the
+  mesh-level Intrinsic check (observed: 36-72 `place_spot_rejected` events per episode, all
+  `hand:microwave_1_main`). On 3 states (10, 12, 14) the pre-grasp after relocation ends 2.7-4.3 cm
+  and 7-11 deg off (TRACK, the joint-2-limit posture of 11.2). The task is now failing one stage
+  later than at ce7685b (where no release pose existed at all).
+- Task 1 init 17 (REACH after TRACK): the second pick's approach exceeded the tracking limit
+  (8.2 cm), after which no reachable grasp remained (hypothesis: the butter was displaced by that
+  motion; not verified from video). At ce7685b the same state took a different first-place path
+  (one failed place attempt) and a different second grasp (yaw 45 instead of yaw 135).
+- Task 4 init 11 (PLACE): both places completed (xy error 2.6 cm and 1.2 cm) and the goal
+  predicate is still false; the second pick's first attempt had an 8.6 cm pre-grasp tracking
+  error near the first placed mug (hypothesis: the first mug was pushed off its plate).
+- Task 5 init 12 (PLACE) and init 18 (REACH): identical to ce7685b (book released 12.7 cm off
+  after a support contact; no reachable grasp).
+- Task 6 init 19 (PLACE): the second mug ended 76 cm from its target after transport
+  (`released_outside_region_box`; the grasp verified with 10 pad contacts, so this is a slip in
+  transport). Init 18, which failed at ce7685b the same way, succeeded here: this family flips
+  between runs of the same states (hypothesis: sensitivity to planner path choice; the planner
+  is not seeded by the adapter).
+- Task 7 init 11 (TRACK): identical to ce7685b.
+
+**Candidate decision.** By the declared criteria (valid integration: both; comparable success:
+76 vs 74 with overlapping intervals; per-task regressions: 9b02207 loses one episode each on
+tasks 1 and 4 and gains nothing; generalization: neither candidate solves a new task; runtime:
+9b02207 is cheaper on task 3; reproducibility: 9b02207's run was interrupted and resumed), the
+previous candidate **ce7685b remains the recommended version**. 9b02207 is retained in the
+history as the better-instrumented diagnosis code (its task 9 records show the insertion-stage
+blocker, which ce7685b never reached) and as the base for the next loop; it is not the submitted
+result. Tasks 0-9 were never evaluated on states 20-29 with either candidate except 5b713c6
+(9.6), so no held-out claim is made for ce7685b or 9b02207.
+
+### 11.7 Status and next experiment
+
+Status: **reproducible partial submission** (classification 2): 8 of 10 tasks are solved with
+one classical system whose planning is computed by Intrinsic Core; tasks 3 and 9 have
+reproducible blockers with the evidence above.
+
+Next experiment, defined before running it (not started in this session):
+hypothesis: on task 9, applying Intrinsic's mesh-level collision verdict (a `CheckCollisions`
+or IK probe of the hand at each candidate release pose) inside the release search, instead of
+the adapter's box model, will discard the hand-vs-microwave targets early and either expose a
+feasible deeper grasp (hand further from the cavity) or prove that no level grasp of this mug
+fits the 20.7 cm opening; budget: 2 dev runs on states 0-1 plus the 16-episode regression;
+observable: `place_spot_rejected` reasons from Intrinsic vs the box model, and whether any
+release pose passes IK; decision: keep if a release pose is reached on either dev state,
+otherwise record task 9 as geometrically infeasible with a level hand and move to a two-contact
+(push-in) insertion.

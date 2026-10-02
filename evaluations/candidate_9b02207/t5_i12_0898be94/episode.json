@@ -1,0 +1,747 @@
+{
+ "run_id": "t5_i12_0898be94",
+ "task_index": 5,
+ "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+ "language": "pick up the book and place it in the back compartment of the caddy",
+ "init_state_index": 12,
+ "seed": 0,
+ "revisions": {
+  "libero_intrinsic_bridge": "ae2d53929cb01793999390cff66645644132b01f",
+  "working_tree_dirty_at_start": false,
+  "intrinsic_core": "c61bf075f2335371c6367b61117e8a62bb960c3b",
+  "LIBERO": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+  "robosuite": "1.4.0",
+  "mujoco": "2.3.7",
+  "numpy": "1.23.5"
+ },
+ "observation_mode": "privileged_state",
+ "controller": "OSC_POSE (robosuite 1.4.0 default osc_pose.json, 20 Hz)",
+ "step_budget": 1200,
+ "intrinsic": {
+  "component": "MotionPlannerServiceInProcess + FakeWorldService (intrinsic-core, in-process gRPC)",
+  "binary": "/home/user/bazel_out/execroot/_main/bazel-out/haswell-opt/bin/libero_bridge/libero_planner_server",
+  "world_id": "libero10_task5",
+  "sdf": "runs/eval_9b02207/B/task5/world/task5.sdf",
+  "addresses": {
+   "world_service": "127.0.0.1:44613",
+   "motion_planner_service": "dns:///localhost:42297",
+   "credentials": "local_tcp"
+  },
+  "n_requests": 408,
+  "requests_by_rpc": {
+   "CheckCollisions": 7,
+   "ComputeFk": 294,
+   "ComputeIk": 6,
+   "GetObject": 1,
+   "GetTransform": 4,
+   "ListObjects": 2,
+   "PlanTrajectory": 17,
+   "ReparentObject": 8,
+   "UpdateObjectJoints": 8,
+   "UpdateTransform": 54,
+   "note": 7
+  },
+  "plan_latency_s": [
+   0.035764858000220556,
+   0.015181262000169227,
+   0.013654473000315193,
+   0.020059646000390785,
+   0.04376363700021102,
+   0.022571108999727585,
+   0.03587779000008595,
+   0.019478027999866754,
+   0.04383012900007088,
+   0.035394465000081254,
+   0.01682960700009062,
+   0.05015571900003124,
+   0.024588854999819887,
+   0.03619846799983861,
+   0.016614067000318755,
+   0.05603050499985329,
+   0.018561373000011372
+  ],
+  "plan_failures": 7,
+  "plan_timeouts": 0,
+  "linear_replans": 7
+ },
+ "t_start": 1790898488.824737,
+ "success": false,
+ "error": null,
+ "skills": [
+  {
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 89,
+   "details": {
+    "grasp": "pinch_z0.999_yaw0",
+    "width": 0.037016826189376045,
+    "lifted": 0.1003848164447797,
+    "drift": 0.0006890957534465546
+   }
+  },
+  {
+   "skill": "place",
+   "ok": true,
+   "reason": "released_earlier",
+   "attempts": 2,
+   "recoveries": 1,
+   "steps": 106,
+   "details": {
+    "retreat_ok": true
+   }
+  }
+ ],
+ "events": [
+  {
+   "event": "grasp_candidates",
+   "n_total": 3,
+   "n_cleared": 3,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790898491.9008386,
+   "env_step": 0
+  },
+  {
+   "event": "grasp_placement_filter",
+   "n_checked": 3,
+   "n_compatible": 3,
+   "first": "pinch_z0.999_yaw0",
+   "first_drop_m": 0.022150919297213408,
+   "incompatible_examples": [],
+   "ranked": [
+    [
+     "pinch_z0.999_yaw0",
+     0.022
+    ],
+    [
+     "pinch_z0.999_yaw135",
+     0.051
+    ],
+    [
+     "pinch_z0.999_yaw158",
+     0.051
+    ]
+   ],
+   "t_wall": 1790898493.3580112,
+   "env_step": 0
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.999_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-5fc0af1624",
+   "latency_s": 0.0196465519998128,
+   "t_wall": 1790898494.2003036,
+   "env_step": 16
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z0.999_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-634949047c",
+   "latency_s": 0.02582893699991473,
+   "t_wall": 1790898494.2268326,
+   "env_step": 16
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z0.999_yaw0",
+   "n_solutions": 4,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790898494.3000743,
+   "env_step": 16
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-57871533eb",
+   "motion_type": "ANY",
+   "n_states": 67,
+   "duration_s": 0.47674885100000003,
+   "latency_s": 0.013654473000315193,
+   "target_pos": [
+    -0.2343768654861196,
+    0.17819640679067927,
+    1.0993696874767405
+   ],
+   "t_wall": 1790898494.3146205,
+   "env_step": 16
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-57871533eb",
+   "ok": true,
+   "reason": "completed",
+   "steps": 26,
+   "pos_err_max": 0.006950048641572548,
+   "pos_err_mean": 0.004180159087293001,
+   "rot_err_max_deg": 0.7261970084727778,
+   "joint_err_max": 0.0810030426107827,
+   "joint_err_final": 0.07750900325055643,
+   "final_pos_err": 0.0035158797188928376,
+   "final_rot_err_deg": 0.6452788210340122,
+   "planned_duration_s": 0.47674885100000003,
+   "planning_latency_s": 0.013654473000315193,
+   "n_states": 67,
+   "time_scale": 2.6198345523277635,
+   "t_wall": 1790898495.7550168,
+   "env_step": 42
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp_settle",
+   "trajectory_id": "PlanTrajectory-3a028349a9",
+   "ok": true,
+   "reason": "completed",
+   "steps": 5,
+   "pos_err_max": 0.0014473688798941498,
+   "pos_err_mean": 0.0007736514501760319,
+   "rot_err_max_deg": 0.2337609348098925,
+   "joint_err_max": 0.07160885782593526,
+   "joint_err_final": 0.07160885782593526,
+   "final_pos_err": 0.0012222894295008011,
+   "final_rot_err_deg": 0.20996717980093343,
+   "planned_duration_s": 0.19868435,
+   "planning_latency_s": 0.020059646000390785,
+   "n_states": 25,
+   "time_scale": 1.0,
+   "t_wall": 1790898496.0887148,
+   "env_step": 47
+  },
+  {
+   "event": "plan",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-2bcaad46d8",
+   "motion_type": "LINEAR",
+   "n_states": 39,
+   "duration_s": 0.387213099,
+   "latency_s": 0.022571108999727585,
+   "target_pos": [
+    -0.2343768654861196,
+    0.17819640679067927,
+    0.9993696874767405
+   ],
+   "t_wall": 1790898496.1570919,
+   "env_step": 47
+  },
+  {
+   "event": "execute",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-2bcaad46d8",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.005926181976539454,
+   "pos_err_mean": 0.0035486140652630127,
+   "rot_err_max_deg": 0.39356537221957644,
+   "joint_err_max": 0.015858982744767935,
+   "joint_err_final": 0.015858982744767935,
+   "final_pos_err": 0.0032127586771558718,
+   "final_rot_err_deg": 0.39356537221957644,
+   "planned_duration_s": 0.387213099,
+   "planning_latency_s": 0.022571108999727585,
+   "n_states": 39,
+   "time_scale": 1.77348897675305,
+   "t_wall": 1790898497.1146371,
+   "env_step": 62
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-2bcaad46d8",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-3e069fdfa6",
+   "t_wall": 1790898497.1224937,
+   "env_step": 62
+  },
+  {
+   "event": "grasp_verify",
+   "finger_gap": 0.03971215506298581,
+   "pad_contacts": 6,
+   "grasp": "pinch_z0.999_yaw0",
+   "t_wall": 1790898497.807653,
+   "env_step": 74
+  },
+  {
+   "event": "plan",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-4801a4cd6b",
+   "motion_type": "LINEAR",
+   "n_states": 39,
+   "duration_s": 0.39167058000000005,
+   "latency_s": 0.019478027999866754,
+   "target_pos": [
+    -0.23833084660370124,
+    0.179585188084907,
+    1.0963836826486684
+   ],
+   "t_wall": 1790898497.873799,
+   "env_step": 74
+  },
+  {
+   "event": "execute",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-4801a4cd6b",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.0056897521853372,
+   "pos_err_mean": 0.003026764702502792,
+   "rot_err_max_deg": 0.4214095324916945,
+   "joint_err_max": 0.018614218317803688,
+   "joint_err_final": 0.012022934103311761,
+   "final_pos_err": 0.001534690420697804,
+   "final_rot_err_deg": 0.18451526217778894,
+   "planned_duration_s": 0.39167058000000005,
+   "planning_latency_s": 0.019478027999866754,
+   "n_states": 39,
+   "time_scale": 1.7471880457760722,
+   "t_wall": 1790898498.9336865,
+   "env_step": 89
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-4801a4cd6b",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-08b1efa395",
+   "t_wall": 1790898498.9420943,
+   "env_step": 89
+  },
+  {
+   "event": "lift_verify",
+   "lifted_m": 0.1003848164447797,
+   "tcp_obj_drift_m": 0.0006890957534465546,
+   "pad_contacts": 6,
+   "t_wall": 1790898498.9432032,
+   "env_step": 89
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "grasp": "pinch_z0.999_yaw0",
+    "width": 0.037016826189376045,
+    "lifted": 0.1003848164447797,
+    "drift": 0.0006890957534465546
+   },
+   "t_wall": 1790898498.943345,
+   "env_step": 89
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 89,
+   "t_wall": 1790898498.943348,
+   "env_step": 89
+  },
+  {
+   "event": "place_attachment_refresh",
+   "drift_m": 0.0006890957534465546,
+   "t_wall": 1790898498.962057,
+   "env_step": 89
+  },
+  {
+   "event": "place_fit_rotation",
+   "yaw_deg": [
+    -66.97345052563452,
+    113.02654947436547
+   ],
+   "overhang_m": 0.0,
+   "t_wall": 1790898498.9638188,
+   "env_step": 89
+  },
+  {
+   "event": "place_rotation_choice",
+   "limit_margin_rad": 0.3649933000920096,
+   "t_wall": 1790898499.0251148,
+   "env_step": 89
+  },
+  {
+   "event": "place_region_box_rule",
+   "rest_origin_z": 0.8987995035282812,
+   "box_bottom_z": 0.91212,
+   "ledge": [
+    -0.3993741680628408,
+    -0.14003378454287388,
+    0.98565
+   ],
+   "ledge_extent": [
+    0.008060000000000012,
+    0.13368000000000002
+   ],
+   "floor_z": 0.90081,
+   "t_wall": 1790898499.0267951,
+   "env_step": 89
+  },
+  {
+   "event": "place_transport_rule",
+   "support_checked": true,
+   "tcp_pre": [
+    -0.4165149942769367,
+    -0.1437107489466664,
+    1.1966455620850305
+   ],
+   "tcp_release": [
+    -0.41667137593229225,
+    -0.1439803107317937,
+    1.1120055620850304
+   ],
+   "rim_z": 1.05529,
+   "obj_bottom_at_pre": 1.08529,
+   "obj_bottom_at_release": 1.00065,
+   "t_wall": 1790898499.072418,
+   "env_step": 89
+  },
+  {
+   "event": "ik",
+   "label": "place_transport_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-6e6015059b",
+   "latency_s": 0.027325502000167035,
+   "t_wall": 1790898499.1007242,
+   "env_step": 89
+  },
+  {
+   "event": "plan",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-153f3d0eef",
+   "motion_type": "ANY",
+   "n_states": 293,
+   "duration_s": 1.234191471,
+   "latency_s": 0.04383012900007088,
+   "target_pos": [
+    -0.4165149942769367,
+    -0.1437107489466664,
+    1.1966455620850305
+   ],
+   "t_wall": 1790898499.152177,
+   "env_step": 89
+  },
+  {
+   "event": "execute",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-153f3d0eef",
+   "ok": true,
+   "reason": "completed",
+   "steps": 38,
+   "pos_err_max": 0.00633718484420577,
+   "pos_err_mean": 0.004278064707717445,
+   "rot_err_max_deg": 2.5588150365637676,
+   "joint_err_max": 0.1840500346092765,
+   "joint_err_final": 0.1840500346092765,
+   "final_pos_err": 0.004663572755122473,
+   "final_rot_err_deg": 1.3729230508983215,
+   "planned_duration_s": 1.234191471,
+   "planning_latency_s": 0.04383012900007088,
+   "n_states": 293,
+   "time_scale": 1.4792004717213076,
+   "t_wall": 1790898501.4370985,
+   "env_step": 127
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-153f3d0eef",
+   "n_checked": 38,
+   "collision": true,
+   "msg": "Invalid path segment (most likely due to collisions) detected between point 15 [0.0169205,-0.0899701,0.034934,-2.41954,-0.121928,2.31376,0.146407] and point 16 [0.0108278,-0.112371,0.0158597,-2.43426,",
+   "request_id": "CheckCollisions-dde6c17a15",
+   "t_wall": 1790898501.4473338,
+   "env_step": 127
+  },
+  {
+   "event": "place_slip_compensation",
+   "drift_m": 0.007704403030715449,
+   "xy_correction_m": 0.007973237136816289,
+   "z_correction_m": 0.0028441969343948603,
+   "t_wall": 1790898501.4511921,
+   "env_step": 127
+  },
+  {
+   "event": "plan",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-db53949217",
+   "motion_type": "LINEAR",
+   "n_states": 44,
+   "duration_s": 0.382155713,
+   "latency_s": 0.01682960700009062,
+   "target_pos": [
+    -0.41667137593229225,
+    -0.1439803107317937,
+    1.1120055620850304
+   ],
+   "t_wall": 1790898501.5055757,
+   "env_step": 127
+  },
+  {
+   "event": "execute",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-db53949217",
+   "ok": false,
+   "reason": "contact:support_contact",
+   "steps": 6,
+   "pos_err_max": 0.008134434398708687,
+   "pos_err_mean": 0.00548643295597007,
+   "rot_err_max_deg": 0.7944803383203045,
+   "joint_err_max": 0.03432843224088433,
+   "joint_err_final": 0.13601955810946592,
+   "final_pos_err": 0.043874962103602366,
+   "final_rot_err_deg": 1.445892084366623,
+   "planned_duration_s": 0.382155713,
+   "planning_latency_s": 0.01682960700009062,
+   "n_states": 44,
+   "time_scale": 1.5,
+   "t_wall": 1790898501.8752186,
+   "env_step": 133
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-db53949217",
+   "n_checked": 6,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-c368e2970e",
+   "t_wall": 1790898501.8860843,
+   "env_step": 133
+  },
+  {
+   "event": "place_verify",
+   "obj_pos": [
+    -0.3008908843167728,
+    -0.07599883695515255,
+    0.9302209796398652
+   ],
+   "target": [
+    -0.4163741679492044,
+    -0.12810124427734088,
+    0.98565
+   ],
+   "xy_err": 0.12669273715290813,
+   "lower_stop": "contact:support_contact",
+   "in_region_box": false,
+   "t_wall": 1790898503.150627,
+   "env_step": 157
+  },
+  {
+   "event": "plan",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-94fce3f769",
+   "motion_type": "LINEAR",
+   "n_states": 44,
+   "duration_s": 0.334770032,
+   "latency_s": 0.024588854999819887,
+   "target_pos": [
+    -0.4139919319510933,
+    -0.1483196407718619,
+    1.2538459113286484
+   ],
+   "t_wall": 1790898503.2575285,
+   "env_step": 157
+  },
+  {
+   "event": "execute",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-94fce3f769",
+   "ok": true,
+   "reason": "completed",
+   "steps": 14,
+   "pos_err_max": 0.006442713549352971,
+   "pos_err_mean": 0.003412236748168609,
+   "rot_err_max_deg": 0.5948110877536114,
+   "joint_err_max": 0.01809457844040585,
+   "joint_err_final": 0.015220205016653866,
+   "final_pos_err": 0.001926881672046111,
+   "final_rot_err_deg": 0.30998734154792196,
+   "planned_duration_s": 0.334770032,
+   "planning_latency_s": 0.024588854999819887,
+   "n_states": 44,
+   "time_scale": 1.8175281733686601,
+   "t_wall": 1790898504.2173336,
+   "env_step": 171
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-94fce3f769",
+   "n_checked": 14,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-dcee015f08",
+   "t_wall": 1790898504.2246022,
+   "env_step": 171
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "place",
+   "attempt": 0,
+   "ok": false,
+   "reason": "released_outside_region_box",
+   "details": {
+    "xy_err": 0.12669273715290813,
+    "retreat_ok": true
+   },
+   "t_wall": 1790898504.2247155,
+   "env_step": 171
+  },
+  {
+   "event": "plan",
+   "label": "place_recover_up",
+   "trajectory_id": "PlanTrajectory-1355bd291c",
+   "motion_type": "LINEAR",
+   "n_states": 28,
+   "duration_s": 0.233891901,
+   "latency_s": 0.016614067000318755,
+   "target_pos": [
+    -0.41562181300235307,
+    -0.14767874373372347,
+    1.3130429341360415
+   ],
+   "t_wall": 1790898504.2960894,
+   "env_step": 171
+  },
+  {
+   "event": "execute",
+   "label": "place_recover_up",
+   "trajectory_id": "PlanTrajectory-1355bd291c",
+   "ok": true,
+   "reason": "completed",
+   "steps": 9,
+   "pos_err_max": 0.0072067875498625315,
+   "pos_err_mean": 0.003583770877655369,
+   "rot_err_max_deg": 0.2479169370118298,
+   "joint_err_max": 0.02177405318734782,
+   "joint_err_final": 0.004177096947931877,
+   "final_pos_err": 0.0007874465277977362,
+   "final_rot_err_deg": 0.056315766944591485,
+   "planned_duration_s": 0.233891901,
+   "planning_latency_s": 0.016614067000318755,
+   "n_states": 28,
+   "time_scale": 1.5679244619605524,
+   "t_wall": 1790898504.7782702,
+   "env_step": 180
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_recover_up",
+   "trajectory_id": "PlanTrajectory-1355bd291c",
+   "n_checked": 9,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-8ca392b4cf",
+   "t_wall": 1790898504.787449,
+   "env_step": 180
+  },
+  {
+   "event": "plan",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-73c2494e8a",
+   "motion_type": "LINEAR",
+   "n_states": 44,
+   "duration_s": 0.331031589,
+   "latency_s": 0.018561373000011372,
+   "target_pos": [
+    -0.4163572052599798,
+    -0.1469687054974968,
+    1.412898718288071
+   ],
+   "t_wall": 1790898504.8971195,
+   "env_step": 180
+  },
+  {
+   "event": "execute",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-73c2494e8a",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.0052249492162588385,
+   "pos_err_mean": 0.003368031759789799,
+   "rot_err_max_deg": 0.8976317048414654,
+   "joint_err_max": 0.02157958691931261,
+   "joint_err_final": 0.016382794243306353,
+   "final_pos_err": 0.0025573501578216133,
+   "final_rot_err_deg": 0.5616043866316387,
+   "planned_duration_s": 0.331031589,
+   "planning_latency_s": 0.018561373000011372,
+   "n_states": 44,
+   "time_scale": 2.086731205959638,
+   "t_wall": 1790898505.9493554,
+   "env_step": 195
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-73c2494e8a",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-d45a8be8fe",
+   "t_wall": 1790898505.9576566,
+   "env_step": 195
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "place",
+   "attempt": 1,
+   "ok": true,
+   "reason": "released_earlier",
+   "details": {
+    "retreat_ok": true
+   },
+   "t_wall": 1790898505.9577184,
+   "env_step": 195
+  },
+  {
+   "event": "skill",
+   "skill": "place",
+   "ok": true,
+   "reason": "released_earlier",
+   "attempts": 2,
+   "steps": 106,
+   "t_wall": 1790898505.9577205,
+   "env_step": 195
+  }
+ ],
+ "world_sync": {
+  "n_objects": 4,
+  "max_pose_error_m": 0.0,
+  "max_rot_error_deg": 0.0
+ },
+ "goal": [
+  {
+   "predicate": "in",
+   "args": [
+    "black_book_1",
+    "desk_caddy_1_back_contain_region"
+   ],
+   "subgoal_index": 0
+  }
+ ],
+ "plan": [
+  "pick:black_book_1_main",
+  "place:black_book_1_main"
+ ],
+ "video": "runs/eval_9b02207/B/task5/episodes/t5_i12_0898be94/agentview.mp4",
+ "steps": 195,
+ "t_end": 1790898506.0217931,
+ "wall_time_s": 17.19705605506897
+}

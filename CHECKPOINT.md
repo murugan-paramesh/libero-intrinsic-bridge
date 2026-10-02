@@ -143,3 +143,16 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
 - Resume consequence to disclose: tasks 0 and 6 were completed by a fresh TaskSession (new planner
   server process) for their last 3 / 1 init states; everything else is as in an uninterrupted run.
 - If interrupted again: repeat the same procedure for the missing (task, init) pairs only.
+
+### 2026-10-02 02:25 UTC (session 5): 9b02207 protocol run complete, 74/100; ce7685b stays recommended
+- Run finished 02:21 UTC (100/100 episodes; 26 before the interruption, 74 after the resume).
+  Result 74/100: 10, 9, 10, 0, 9, 8, 9, 9, 10, 0. Archived: evaluations/candidate_9b02207
+  (+ resume_manifest.json); docs/results_9b02207.*, docs/comparison_9b02207.md,
+  docs/comparison_ce7685b_to_9b02207.md; evidence/eval_episodes_9b02207 (6 episodes, 6.2 MB).
+- Decision by the declared criteria: ce7685b (76/100) remains the recommended candidate
+  (9b02207 loses one episode each on tasks 1 and 4, gains none). Report 11.6-11.7, failure
+  table 8, methods 4-5, README updated.
+- Status classification: reproducible partial submission (tasks 3 and 9 unresolved, blockers
+  documented with records and videos).
+- Next experiment (defined, not started): Intrinsic collision verdict inside the task 9 release
+  search (methods.md section 5, rank 1).

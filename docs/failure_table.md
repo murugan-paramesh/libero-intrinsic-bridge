@@ -96,3 +96,20 @@ fingertip push in this scene with the hand poses probed.
 | 9 | PLAN/TRACK (approach): LINEAR approach from the reached posture fails ("FinePathIK"), ANY fallback reaches the grasp on init 1 but the pre-grasp tracking error (3-5 cm, 9-11 deg) at the joint-2 limit aborts the attempts | joint error after the free-space motion 0.6-1.0 rad although the TCP is within 2 cm (OSC null-space drift) | LINEAR dry-run validation + ANY fallback (both recorded) | 0/2; insertion stage not reached |
 | 3 | PLAN (stage A approach): same FinePathIK mechanism on init 0 | `precontact_path_check` feasible, `execute.joint_err_final` 0.64-0.99 rad, LINEAR seg0 fails | ANY fallback reaches the panel; segment 1 fails | 0/1 |
 | 0,1,2,4,5,6,7,8 | regression | - | - | 16/16 at b205f2a and 16/16 at 9b02207 |
+
+## 8. Candidate 9b02207, repeated evaluation (100 episodes, evaluations/candidate_9b02207, 74/100; interrupted at 26 episodes by a container restart and resumed under the same protocol, see resume_manifest.json)
+
+| task | failures | stage | observed evidence |
+|---|---|---|---|
+| 1 | 1/10 | REACH after TRACK | second pick: approach tracking error 8.2 cm, then no reachable grasp for two attempts (17); 10/10 at ce7685b |
+| 3 | 10/10 | ARTIC (stage A 5, stage B 5) | stage A: ANY-fallback approach reaches the panel, next LINEAR segment NOT_FOUND (10, 13, 14, 18); pre-contact unreachable (12); stage B after relocating the wine bottle: every probed horizontal contact pose rejected (11, 15, 16, 17, 19) |
+| 4 | 1/10 | PLACE | both places completed (xy 2.6 / 1.2 cm), goal predicate false; 8.6 cm pre-grasp tracking error near the first placed mug (11); 10/10 at ce7685b |
+| 5 | 2/10 | PLACE (1), REACH (1) | same states and reasons as ce7685b (12, 18) |
+| 6 | 1/10 | PLACE | second mug 76 cm from target after transport, released outside the region box (19); state 18 (failed at ce7685b) succeeded |
+| 7 | 1/10 | TRACK | same as ce7685b (11) |
+| 9 | 10/10 | PLACE (7), TRACK (3) | relocation executed on 10/10; mug grasped on 7/10 and a release target inside the cavity found, but Intrinsic IK reports hand (gripper0_right_gripper) vs microwave_1_main.link at the pre-place/release configuration (11, 13, 15, 16, 17, 18, 19); pre-grasp after relocation 2.7-4.3 cm / 7-11 deg off at the joint-2 limit (10, 12, 14) |
+
+Evidence episodes (video + record + request log) for this run: `evidence/eval_episodes_9b02207`
+(task 9 insertion failure 13, task 9 tracking failure 10, task 3 stage A 10 and stage B 11,
+task 1 regression 17, task 6 slip 19). The other 94 episodes exist only as records
+(`evaluations/candidate_9b02207`); their videos are in the temporary `runs/` directory.

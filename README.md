@@ -16,10 +16,14 @@ per task disjoint from development states, budget 1,200 steps, seed 0):
 |---|---|---|
 | baseline `76267bf` (archived, unchanged) | **62/100** (Wilson 95% CI 52-71%) | 10, 5, 10, 0, 10, 2, 9, 8, 8, 0 |
 | candidate `5b713c6` | **73/100** (CI 64-81%) | 10, 9, 10, 0, 10, 8, 9, 9, 8, 0 |
-| candidate `ce7685b` (current) | **76/100** (CI 67-83%) | 10, 10, 10, 0, 10, 8, 9, 9, 10, 0 |
+| candidate `ce7685b` (**recommended**) | **76/100** (CI 67-83%) | 10, 10, 10, 0, 10, 8, 9, 9, 10, 0 |
+| candidate `9b02207` (later code, archived, not recommended) | 74/100 (CI 65-82%) | 10, 9, 10, 0, 9, 8, 9, 9, 10, 0 |
 
 Per-task before/after with the episodes that changed: `docs/comparison_ce7685b.md`,
-`docs/comparison_5b713c6_to_ce7685b.md`. Every motion executed was an Intrinsic
+`docs/comparison_5b713c6_to_ce7685b.md`, `docs/comparison_ce7685b_to_9b02207.md` (the later
+candidate loses one episode each on tasks 1 and 4 and gains none, so ce7685b stays recommended;
+its run was interrupted by a container restart and resumed under the protocol, see
+`docs/report.md` 11.6 and `evaluations/candidate_9b02207/resume_manifest.json`). Every motion executed was an Intrinsic
 `PlanTrajectory` result (candidate ce7685b: 1,321 plans, mean 22 ms, max 96 ms, no timeouts);
 every success is within LIBERO's 600-step horizon. Tasks 3 and 9 remain unsolved
 (docs/report.md 10.2-10.3, docs/methods.md). A separate held-out run of candidate 5b713c6 on
@@ -75,6 +79,33 @@ python -m libero_intrinsic.eval.report runs/eval --out docs/results.json   # res
 python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/eval_<rev>/A ; python scripts/evaluate.py --tasks 5 6 7 8 9 --out runs/eval_<rev>/B   # repeated evaluation of a new candidate (same protocol)
 python scripts/compare_evaluations.py evaluations/baseline_76267bf runs/eval_<rev> --out docs/comparison_<rev>.md   # per-task before/after
 python scripts/archive_evaluation.py runs/eval_<rev> evaluations/candidate_<rev>   # commit the episode records (no videos)
+```
+
+## Evidence index (committed)
+| what | where |
+|---|---|
+| 100 episode records per evaluated revision (success flag, steps, every Intrinsic request id, skill events) | `evaluations/baseline_76267bf`, `evaluations/candidate_5b713c6`, `evaluations/heldout_5b713c6`, `evaluations/candidate_ce7685b`, `evaluations/candidate_9b02207` |
+| results tables and per-task comparisons | `docs/results*.md`, `docs/comparison_*.md`, `docs/heldout_5b713c6.md` |
+| videos + records + Intrinsic request logs for the recommended candidate (one success per solved task, failures for tasks 3, 5, 6, 7, 9) | `evidence/eval_episodes_ce7685b` (`MANIFEST.json` maps task -> episode dir) |
+| videos + records for the later candidate's new failure modes (task 9 insertion, task 3 stages, task 1/6 regressions) | `evidence/eval_episodes_9b02207` |
+| failure stages with evidence per run | `docs/failure_table.md` |
+| method families, Intrinsic support, experiments, outcomes | `docs/methods.md` |
+
+Videos of the other episodes exist only in the temporary `runs/` directory of the session
+container and are not part of the repository.
+
+## Final review sequence
+```bash
+# 0. setup as above (pinned sources, venv, Bazel build of the planner server, proto stubs), then:
+python -m pytest -q
+python scripts/validate_kinematics.py --task 0                                # Intrinsic FK/IK vs MuJoCo
+python scripts/demo_motion.py --task 0 --init 0                               # one planned motion in LIBERO
+git checkout ce7685b   # recommended candidate (detached HEAD; `git checkout -` returns)
+python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/review/A && python scripts/evaluate.py --tasks 5 6 7 8 9 --out runs/review/B   # ~2.5 h on 4 cores, run the halves in parallel
+git checkout -
+python -m libero_intrinsic.eval.report runs/review --out runs/review/results.json
+python scripts/compare_evaluations.py evaluations/candidate_ce7685b runs/review --labels archived_ce7685b your_rerun
+cat evidence/eval_episodes_ce7685b/MANIFEST.json                              # task -> video/record
 ```
 
 ## Exact Intrinsic Core integration

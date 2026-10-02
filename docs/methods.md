@@ -82,7 +82,8 @@ Provenance | Revision captured at process start + dirty flag | - | all runs | re
 |---|---|---|---|---|---|
 | 76267bf baseline | 62/100 | 1,580 | 30 / 110 ms | 17 / 1,017 | - |
 | 5b713c6 | 73/100 | 1,204 | 24 / 121 ms | 11 / 1,204 | evaluated with the cross-episode attachment defect |
-| ce7685b | 76/100 | 1,321 | 22 / 96 ms | 21 / 1,321 | task 3 episodes 13 min wall on average, max 26 min (IK probes with 5 s solver timeouts), others unchanged |
+| ce7685b (recommended) | 76/100 | 1,321 | 22 / 96 ms | 21 / 1,321 | task 3 episodes 13 min wall on average, max 26 min (IK probes with 5 s solver timeouts), others unchanged |
+| 9b02207 | 74/100 | 1,388 | 22 / 92 ms | 30 / 1,175 | run interrupted after 26 episodes and resumed under the protocol (report 11.6); task 3 episodes 6.6 min on average (max 10.5); loses one episode each on tasks 1 and 4, no gains; task 9 now fails at the insertion (hand vs microwave body in Intrinsic's IK) instead of before it |
 
 Unresolved feasibility questions: (a) task 3: is any single-contact push able to close the last
 3-6 cm with the bowl against the panel, or must the bowl be held back (two contacts) or placed
@@ -92,7 +93,7 @@ yes, the candidate generator did not produce it)? (c) task 1 held-out: pre-manip
 milk carton vs a thinner-finger approach; (d) whether Intrinsic's `DynamicCartesianLimits` on
 transport segments reduces the residual slip/goal-not-reached cases (tasks 5, 6).
 
-## 5. Ranked work queue (end of session 4, evidence-based)
+## 5. Ranked work queue (end of session 5, evidence-based)
 
 | rank | item | failures affected | evidence strength | reusable fix? | cost | risk |
 |---|---|---|---|---|---|---|
@@ -101,3 +102,12 @@ transport segments reduces the residual slip/goal-not-reached cases (tasks 5, 6)
 | 3 | Task 1 held-out: butter against the milk carton | 9/100 held-out (protocol 10/10) | IK collision pairs (finger/hand vs carton 95x) | pre-manipulation skill (push carton) | high | medium |
 | 4 | Tasks 5/6 goal-not-reached after a completed place (2-3/100) | 3/100 | records only (no video review yet) | unknown | low to diagnose | low |
 | 5 | Task 7 pre-grasp tracking error (1/100) | 1/100 | tracking log | executor gains | low | medium (all tasks) |
+
+Update after the 9b02207 protocol run (report 11.6):
+
+| rank | item | failures affected | evidence strength | reusable fix? | cost | risk |
+|---|---|---|---|---|---|---|
+| 1 | Task 9: use Intrinsic's collision verdict (CheckCollisions / IK probe) in the release search instead of the adapter's hand box; then search deeper level grasps | 7/100 (PLACE) | 7 records name the pair hand vs microwave_1_main.link | place skill (all container tasks; regression required) | 2 dev runs + regression | medium |
+| 2 | Task 3: stage B needs a contact pose with the bowl against the panel: two-contact strategy (hold the bowl back, or push on the panel edge beside the bowl) | 10/100 | 10 records (5 stage A, 5 stage B) | task-specific composite | 2-3 dev runs (6 min each) | medium |
+| 3 | Pre-grasp tracking near joint limits (tasks 9: 3, 7: 1, 1: 1, 4: 1) | 6/100 | tracking logs; joint-2 limit posture (report 11.2) | posture="margin" IK for pre-grasp, re-plan from the reached pose | 1 dev run + regression | medium (all tasks) |
+| 4 | Transport slip (task 6: 1, task 5: 1) | 2/100 | grasp verified then object lost; flips between runs | DynamicCartesianLimits on transport segments (Intrinsic, category 1) | 1 run | low |
