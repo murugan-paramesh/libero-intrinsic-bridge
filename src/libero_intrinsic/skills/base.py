@@ -14,6 +14,12 @@ from libero_intrinsic.intrinsic.client import IntrinsicClient, IntrinsicRequestE
 from libero_intrinsic.intrinsic.world_sync import WorldSync
 
 
+class GoalReached(Exception):
+    """Raised from the per-step hook when LIBERO reports done (the goal predicate holds): the
+    episode terminates exactly like LIBERO's own evaluation loop (libero/lifelong/metric.py breaks
+    on the first done)."""
+
+
 class BudgetExceeded(RuntimeError):
     pass
 

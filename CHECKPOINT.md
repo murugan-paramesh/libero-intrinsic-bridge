@@ -166,3 +166,26 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
   (session 5 rows + queue) updated. Regression suite not needed (no source change retained).
 - Next: methods.md section 5 rank 1 (ANY re-plan from the reached configuration for the
   pre-place correction; posture-margin transport IK), then task 3 two-contact strategy.
+
+### 2026-10-02 19:50 UTC (session 6, final pass): experimental HEAD, not evaluated; ce7685b (76/100) remains the verified fallback
+- New dev tool `scripts/stage_lab.py` (real skills up to a stage, post-stage audit, bounded candidate
+  search geometry -> Intrinsic IK -> LINEAR dry-run -> physical execution with state restore; dev only).
+- Task 3 first divergence (measured, runs/lab/t3_*): the bowl is released 3-4 cm above a spot whose
+  footprint overlaps the drawer's inner front wall and lands tilted 30 deg; every deeper spot is
+  rejected because a level top-down hand over a flat bowl hits the handles of the drawers above
+  (points y >= 0.188-0.197, z 1.007-1.097). Fixes kept: no raising over object-vs-wall blockers,
+  carried-object rotation chosen by the release search, finger zone = measured finger gap, bounded
+  release opening, release-tilt family (+-10/20 deg), tilted grasps join the placement assessment
+  (top-down picks only), stage B attempted after a failed stage A, riders excluded from the stage-B
+  probe, relocation only of bodies with a free joint, higher contact heights + base-turned posture.
+  Task 3 still unsolved on dev state 0 (stage B contact: link 5 vs wine rack / wrist vs table / NOT_FOUND).
+- Task 9 first divergence (measured): slip compensation mistook the 8 cm pre-place offset for slip
+  on side approaches (fixed); pre-contact postures now ordered by reachability from the current
+  configuration; ANY fallback for later push segments; start-state recovery with a joint-space
+  retreat; door push slowed, goal re-checked after the retreat (door rebounds). Official success
+  accounting added: LIBERO's metric counts done at any step (libero/lifelong/metric.py), the episode
+  now terminates on the first done; records keep success_at_end and the goal atoms.
+- RESULT: Task 9 complete official successes on dev states 3 and 4 (runs/dev2/task9_official:
+  t9_i3 goal at step 1084, t9_i4 at step 870; both atoms true, door qpos > 0). States 0-2 fail at
+  the pick after relocation (pre-grasp posture, joint-2 limit); fix under test (pool ordering).
+- Resume: `python scripts/run_task.py --task 9 --inits 0 1 2`; regression `scripts/evaluate.py --tasks 0 1 2 4 5 6 7 8 --inits 0 1`.

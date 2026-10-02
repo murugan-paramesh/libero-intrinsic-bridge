@@ -134,6 +134,8 @@ class LiberoEnv:
             obs, _, _, _ = self.env.step(np.zeros(7))
         self._last_obs = obs
         self.step_count = 0
+        self.done_seen = False
+        self.first_done_step = None
         return obs
 
     def close(self):
@@ -145,10 +147,41 @@ class LiberoEnv:
         obs, reward, done, info = self.env.step(action)
         self._last_obs = obs
         self.step_count += 1
+        if done and not self.done_seen:      # official success accounting: LIBERO's metric counts
+            self.done_seen = True            # an episode as successful when done is reported at any step
+            self.first_done_step = self.step_count
         return obs, reward, bool(done), info
 
     def check_success(self) -> bool:
         return bool(self.env.check_success())
+
+    def goal_atoms_eval(self):
+        """Official goal atoms with their current truth values (LIBERO's own predicate functions)."""
+        inner = self.env.env
+        out = []
+        for state in inner.parsed_problem["goal_state"]:
+            try:
+                out.append({"atom": list(state), "true": bool(inner._eval_predicate(state))})
+            except Exception as e:   # never let diagnostics break an episode
+                out.append({"atom": list(state), "error": str(e)[:80]})
+        return out
+
+    def final_state_audit(self):
+        """Object poses, articulated joint positions and goal atoms at the end of an episode."""
+        m = self.sim.model
+        objs = {}
+        for name in self.object_names():
+            try:
+                p, _ = self.body_pose(self.object_root_body(name))
+                objs[name] = [float(v) for v in p]
+            except Exception:
+                pass
+        joints = {}
+        for j in range(m.njnt):
+            jn = m.joint_id2name(j)
+            if jn and not jn.startswith(("robot0", "gripper0")) and int(m.jnt_type[j]) in (2, 3):   # slide / hinge
+                joints[jn] = float(self.sim.data.get_joint_qpos(jn))
+        return {"objects": objs, "articulations": joints, "goal_atoms": self.goal_atoms_eval()}
 
     # ------------------------------------------------------------------ state access
     @property

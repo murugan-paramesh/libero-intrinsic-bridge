@@ -208,11 +208,27 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
             door_body = f"{target}_microdoorroot"
             joint = f"{target}_microjoint"
             skills.append(PushSkill(door_body, *microwave_close_geometry(env, door_body, joint), label="close_microwave",
-                                    extra_contact_bodies=[f"{target}_main"]))
+                                    extra_contact_bodies=[f"{target}_main"],
+                                    progress_fn=lambda joint=joint: float(env.joint_qpos(joint)),   # door angle (closing increases it)
+                                    time_scale=1.5))
         else:
             raise NotImplementedError(f"no skill for goal atom {atom}")
     ctx.params["support_bodies"] = sorted(support_bodies)
     return skills
+
+
+def is_movable_body(env, body: str) -> bool:
+    """A body that can be relocated by manipulation: it has its own free joint (fixtures such as
+    the wine rack or the cabinet have none and must never be relocation candidates)."""
+    m = env.model
+    try:
+        bid = m.body_name2id(body)
+    except Exception:
+        return False
+    for j in range(m.njnt):
+        if int(m.jnt_bodyid[j]) == bid and int(m.jnt_type[j]) == 0:   # mjJNT_FREE
+            return True
+    return False
 
 
 def free_table_spot(env, ctx, obstacle, table_body, all_movable, keep_away_xy, keep_away_r=0.25, record=True):
@@ -275,7 +291,7 @@ class PickWithRelocation(Skill):
             self.pick.assess_only = False
         a = self.pick.last_assessment
         blockers = [b for b, n in sorted(a.get("blockers", {}).items(), key=lambda kv: -kv[1])
-                    if b in self.all_movable and b not in self.goal_bodies]
+                    if b in self.all_movable and b not in self.goal_bodies and is_movable_body(self.env, b)]
         if a.get("n_compatible", 1) > 0 or not blockers:
             r = self.pick.run(ctx)
             if r.ok or not blockers:
@@ -316,13 +332,17 @@ class DrawerCloseComposite(Skill):
     def attempt(self, ctx, i):
         ra = self.a.run(ctx)
         if not ra.ok:
-            return SkillResult(self.name, False, "stage_a:" + ra.reason)
+            # stage A (top-down partial push) could not even start on some states (posture at the
+            # reach limit); stage B's run-time contact selection is independent of it, so it is
+            # still attempted (recorded)
+            ctx.record(event="stage_a_failed_continue", reason=ra.reason[:120])
         if self.check_fn():
             return SkillResult(self.name, True)
         rb = self.b.run(ctx)
         if rb.ok:
             return SkillResult(self.name, True)
-        blockers = [b for b in ctx.params.get("last_push_blockers", []) if b not in self.goal_bodies and b != self.drawer_body]
+        blockers = [b for b in ctx.params.get("last_push_blockers", []) if b not in self.goal_bodies and b != self.drawer_body
+                    and is_movable_body(self.env, b)]
         if not blockers:
             return SkillResult(self.name, False, "stage_b:" + rb.reason)
         obstacle = blockers[0]
@@ -412,7 +432,9 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
     and end-of-travel poses all have collision-free Intrinsic IK solutions is used (category 2
     orchestration around ComputeIk; no local IK)."""
     LATERAL = (-0.06, -0.045, -0.075, -0.03, -0.09, 0.0, 0.04)   # metres along the panel (prior order)
-    HEIGHTS = (0.4, 0.45, 0.35, 0.5, 0.6)                          # fraction of the panel height (7.4 cm hand vs 6.9 cm panel: ~0.4 keeps it between table and panel top)
+    # fraction of the panel height; observed with the rider-aware probe: at 0.35-0.5 the wrist
+    # (link 6) touches the table at the end of the travel, so higher contacts come first
+    HEIGHTS = (0.8, 0.65, 0.5, 0.4)
 
     def contact_fn(ctx=None):
         axis, _ = joint_world_axis_and_anchor(env, joint)  # slide axis (world); open = negative qpos
@@ -434,7 +456,16 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
         chosen, tried = None, []
         if ctx is not None:
             rs = ctx.env.robot_state()
-            cs = ctx.sync.grasp_collision_settings(drawer_body, [(ctx.client.robot, b) for b in ctx.params.get("push_extra", [])])
+            # bodies riding inside the drawer (the bowl) travel with it: at the mid/end probe poses
+            # they are not where the (stale) world has them, so they are excluded from the PROBE
+            # only; the executed segments re-synchronise the world and check them at their true poses
+            c_r, rot_r, half_r = geo.site_box_world(env, joint.replace("_level", "_region"))   # white_cabinet_1_bottom_level -> white_cabinet_1_bottom_region
+            riders = [b for b in ctx.sync.bodies if b != drawer_body and np.all(np.abs(rot_r.T @ (env.body_pose(b)[0] - c_r)) <= half_r)]
+            extra_pairs = [(ctx.client.robot, b) for b in ctx.params.get("push_extra", [])]
+            extra_pairs += [(ctx.client.robot, b) for b in riders] + [(f, b) for f in ctx.sync.fingers.values() for b in riders]
+            if riders:
+                ctx.record(event="push_probe_riders_excluded", riders=riders)
+            cs = ctx.sync.grasp_collision_settings(drawer_body, extra_pairs)
             # posture diversity: the numerical IK is seeded; the current (post-push) configuration,
             # the episode's home configuration and two fixed elbow postures are tried per pose
             seeds = [rs.q] + ([ctx.params["home_q"]] if "home_q" in ctx.params else []) + \
@@ -442,7 +473,10 @@ def drawer_close_geometry(env, drawer_body: str, joint: str):
             lim = ctx.env.joint_limits()
             # posture families (JointPositionLimits IK constraint): unrestricted, shoulder forward
             # (joint 2 >= 0.3 rad: the forearm rises faster and clears objects next to the cabinet)
-            postures = [("free", None), ("shoulder_fwd", (np.maximum(lim[:, 0] + 0.05, [-9, 0.3, -9, -9, -9, -9, -9]), lim[:, 1] - 0.05))]
+            postures = [("free", None), ("shoulder_fwd", (np.maximum(lim[:, 0] + 0.05, [-9, 0.3, -9, -9, -9, -9, -9]), lim[:, 1] - 0.05)),
+                        # base turned toward the drawer side (joint 1 >= 0.15 rad): keeps the forearm away
+                        # from fixtures on the other side (observed: link 5 vs the wine rack)
+                        ("base_left", (np.maximum(lim[:, 0] + 0.05, [0.15, -9, -9, -9, -9, -9, -9]), lim[:, 1] - 0.05))]
             for pname, jl in postures:
                 for xo in LATERAL:
                     for h in HEIGHTS:

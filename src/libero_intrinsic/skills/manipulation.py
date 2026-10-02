@@ -14,6 +14,7 @@ Place: object-relative target -> tcp target via the grasp transform -> plan tran
 from __future__ import annotations
 
 import dataclasses
+import os
 import re
 from typing import Callable, List, Optional, Sequence, Tuple
 
@@ -106,8 +107,18 @@ def _recover_start_state(ctx: SkillContext, label: str, err: IntrinsicRequestErr
                                        motion_type="LINEAR", timeout_s=5.0, caller_id=label + "_recover")
         ctx.execute(traj, ExecutionConfig(gripper=0.0), label + "_recover")
     except IntrinsicRequestError as e2:
-        ctx.record(event="start_state_recovery_failed", label=label, reason=str(e2)[:160])
-        return False
+        # near a joint limit the linear retreat has no path: configuration-space retreat to the
+        # nearest IK solution of the same raised pose (same contact pair excluded)
+        try:
+            sols, _, _ = ctx.client.ik(rs.tcp_pos + np.array([0, 0, 0.05]), rs.tcp_rot, rs.q, max_solutions=8, collision_settings=cs_r)
+            w = np.array([3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.5])
+            sols.sort(key=lambda q: float(np.sum(w * (np.asarray(q) - rs.q) ** 2)))
+            traj = ctx.client.plan_to_joints(rs.q, sols[0], collision_settings=cs_r, motion_type="ANY", timeout_s=5.0, caller_id=label + "_recover_any")
+            ctx.record(event="start_state_recovery_any", label=label)
+            ctx.execute(traj, ExecutionConfig(gripper=0.0), label + "_recover_any")
+        except (IntrinsicRequestError, IndexError) as e3:
+            ctx.record(event="start_state_recovery_failed", label=label, reason=str(e2)[:120] + " | any: " + str(e3)[:80])
+            return False
     sync.sync()
     return True
 
@@ -255,16 +266,31 @@ class PickSkill(Skill):
             # placement target come first (e.g. a bowl going into a drawer under a cabinet must be
             # held so that the wide hand stays in front of the cabinet), ties keep the grasp score
             compat, whys = [], []
-            for c in cands[: max(self.p.max_candidates, 48 if self.p.side_grasp else 24)]:
-                try:
-                    ok, drop = self.place_skill.grasp_compatible(env, sync, c.pos, c.rot)
-                    if not ok:
-                        whys.append((c.label, getattr(self.place_skill, "last_compat_why", "")))
-                except Exception as e:   # geometry failure must not block picking
-                    ctx.record(event="grasp_placement_check_error", reason=str(e)[:200])
-                    ok, drop = True, 0.0
-                compat.append((c, ok, drop))
-            rest = cands[len(compat):]
+
+            def assess(pool):
+                for c in pool:
+                    try:
+                        ok, drop = self.place_skill.grasp_compatible(env, sync, c.pos, c.rot, finger_gap=float(c.width))
+                        if not ok:
+                            whys.append((c.label, getattr(self.place_skill, "last_compat_why", "")))
+                    except Exception as e:   # geometry failure must not block picking
+                        ctx.record(event="grasp_placement_check_error", reason=str(e)[:200])
+                        ok, drop = True, 0.0
+                    compat.append((c, ok, drop))
+            # assess enough candidates to cover every yaw family (the score order prefers yaws near 0,
+            # but the placement may need the wide hand axis along one direction: task 3 yaw-90 family)
+            n_assess = max(self.p.max_candidates, 48 if self.p.side_grasp else 64)
+            assess(cands[:n_assess])
+            rest = cands[n_assess:]
+            if not self.p.side_grasp and not any(ok for _, ok, _ in compat) and not any("tilt" in c.label for c, _, _ in compat):
+                # no level grasp admits a valid release at the target (e.g. the hand would hit the
+                # cabinet above the drawer): a pitched hand carries the object level but keeps the
+                # palm away from the obstacle, so tilted pinch grasps join the assessment
+                tilted = [c for c in geo.grasp_candidates(env, self.body, yaws=self.p.yaws, tilts=(np.radians(20), np.radians(35)))
+                          if c.label not in self._tried and "tilt" in c.label]
+                tilted = clear(tilted)
+                ctx.record(event="grasp_tilted_for_placement", n_tilted=len(tilted))
+                assess(tilted[:32])
             # feasible grasps first, ordered by the drop height after release (1 cm bins: a grasp
             # that lets the object hang deeper into a container is released closer to the floor),
             # ties keep the grasp score order
@@ -323,6 +349,13 @@ class PickSkill(Skill):
                     pool += [q for q in more if not any(np.allclose(q, s0, atol=1e-3) for s0 in pool)]
                 except IntrinsicRequestError:
                     pass
+            # configurations the OSC controller can reach first: nearest to the current one
+            # (weighted joint distance) among those with a joint-limit margin (observed on task 9:
+            # a far pre-grasp branch was reached 0.4-1.0 rad off and the approach then failed)
+            lim_ = env.joint_limits()
+            w_ = np.array([3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.5])
+            margin_ = lambda q: float(min(np.min(np.asarray(q) - lim_[:, 0]), np.min(lim_[:, 1] - np.asarray(q))))
+            pool.sort(key=lambda q: (margin_(q) < 0.12, float(np.sum(w_ * (np.asarray(q) - rs.q) ** 2))))
             q_pre, n_tested = None, 0
             for q in pool:
                 n_tested += 1
@@ -469,30 +502,49 @@ class PlaceSkill(Skill):
             # every equally fitting rotation is a candidate (some violate the wrist joint limit)
             fits = placement.fit_rotations(env, self.region, self.body)
             best_cost = fits[0][1]
-            angles = [a for a, cost in fits if cost <= best_cost + 0.005][:4]
+            angles = [a for a, cost in fits if cost <= best_cost + 0.005][:6]
             if any(abs(a) > 1e-6 for a in angles):
                 rot_options = [R.from_euler("z", a).as_matrix() @ R_tcp for a in angles]
                 ctx.record(event="place_fit_rotation", yaw_deg=[float(np.degrees(a)) for a in angles], overhang_m=float(best_cost))
-        if len(rot_options) > 1 or rot_options[0] is not R_tcp:
-            cs_probe = sync.transport_collision_settings(self.support)
-            t0, _ = targets[0]
-            lim = env.joint_limits()
-            best, best_margin = None, -1.0
-            for Rc in rot_options:
-                probe = np.array([t0[0], t0[1], t0[2] + 0.15]) - Rc @ tcp_t_obj_p  # well above the target
-                try:
-                    sols, _, _ = nearest_ik(ctx, probe, Rc, rs.q, cs_probe, n=4)
-                except IntrinsicRequestError:
-                    sols = []
-                for q in sols:
-                    margin = float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q))))
-                    if margin > best_margin:
-                        best, best_margin = Rc, margin
-            R_tcp = best if best is not None else rot_options[0]
-            ctx.record(event="place_rotation_choice", limit_margin_rad=float(best_margin))
         obj_local = (geo.object_point_cloud(env, self.body, spacing=0.012) - rs.tcp_pos) @ rs.tcp_rot
-        width = float(2 * max(np.abs(obj_local[:, 0]).max(), 0.005))
+        # finger-zone width = the measured finger gap (an edge/rim grasp holds a 1 cm wall of a
+        # 10 cm object: the fingers open from that gap, not from the object's extent; observed on
+        # task 3, where the fully open finger zone reached the drawer's side walls)
+        width = float(max(np.sum(np.abs(rs.finger_q)), 0.005))
         targets = self._region_box_targets(ctx, targets, obj_origin_above_bottom)
+        if len(rot_options) > 1 or rot_options[0] is not R_tcp:
+            # Choose the carried-object rotation by the SAME release search used at place time:
+            # the option whose release needs the smallest drop wins (tie-break: joint-limit margin
+            # of an IK solution at its pre-place pose). Observed before: a probe pose 15 cm above
+            # the target had no IK for any option (hand vs the upper drawers' handles), so the
+            # first option was always used and the hand's wide axis lay along the drawer axis.
+            cs_probe = sync.transport_collision_settings(self.support)
+            lim = env.joint_limits()
+            best, best_key, choice = None, None, []
+            for ri, Rc in enumerate(rot_options):
+                found = self._release_search(env, sync, targets, tcp_t_obj_p, Rc, obj_local, width, obj_origin_above_bottom,
+                                             max_raise=0.08, max_candidates=24,
+                                             record=lambda ri=ri, **kw: ctx.record(rotation_option=ri, **kw) if kw.get("event") == "place_spot_rejected" else None)
+                if found is None:
+                    choice.append([None, None])
+                    continue
+                _, support_z_c, tcp_rel_c, tcp_pre_c, _ = found
+                Rl = self.last_release_rot
+                drop = float((obj_local @ Rl.T + tcp_rel_c)[:, 2].min() - support_z_c)
+                margin = -1.0
+                try:
+                    sols, _, _ = nearest_ik(ctx, tcp_pre_c, Rl, rs.q, cs_probe, n=4)
+                    for q in sols:
+                        margin = max(margin, float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q)))))
+                except IntrinsicRequestError:
+                    pass
+                choice.append([round(drop, 3), round(margin, 3)])
+                key = (round(drop, 2), -margin)
+                if margin > 0 and (best_key is None or key < best_key):
+                    best, best_key = Rc, key
+            R_tcp = best if best is not None else rot_options[0]
+            ctx.record(event="place_rotation_choice", options=choice,
+                       chosen=(next(i for i, Rc in enumerate(rot_options) if Rc is best) if best is not None else -1))
         found = self._release_search(env, sync, targets, tcp_t_obj_p, R_tcp, obj_local, width, obj_origin_above_bottom,
                                      record=ctx.record)
         if found is None:
@@ -508,6 +560,7 @@ class PlaceSkill(Skill):
                 tcp_pre = tcp_pre + np.array([0, 0, 0.02])
         else:
             target_origin, support_z, tcp_release, tcp_pre, _ = found
+            R_tcp = self.last_release_rot      # the search may have chosen a pitched hand (release-tilt family)
             approach = R_tcp[:, 2]
         cs_transport = sync.transport_collision_settings(self.support)
         # Transport rule: the carried object must NOT pass through its future support (container
@@ -532,7 +585,12 @@ class PlaceSkill(Skill):
         drift = sync.refresh_attachment(self.body)
         rs = env.robot_state()
         obj_now = env.body_pose(self.body)[0]
-        xy_corr = np.array([target_origin[0] - obj_now[0], target_origin[1] - obj_now[1], 0.0])
+        # predicted object position at the release = release tcp + the measured tcp->object offset
+        # (the robot is at the PRE-place pose here: for a side approach the pre pose is 8 cm in
+        # front of the release, which must not be mistaken for slip; observed on task 9, where the
+        # "correction" doubled the insertion depth and drove the hand into the microwave frame)
+        predicted = tcp_release + (obj_now - rs.tcp_pos)
+        xy_corr = np.array([target_origin[0] - predicted[0], target_origin[1] - predicted[1], 0.0])
         # vertical: keep the planned tcp-to-object bottom distance consistent with the new offset
         box_now = geo.object_box(env, self.body)
         z_corr = (support_z + self.p.release_gap) - (box_now.bottom_z - (rs.tcp_pos[2] - tcp_release[2]))
@@ -573,7 +631,8 @@ class PlaceSkill(Skill):
             except IntrinsicRequestError as e:
                 ctx.record(event="place_settle_failed", reason=str(e)[:200])
         # release: open only as much as needed (fingers stay clear of container walls)
-        ctx.open_gripper(int(np.ceil((geo.object_box(env, self.body).half_extents_world.max() * 2 + 0.03) / 0.01)))
+        gap_now = float(np.sum(np.abs(env.robot_state().finger_q)))
+        ctx.open_gripper(int(np.ceil(min(geo.GRIPPER_MAX_OPENING, gap_now + 0.03) / 0.01)))
         sync.detach(self.body)
         self._released = True
         ctx.hold(0.0, self.p.settle_steps)
@@ -676,7 +735,8 @@ class PlaceSkill(Skill):
                 return False
         return True
 
-    def _release_search(self, env, sync, targets, tcp_t_obj_p, R_tcp, obj_local, width, obj_origin_above_bottom, record=None):
+    def _release_search(self, env, sync, targets, tcp_t_obj_p, R_tcp, obj_local, width, obj_origin_above_bottom, record=None,
+                        max_raise: float = 0.15, max_candidates: int = 10 ** 6):
         """Choose the first placement candidate whose release AND pre-place poses are geometrically
         valid: hand/fingers clear of every other body, carried object clear of every non-support
         body (8 mm) and of the support's walls (5 mm), object above a container rim at the
@@ -689,9 +749,31 @@ class PlaceSkill(Skill):
         non_support = [b for b in others if b not in self.support
                        and np.linalg.norm(env.body_pose(b)[0][:2] - targets[0][0][:2]) < 0.6]
         trees = {b: cKDTree(geo.object_point_cloud(env, b, spacing=0.012)) for b in non_support + list(self.support)}
+        # point clouds for the hand/finger clearance test, built once per search (geo.hand_clearance
+        # rebuilds them per call, which made the 6-rotation assessment take minutes)
+        t_xy = np.asarray(targets[0][0])[:2]
+        hand_clouds = {b: geo.object_point_cloud(env, b, spacing=0.012) for b in others
+                       if np.linalg.norm(env.body_pose(b)[0][:2] - t_xy) < 0.6}
 
-        def clear_of(tcp_p, bodies, threshold, walls_only=False):
-            pts = obj_local @ R_tcp.T + tcp_p
+        def hand_clear(tcp_p, Rm=None):
+            half_open_c = opening / 2.0
+            for b, pts in hand_clouds.items():
+                local = (pts - tcp_p) @ (R_tcp if Rm is None else Rm)
+                x, y, z = local[:, 0], local[:, 1], local[:, 2]
+                finger = (np.abs(x) >= width / 2 - 0.002) & (np.abs(x) <= half_open_c + 0.027) & (np.abs(y) < geo.FINGER_HALF_Y) & (z > geo.FINGER_Z[0]) & (z < geo.PAD_Z[1])
+                palm = (np.abs(x) < geo.HAND_HALF_X) & (np.abs(y) < geo.HAND_HALF_Y) & (z > geo.HAND_Z[0]) & (z < geo.HAND_Z[1])
+                if finger.any() or palm.any():
+                    if record and os.environ.get("LIBERO_LAB_DEBUG"):
+                        sel = finger | palm
+                        record(event="hand_block_debug", body=b, tcp=[float(v) for v in tcp_p], n=int(sel.sum()),
+                               zone="finger" if finger.any() else "palm", opening=float(opening), width=float(width),
+                               world_y=[float(pts[sel][:, 1].min()), float(pts[sel][:, 1].max())], world_z=[float(pts[sel][:, 2].min()), float(pts[sel][:, 2].max())],
+                               local_xyz_min=[float(v) for v in local[sel].min(0)], local_xyz_max=[float(v) for v in local[sel].max(0)])
+                    return False, b
+            return True, ""
+
+        def clear_of(tcp_p, bodies, threshold, walls_only=False, Rm=None):
+            pts = obj_local @ (R_tcp if Rm is None else Rm).T + tcp_p
             if walls_only:
                 pts = pts[pts[:, 2] > pts[:, 2].min() + 0.02]
                 if not len(pts):
@@ -748,29 +830,31 @@ class PlaceSkill(Skill):
                     tcp_release[2] = tcp_min_z
             prepared.append((k, target_origin, support_z, tcp_release, container))
 
-        def valid(tcp_p):
+        def valid(tcp_p, Rm=None):
             """Release pose, pre-place pose and the straight segment between them (5 samples) must
             keep hand/fingers clear of every other body, the carried object clear of non-support
             bodies (8 mm) and of the support's walls (5 mm; at the release only its upper part)."""
-            ok, blocker = geo.hand_clearance(env, tcp_p, R_tcp, opening, width, others)
+            Rm = R_tcp if Rm is None else Rm
+            appr = Rm[:, 2]
+            ok, blocker = hand_clear(tcp_p, Rm)
             if not ok:
                 return False, "hand:" + blocker, None
-            ok, blocker = clear_of(tcp_p, non_support, 0.008)
+            ok, blocker = clear_of(tcp_p, non_support, 0.008, Rm=Rm)
             if not ok:
                 return False, "obj:" + blocker, None
-            ok, blocker = clear_of(tcp_p, self.support, 0.005, walls_only=True)
+            ok, blocker = clear_of(tcp_p, self.support, 0.005, walls_only=True, Rm=Rm)
             if not ok:
                 return False, "objwall:" + blocker, None
-            pre = tcp_p - approach * self.p.preplace_clearance
+            pre = tcp_p - appr * self.p.preplace_clearance
             if approach[2] > -0.9:            # side grasp: also stay clear above the floor before entering
                 pre = pre + np.array([0, 0, 0.02])
             elif container_here and approach[2] < -0.9:   # top grasp: the object must be above the rim before descending
-                pre[2] = max(pre[2], rim_z + 0.03 - bottom_off)
+                pre[2] = max(pre[2], rim_z + 0.03 - float((obj_local @ Rm.T)[:, 2].min()))
             for t in (1.0, 0.8, 0.6, 0.4, 0.2):
                 q_p = tcp_p + (pre - tcp_p) * t
-                ok, blocker = geo.hand_clearance(env, q_p, R_tcp, opening, width, others)
+                ok, blocker = hand_clear(q_p, Rm)
                 if ok:
-                    ok, blocker = clear_of(q_p, non_support + (list(self.support) if t >= 0.99 else []), 0.005 if t >= 0.99 else 0.008)
+                    ok, blocker = clear_of(q_p, non_support + (list(self.support) if t >= 0.99 else []), 0.005 if t >= 0.99 else 0.008, Rm=Rm)
                 if not ok:
                     return False, ("pre:" if t >= 0.99 else f"path{t:.1f}:") + blocker, None
             return True, "", pre
@@ -781,25 +865,59 @@ class PlaceSkill(Skill):
         traces = {k: [] for k, *_ in prepared}
         top_off = float(world_pts[:, 2].max())      # object top relative to the tcp
         box_top = (c_r[2] + half_r[2]) if self.region is not None else np.inf
-        for raised in np.arange(0.0, 0.151, 0.01):
+        prepared = prepared[:max_candidates]
+        # Release-tilt family (top-down placements into containers): the hand, and with it the
+        # carried object, pitched about the closing axis by a few degrees. Observed on task 3: a
+        # level hand over a flat, deep bowl position always hits the handles of the drawers above,
+        # while a hand pitched 10-20 deg toward the robot clears them; the object then lands on
+        # its lower edge from a few millimetres and settles, instead of being dropped 14 cm.
+        tilt_opts = [(0.0, R_tcp)]
+        if self.region is not None and approach[2] < -0.9 and any(ch for *_, ch in prepared):
+            for deg in (10.0, -10.0, 20.0, -20.0):
+                tilt_opts.append((deg, R.from_rotvec(R_tcp[:, 0] * np.radians(deg)).as_matrix() @ R_tcp))
+        self.last_release_rot = R_tcp
+        for raised in np.arange(0.0, max_raise + 0.001, 0.01):
             for k, target_origin, support_z, tcp_release, container_here in prepared:
-                cand = tcp_release + np.array([0, 0, raised])
+              for tilt_deg, Rm in tilt_opts:
+                if tilt_deg == 0.0:
+                    cand = tcp_release + np.array([0, 0, raised])
+                else:
+                    # same object origin target; the tilted object's lowest point at the release gap
+                    bottom_t = float((obj_local @ Rm.T)[:, 2].min())
+                    cand = np.array([target_origin[0], target_origin[1], 0.0]) - Rm @ tcp_t_obj_p
+                    cand[2] = support_z + self.p.release_gap - bottom_t + raised
                 if approach[2] > -0.9 and cand[2] + top_off > box_top + 0.01:
                     continue      # horizontal insertion: the object cannot be lifted out of the region box (roof)
-                ok, blocker, pre = valid(cand)
+                if raised > 0 and traces[k] and traces[k][0].split(":")[0] in ("obj", "objwall"):
+                    # the OBJECT itself overlaps a wall / another body at the landing spot: releasing
+                    # higher does not clear the landing (observed on task 3: the bowl dropped 3 cm
+                    # onto the drawer's inner front wall and came to rest tilted 30 deg)
+                    continue
+                ok, blocker, pre = valid(cand, Rm)
+                if ok and tilt_deg != 0.0:
+                    self.last_release_rot = Rm
+                    if record:
+                        record(event="place_release_tilted", candidate=k, tilt_deg=float(tilt_deg), raised_m=float(raised))
                 if ok:
                     if raised > 0 and record:
                         record(event="place_release_raised", candidate=k, raised_m=float(raised), blockers=traces[k][:16])
+                    if record:   # diagnostic trace: why every earlier candidate was rejected (first blocker)
+                        record(event="place_release_search", chosen=k, raised_m=float(raised), n_candidates=len(prepared),
+                               target=[float(v) for v in target_origin], tcp=[float(v) for v in cand],
+                               rejected={str(kk): (traces[kk][0] if traces[kk] else "") for kk, *_ in prepared if traces[kk]},
+                               candidates=[[int(kk), [round(float(v), 3) for v in to], [round(float(v), 3) for v in tr]] for kk, to, _, tr, _ in prepared],
+                               approach=[float(v) for v in approach], hand_low=float(hand_low))
                     return target_origin, support_z, cand, pre, float(raised)
                 traces[k].append(blocker)
                 last_blockers[k] = blocker
         if record:
             for k, target_origin, support_z, tcp_release, _ in prepared:
                 record(event="place_spot_rejected", candidate=k, blocker=last_blockers.get(k, ""),
-                       first_blocker=(traces[k][0] if traces[k] else ""), tcp=[float(v) for v in tcp_release])
+                       first_blocker=(traces[k][0] if traces[k] else ""), tcp=[float(v) for v in tcp_release],
+                       trace=traces[k][:10])
         return None
 
-    def grasp_compatible(self, env, sync, grasp_pos, grasp_rot) -> Tuple[bool, float]:
+    def grasp_compatible(self, env, sync, grasp_pos, grasp_rot, finger_gap: Optional[float] = None) -> Tuple[bool, float]:
         """Placement-aware grasp selection: would this grasp (tcp pose on the object at its
         current pose) admit a valid release pose at the placement target, and how far would the
         object drop after release? Pure geometry (the same release search as at place time,
@@ -809,7 +927,7 @@ class PlaceSkill(Skill):
         T_rel = tf.inv_T(tf.make_T(grasp_pos, grasp_rot)) @ tf.make_T(obj_p, obj_R)
         tcp_t_obj_p = T_rel[:3, 3]
         obj_local = (geo.object_point_cloud(env, self.body, spacing=0.012) - grasp_pos) @ grasp_rot
-        width = float(2 * max(np.abs(obj_local[:, 0]).max(), 0.005))
+        width = float(max(finger_gap, 0.005)) if finger_gap is not None else float(2 * max(np.abs(obj_local[:, 0]).max(), 0.005))
         box = geo.object_box(env, self.body)
         obj_origin_above_bottom = obj_p[2] - box.bottom_z
         targets = self.target_fn(grasp_rot[:, 0])
@@ -818,19 +936,20 @@ class PlaceSkill(Skill):
         rots = [grasp_rot]
         if self.region is not None and placement.is_container_region(env, self.region):
             fits = placement.fit_rotations(env, self.region, self.body)
-            angles = [a for a, cost in fits if cost <= fits[0][1] + 0.005][:4]
+            angles = [a for a, cost in fits if cost <= fits[0][1] + 0.005][:6]
             rots = [R.from_euler("z", a).as_matrix() @ grasp_rot for a in angles]
         best = None
         self.last_compat_why = ""
         for Rc in rots:
             why = []
             found = self._release_search(env, sync, targets, tcp_t_obj_p, Rc, obj_local, width, obj_origin_above_bottom,
-                                         record=lambda **kw: why.append(kw.get("first_blocker", "")) if kw.get("event") == "place_spot_rejected" else None)
+                                         record=lambda **kw: why.append(kw.get("first_blocker", "")) if kw.get("event") == "place_spot_rejected" else None,
+                                         max_raise=0.08, max_candidates=24)
             if found is None:
                 self.last_compat_why = next((w for w in why if w), "")
                 continue
             target_origin, support_z, tcp_release, _, _ = found
-            bottom = float((obj_local @ Rc.T + tcp_release)[:, 2].min())
+            bottom = float((obj_local @ self.last_release_rot.T + tcp_release)[:, 2].min())
             drop = bottom - support_z          # how far the object falls after release
             # distance of the accepted placement candidate from the preferred slot: a grasp that
             # forces the object to the edge of the region (e.g. the front of a drawer, where it
@@ -839,6 +958,8 @@ class PlaceSkill(Skill):
             score = drop + 0.5 * slot_dist
             if best is None or score < best:
                 best = score
+            if best < 0.02:
+                break        # a near-ideal release exists for this grasp: no need to try more rotations
         return best is not None, (best if best is not None else float("inf"))
 
     def _retreat(self, ctx, result: SkillResult) -> SkillResult:

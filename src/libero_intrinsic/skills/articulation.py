@@ -182,7 +182,14 @@ class PushSkill(Skill):
                     pool += [q for q in more if not any(np.allclose(q, s0, atol=1e-3) for s0 in pool)]
                 except IntrinsicRequestError:
                     pass
-        pool.sort(key=lambda q: -float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q)))))
+        # Order: configurations the OSC controller can actually reach first, i.e. nearest to the
+        # current configuration (weighted joint distance, proximal joints weigh more), among those
+        # with a joint-limit margin. Observed (task 9 door): the margin-best solution was 2.3 rad
+        # from the current posture; the controller reached the TCP in another branch at the
+        # joint-5 limit, from which no LINEAR push segment could be planned.
+        w = np.array([3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 0.5])
+        margin_of = lambda q: float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q))))
+        pool.sort(key=lambda q: (margin_of(q) < 0.12, float(np.sum(w * (np.asarray(q) - rs.q) ** 2))))
         q_goal, n_tested = None, 0
         for q in pool[:12]:
             n_tested += 1
@@ -238,7 +245,9 @@ class PushSkill(Skill):
                     _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}", rs.q, p_k, rot_k, push_cs, "LINEAR", +1.0, 10.0,
                                                time_scale=self.time_scale)
                 except IntrinsicRequestError as e0:
-                    if k != 0 or "FinePathIK" not in str(e0):
+                    if "FinePathIK" not in str(e0):
+                        raise
+                    if k != 0 and not (self.progress_fn is not None and self.progress_fn() > progress0 + 0.005):
                         raise
                     # The benchmark's OSC_POSE controller tracks the TCP pose only; its null space
                     # drifts, so the posture Intrinsic validated for the LINEAR segment is not the
@@ -247,8 +256,11 @@ class PushSkill(Skill):
                     # configuration-space (ANY) plan to the same contact pose, collision-checked
                     # with nothing excluded (the contact pose is 1.5 cm outside the panel), i.e. a
                     # non-straight but collision-free approach. Recorded explicitly.
-                    ctx.record(event="approach_any_fallback", label=f"{self.label}_seg0", reason=str(e0)[:120])
-                    _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}_any", rs.q, p_k, rot_k, free_cs, "ANY", +1.0, 10.0,
+                    # (also for a later segment once the articulation has moved: a short
+                    # configuration-space move to the next waypoint keeps pushing; the pushed body
+                    # stays excluded from the collision check there, as in the LINEAR segment)
+                    ctx.record(event="approach_any_fallback", label=f"{self.label}_seg{k}", reason=str(e0)[:120])
+                    _, res = _plan_and_execute(ctx, f"{self.label}_seg{k}_any", rs.q, p_k, rot_k, free_cs if k == 0 else push_cs, "ANY", +1.0, 10.0,
                                                time_scale=self.time_scale)
             except IntrinsicRequestError as e:
                 if self.partial_ok and self.progress_fn is not None and self.progress_fn() > progress0 + 0.02:
@@ -259,6 +271,8 @@ class PushSkill(Skill):
             if self.check_fn():
                 break
         ok = bool(self.check_fn())
+        if ok:
+            ctx.hold(+1.0, 10)        # keep the contact a moment: a slammed door/drawer settles against its stop
         if self.partial_ok and self.progress_fn is not None and not ok:
             ok = self.progress_fn() > progress0 + 0.02
         rs = env.robot_state()
@@ -267,4 +281,10 @@ class PushSkill(Skill):
             _plan_and_execute(ctx, f"{self.label}_retreat", rs.q, rs.tcp_pos - rs.tcp_rot[:, 2] * 0.08, rs.tcp_rot, push_cs, "LINEAR", +1.0, 5.0)
         except IntrinsicRequestError:
             pass
+        sync.sync()
+        if ok and not self.partial_ok and not self.check_fn():
+            # the goal held while the hand was in contact and was lost after the retreat (observed:
+            # the microwave door rebounded from -0.005 to -0.28 rad); the next attempt re-contacts
+            ctx.record(event="push_goal_lost_after_retreat", progress=float(self.progress_fn()) if self.progress_fn else None)
+            return SkillResult(self.name, False, "push_goal_lost_after_retreat")
         return SkillResult(self.name, ok, "" if ok else "push_goal_not_reached")

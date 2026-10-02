@@ -22,7 +22,7 @@ from libero_intrinsic.env.libero_env import LiberoEnv, TaskInfo, list_tasks
 from libero_intrinsic.intrinsic.client import IntrinsicClient, IntrinsicServer, IntrinsicUnavailableError, RequestLog
 from libero_intrinsic.intrinsic.world_sync import WorldSync
 from libero_intrinsic.model.scene_to_sdf import SceneToSdf, SdfWorldSpec
-from libero_intrinsic.skills.base import BudgetExceeded, SkillContext
+from libero_intrinsic.skills.base import GoalReached, BudgetExceeded, SkillContext
 from libero_intrinsic.skills.task_spec import task_spec_from_env
 from libero_intrinsic.skills.planner import build_skill_sequence
 
@@ -142,8 +142,13 @@ class TaskSession:
             sr = sync.sync(verify=True)
             rec["world_sync"] = dataclasses.asdict(sr)
             video = VideoRecorder(self.env, os.path.join(ep_dir, "agentview.mp4")) if self.cfg.video else None
-            executor = TrajectoryExecutor(self.env, client, on_step=video)
-            ctx = SkillContext(self.env, client, sync, executor, self.cfg.step_budget, on_step=video)
+            def on_step():
+                if video:
+                    video()
+                if self.env.done_seen:      # LIBERO reported done: terminate like the official loop
+                    raise GoalReached(self.env.first_done_step)
+            executor = TrajectoryExecutor(self.env, client, on_step=on_step)
+            ctx = SkillContext(self.env, client, sync, executor, self.cfg.step_budget, on_step=on_step)
             spec = task_spec_from_env(self.env, self.task.name, self.task.language)
             rec["goal"] = [dataclasses.asdict(g) for g in spec.goal]
             skills = build_skill_sequence(spec, self.env, ctx)
@@ -157,7 +162,23 @@ class TaskSession:
                     break
                 if self.env.check_success():
                     break
-            rec["success"] = bool(self.env.check_success())
+            rec["success"] = bool(self.env.check_success()) or bool(self.env.done_seen)
+            rec["success_at_end"] = bool(self.env.check_success())
+            rec["first_done_step"] = self.env.first_done_step
+            try:
+                rec["final_state"] = self.env.final_state_audit()
+            except Exception as e:
+                rec["final_state"] = {"error": str(e)[:120]}
+            rec["events"] = ctx.log
+        except GoalReached as e:
+            # the goal predicate held at control step e (LIBERO's done): official success
+            rec["success"] = True
+            rec["terminated_on_goal_step"] = int(self.env.first_done_step or 0)
+            rec["success_at_end"] = bool(self.env.check_success())
+            try:
+                rec["final_state"] = self.env.final_state_audit()
+            except Exception as e2:
+                rec["final_state"] = {"error": str(e2)[:120]}
             rec["events"] = ctx.log
         except BudgetExceeded as e:
             rec["failure_stage"] = rec.get("failure_stage", "budget")
