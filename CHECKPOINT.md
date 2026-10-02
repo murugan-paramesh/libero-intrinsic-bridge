@@ -199,3 +199,10 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
   evaluations/partial_4c20556, evaluations/partial_c2.
 - Resume if interrupted: the missing (task, init) pairs of runs/eval_c3/A only (same protocol), then
   scratchpad finish script (report/compare/archive), README/report 12.6, commit, push.
+
+### 2026-10-02 23:55 UTC (session 6): FINAL. C3 = 5e236de evaluated 80/100 and recommended; ce7685b (76/100) preserved
+- Protocol run complete (evaluations/candidate_5e236de, docs/results_5e236de.md, comparisons, evidence/eval_episodes_5e236de).
+- Per task: 10, 8, 10, 0, 10, 9, 10, 9, 10, 4. Task 9 solved on protocol states 13, 15, 16, 17 and dev states 1, 3, 4.
+- Task 3 unsolved: report 12.2 / failure table 10-11; experiments/task3_sidepush_family.patch not merged.
+- Unit tests 15/15, FK validation 5e-9 m (runs/validate_kinematics_final.log), git tree clean, pushed.
+

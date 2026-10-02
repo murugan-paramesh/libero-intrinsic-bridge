@@ -1,0 +1,5249 @@
+{
+ "run_id": "t3_i18_aa9e6f9f",
+ "task_index": 3,
+ "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+ "language": "put the black bowl in the bottom drawer of the cabinet and close it",
+ "init_state_index": 18,
+ "seed": 0,
+ "revisions": {
+  "libero_intrinsic_bridge": "5e236def5a8054a7ae41609ddfda0b60d109bd91",
+  "working_tree_dirty_at_start": false,
+  "intrinsic_core": "c61bf075f2335371c6367b61117e8a62bb960c3b",
+  "LIBERO": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+  "robosuite": "1.4.0",
+  "mujoco": "2.3.7",
+  "numpy": "1.23.5"
+ },
+ "observation_mode": "privileged_state",
+ "controller": "OSC_POSE (robosuite 1.4.0 default osc_pose.json, 20 Hz)",
+ "step_budget": 1200,
+ "intrinsic": {
+  "component": "MotionPlannerServiceInProcess + FakeWorldService (intrinsic-core, in-process gRPC)",
+  "binary": "/home/user/bazel_out/execroot/_main/bazel-out/haswell-opt/bin/libero_bridge/libero_planner_server",
+  "world_id": "libero10_task3",
+  "sdf": "runs/eval_c3/A/task3/world/task3.sdf",
+  "addresses": {
+   "world_service": "127.0.0.1:38315",
+   "motion_planner_service": "dns:///localhost:44377",
+   "credentials": "local_tcp"
+  },
+  "n_requests": 1724,
+  "requests_by_rpc": {
+   "CheckCollisions": 13,
+   "ComputeFk": 620,
+   "ComputeIk": 699,
+   "GetObject": 1,
+   "GetTransform": 8,
+   "ListObjects": 2,
+   "PlanTrajectory": 41,
+   "ReparentObject": 12,
+   "UpdateObjectJoints": 29,
+   "UpdateTransform": 296,
+   "note": 3
+  },
+  "plan_latency_s": [
+   0.06629790200167918,
+   0.022978567001700867,
+   0.06430929300040589,
+   0.0900397810000868,
+   0.01920495000013034,
+   0.016753636999055743,
+   0.032540012998651946,
+   0.057687053998961346,
+   0.018806333999236813,
+   0.03363310900022043,
+   0.017540406999614788,
+   0.062076315996819176,
+   0.02052294399982202,
+   0.013432207000732888,
+   0.08282621900070808,
+   0.029624129998410353,
+   0.06784600600076374,
+   0.06553970799723174,
+   0.07059096500233863,
+   0.022374563999619568,
+   0.01901476599960006,
+   0.0664043219985615,
+   0.031002190000435803,
+   0.06537392999962321,
+   0.058182376000331715,
+   0.061954118998983176,
+   0.021139005999430083,
+   0.019032814001548104,
+   0.0675997729995288,
+   0.030770657998800743,
+   0.06933815299998969,
+   0.06705388699992909,
+   0.06481197199900635,
+   0.03398293699865462,
+   0.044361573996866355,
+   5.013002021998545,
+   0.0344290680004633,
+   0.027113181000459008,
+   5.013186354000936,
+   0.03550915799860377,
+   0.027619420001428807
+  ],
+  "plan_failures": 15,
+  "plan_timeouts": 0,
+  "linear_replans": 3
+ },
+ "t_start": 1790983652.811463,
+ "success": false,
+ "error": null,
+ "skills": [
+  {
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 86,
+   "details": {
+    "grasp": "pinch_z0.932_yaw90",
+    "width": 0.00739451857737675,
+    "lifted": 0.09863480318353257,
+    "drift": 0.0016487395808249881
+   }
+  },
+  {
+   "skill": "place",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 64,
+   "details": {
+    "xy_err": 0.0049558107143885585,
+    "retreat_ok": true
+   }
+  },
+  {
+   "skill": "close_drawer",
+   "ok": false,
+   "reason": "relocate_pick:pregrasp_exec:tracking_error_exceeded(0.086m)",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 539,
+   "details": {}
+  }
+ ],
+ "events": [
+  {
+   "event": "grasp_candidates",
+   "n_total": 68,
+   "n_cleared": 35,
+   "n_tilted": 0,
+   "blockers": {
+    "white_cabinet_1_cabinet_bottom": 17,
+    "wine_rack_1_main": 16
+   },
+   "t_wall": 1790983656.4820018,
+   "env_step": 0
+  },
+  {
+   "event": "grasp_placement_filter",
+   "n_checked": 24,
+   "n_compatible": 22,
+   "first": "pinch_z0.932_yaw90",
+   "first_drop_m": 0.03950250748800595,
+   "incompatible_examples": [
+    [
+     "pinch_z0.932_yaw45",
+     "hand:white_cabinet_1_base"
+    ],
+    [
+     "pinch_z0.932_yaw45",
+     "hand:white_cabinet_1_cabinet_top"
+    ]
+   ],
+   "ranked": [
+    [
+     "pinch_z0.932_yaw90",
+     0.04
+    ],
+    [
+     "pinch_z0.932_yaw90",
+     0.04
+    ],
+    [
+     "pinch_z0.932_yaw22",
+     0.04
+    ],
+    [
+     "pinch_z0.932_yaw112",
+     0.04
+    ],
+    [
+     "pinch_z0.932_yaw90",
+     0.04
+    ],
+    [
+     "pinch_z0.932_yaw112",
+     0.04
+    ],
+    [
+     "pinch_z0.932_yaw90",
+     0.04
+    ],
+    [
+     "pinch_z0.932_yaw112",
+     0.04
+    ]
+   ],
+   "t_wall": 1790983727.1528444,
+   "env_step": 0
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.932_yaw90",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-586772afc2",
+   "latency_s": 0.06765207100033876,
+   "t_wall": 1790983728.2548423,
+   "env_step": 13
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z0.932_yaw90",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-ad68da1d12",
+   "latency_s": 0.05086511099943891,
+   "t_wall": 1790983728.306633,
+   "env_step": 13
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z0.932_yaw90",
+   "n_solutions": 4,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790983728.4591534,
+   "env_step": 13
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-7eeb79ed60",
+   "latency_s": 0.062023125999985496,
+   "t_wall": 1790983728.5227716,
+   "env_step": 13
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-026cb05d7a",
+   "motion_type": "ANY",
+   "n_states": 199,
+   "duration_s": 0.842474491,
+   "latency_s": 0.022978567001700867,
+   "target_pos": [
+    -0.024502543563960366,
+    -0.06856883037541878,
+    1.0318884565723108
+   ],
+   "t_wall": 1790983728.5478833,
+   "env_step": 13
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-026cb05d7a",
+   "ok": true,
+   "reason": "completed",
+   "steps": 31,
+   "pos_err_max": 0.0163261910540267,
+   "pos_err_mean": 0.01156372879717643,
+   "rot_err_max_deg": 17.878825966327824,
+   "joint_err_max": 0.3311800072086144,
+   "joint_err_final": 0.028091043025602058,
+   "final_pos_err": 0.005452428105087281,
+   "final_rot_err_deg": 1.0074249495835164,
+   "planned_duration_s": 0.842474491,
+   "planning_latency_s": 0.022978567001700867,
+   "n_states": 199,
+   "time_scale": 1.2769083329368927,
+   "t_wall": 1790983730.5011885,
+   "env_step": 44
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-026cb05d7a",
+   "n_checked": 23,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-4a25e5eafd",
+   "t_wall": 1790983730.5115144,
+   "env_step": 44
+  },
+  {
+   "event": "plan",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-bafdf7246c",
+   "motion_type": "LINEAR",
+   "n_states": 34,
+   "duration_s": 0.37382058700000004,
+   "latency_s": 0.06430929300040589,
+   "target_pos": [
+    -0.024502543563960366,
+    -0.06856883037541878,
+    0.9318884565723108
+   ],
+   "t_wall": 1790983730.5770597,
+   "env_step": 44
+  },
+  {
+   "event": "execute",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-bafdf7246c",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.007169061297373152,
+   "pos_err_mean": 0.004024971695119147,
+   "rot_err_max_deg": 0.331538892996365,
+   "joint_err_max": 0.021873087961554294,
+   "joint_err_final": 0.007972571889706348,
+   "final_pos_err": 0.0015161773493917244,
+   "final_rot_err_deg": 0.1551426899898657,
+   "planned_duration_s": 0.37382058700000004,
+   "planning_latency_s": 0.06430929300040589,
+   "n_states": 34,
+   "time_scale": 1.8379775810639443,
+   "t_wall": 1790983731.7896276,
+   "env_step": 59
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-bafdf7246c",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-79b9f340cb",
+   "t_wall": 1790983731.7975023,
+   "env_step": 59
+  },
+  {
+   "event": "grasp_verify",
+   "finger_gap": 0.007766227974278668,
+   "pad_contacts": 8,
+   "grasp": "pinch_z0.932_yaw90",
+   "t_wall": 1790983732.649422,
+   "env_step": 71
+  },
+  {
+   "event": "plan",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-83accf302f",
+   "motion_type": "LINEAR",
+   "n_states": 34,
+   "duration_s": 0.38229854100000005,
+   "latency_s": 0.01920495000013034,
+   "target_pos": [
+    -0.025646988002518595,
+    -0.06870099150928405,
+    1.0307127816118191
+   ],
+   "t_wall": 1790983732.7743313,
+   "env_step": 71
+  },
+  {
+   "event": "execute",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-83accf302f",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.006646462632477121,
+   "pos_err_mean": 0.003179187530163761,
+   "rot_err_max_deg": 0.24506652253199326,
+   "joint_err_max": 0.015155716691816812,
+   "joint_err_final": 0.00795474395280582,
+   "final_pos_err": 0.001120614017351926,
+   "final_rot_err_deg": 0.2059458102895762,
+   "planned_duration_s": 0.38229854100000005,
+   "planning_latency_s": 0.01920495000013034,
+   "n_states": 34,
+   "time_scale": 1.7465158285624576,
+   "t_wall": 1790983733.8020983,
+   "env_step": 86
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-83accf302f",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-125bf5e09b",
+   "t_wall": 1790983733.8128726,
+   "env_step": 86
+  },
+  {
+   "event": "lift_verify",
+   "lifted_m": 0.09863480318353257,
+   "tcp_obj_drift_m": 0.0016487395808249881,
+   "pad_contacts": 8,
+   "t_wall": 1790983733.8138394,
+   "env_step": 86
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "grasp": "pinch_z0.932_yaw90",
+    "width": 0.00739451857737675,
+    "lifted": 0.09863480318353257,
+    "drift": 0.0016487395808249881
+   },
+   "t_wall": 1790983733.8141618,
+   "env_step": 86
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 86,
+   "t_wall": 1790983733.8141642,
+   "env_step": 86
+  },
+  {
+   "event": "place_attachment_refresh",
+   "drift_m": 0.0016487395808249881,
+   "t_wall": 1790983733.860896,
+   "env_step": 86
+  },
+  {
+   "event": "place_fit_rotation",
+   "yaw_deg": [
+    0.0,
+    -3.88031429633599,
+    86.119685703664,
+    90.0,
+    -90.0,
+    -93.880314296336
+   ],
+   "overhang_m": 0.0,
+   "t_wall": 1790983733.871935,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 0,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.19467060880092116,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.64161,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 1,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.1901718182839699,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416197,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 2,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.19916939931787242,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416247,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 3,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.19467060880092116,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416287,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 4,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.19467060880092116,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416335,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 5,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.1901718182839699,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416368,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 6,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.19916939931787242,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416407,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 7,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.1901718182839699,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.641647,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 8,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.19916939931787242,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416512,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 9,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.20366818983482365,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416585,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 10,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.18567302776701866,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416633,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 11,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.20366818983482365,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416671,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 12,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.16442660880092114,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416702,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 13,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.22491460880092118,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.641674,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 14,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.16442660880092114,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416776,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 15,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.16442660880092114,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.641681,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 16,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.22491460880092118,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416855,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 17,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.22491460880092118,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.641689,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 18,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.16442660880092114,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416924,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 19,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.16442660880092114,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416955,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 20,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.22491460880092118,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6416996,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 21,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.22491460880092118,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.641703,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 22,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.16442660880092114,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6417537,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 23,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.004378675043729971,
+    0.16442660880092114,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.6417613,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 0,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.19460635778251395,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.917613,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 1,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.19010756726556266,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.917623,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 2,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.19910514829946518,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.917629,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 3,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.19460635778251395,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176333,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 4,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.19460635778251395,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176369,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 5,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.19010756726556266,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176412,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 6,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.19910514829946518,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176455,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 7,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.19010756726556266,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176495,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 8,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.19910514829946518,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176545,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 9,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.20360393881641642,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176588,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 10,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.18560877674861143,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176621,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 11,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.20360393881641642,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176655,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 12,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.1643623577825139,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176693,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 13,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.22485035778251394,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176724,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 14,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.1643623577825139,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176762,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 15,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.1643623577825139,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.917684,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 16,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.22485035778251394,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176881,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 17,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.22485035778251394,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.917692,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 18,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.1643623577825139,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176953,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 19,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.1643623577825139,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9176993,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 20,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.22485035778251394,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.917738,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 21,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.22485035778251394,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9177458,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 22,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.1643623577825139,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9177523,
+   "env_step": 86
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 23,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.0075344362230948675,
+    0.1643623577825139,
+    0.9704343071269761
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983736.9177585,
+   "env_step": 86
+  },
+  {
+   "event": "place_rotation_choice",
+   "options": [
+    [
+     0.035,
+     1.146
+    ],
+    [
+     0.035,
+     1.15
+    ],
+    [
+     0.047,
+     0.857
+    ],
+    [
+     0.047,
+     0.806
+    ],
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     null
+    ]
+   ],
+   "chosen": 1,
+   "t_wall": 1790983736.9178576,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 0,
+   "t_wall": 1790983736.9438474,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 1,
+   "t_wall": 1790983736.9438772,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 2,
+   "t_wall": 1790983736.9439042,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 3,
+   "t_wall": 1790983736.9439309,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 4,
+   "t_wall": 1790983736.9439492,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 5,
+   "t_wall": 1790983736.9439733,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 6,
+   "t_wall": 1790983736.9439943,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 7,
+   "t_wall": 1790983736.944014,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 8,
+   "t_wall": 1790983736.9440322,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 9,
+   "t_wall": 1790983736.9440496,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 10,
+   "t_wall": 1790983736.9440668,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 11,
+   "t_wall": 1790983736.9440844,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 12,
+   "t_wall": 1790983736.944102,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 13,
+   "t_wall": 1790983736.9441247,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 14,
+   "t_wall": 1790983736.9441438,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 15,
+   "t_wall": 1790983736.944162,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 16,
+   "t_wall": 1790983736.9441803,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 17,
+   "t_wall": 1790983736.9441984,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 18,
+   "t_wall": 1790983736.9442165,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 19,
+   "t_wall": 1790983736.944235,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 20,
+   "t_wall": 1790983736.9442523,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 21,
+   "t_wall": 1790983736.9442744,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 22,
+   "t_wall": 1790983736.944322,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 23,
+   "t_wall": 1790983736.944351,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 24,
+   "t_wall": 1790983736.9443703,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 25,
+   "t_wall": 1790983736.9443893,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 26,
+   "t_wall": 1790983736.9444072,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 27,
+   "t_wall": 1790983736.9444258,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 28,
+   "t_wall": 1790983736.9444435,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 29,
+   "t_wall": 1790983736.9444609,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 30,
+   "t_wall": 1790983736.9444778,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 31,
+   "t_wall": 1790983736.9444952,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 32,
+   "t_wall": 1790983736.9445248,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 33,
+   "t_wall": 1790983736.9445426,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 34,
+   "t_wall": 1790983736.94456,
+   "env_step": 86
+  },
+  {
+   "event": "place_rim_limit",
+   "rim_z": 0.9840300000000001,
+   "tcp_release_z": 0.9680411685992949,
+   "tcp_min_z": 0.9704343071269761,
+   "drop_height": 0.0023931385276811934,
+   "candidate": 35,
+   "t_wall": 1790983736.9445767,
+   "env_step": 86
+  },
+  {
+   "event": "place_release_tilted",
+   "candidate": 10,
+   "tilt_deg": -20.0,
+   "raised_m": 0.02,
+   "t_wall": 1790983737.663063,
+   "env_step": 86
+  },
+  {
+   "event": "place_release_raised",
+   "candidate": 10,
+   "raised_m": 0.02,
+   "blockers": [
+    "path0.8:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_cabinet_top",
+    "path0.4:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "pre:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_cabinet_top",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790983737.6630745,
+   "env_step": 86
+  },
+  {
+   "event": "place_release_search",
+   "chosen": 10,
+   "raised_m": 0.02,
+   "n_candidates": 36,
+   "target": [
+    0.005008203323726534,
+    0.1390615097834506,
+    0.92049
+   ],
+   "tcp": [
+    -0.04230429892350051,
+    0.1301372030807821,
+    0.9932727905197404
+   ],
+   "rejected": {
+    "0": "hand:white_cabinet_1_cabinet_top",
+    "1": "hand:white_cabinet_1_cabinet_top",
+    "2": "hand:white_cabinet_1_cabinet_top",
+    "3": "hand:white_cabinet_1_cabinet_top",
+    "4": "hand:white_cabinet_1_cabinet_top",
+    "5": "hand:white_cabinet_1_cabinet_top",
+    "6": "hand:white_cabinet_1_cabinet_top",
+    "7": "hand:white_cabinet_1_cabinet_top",
+    "8": "hand:white_cabinet_1_cabinet_top",
+    "9": "hand:white_cabinet_1_cabinet_top",
+    "10": "path0.8:white_cabinet_1_cabinet_middle",
+    "11": "hand:white_cabinet_1_cabinet_top",
+    "12": "objwall:white_cabinet_1_cabinet_bottom",
+    "13": "hand:white_cabinet_1_base",
+    "14": "objwall:white_cabinet_1_cabinet_bottom",
+    "15": "objwall:white_cabinet_1_cabinet_bottom",
+    "16": "hand:white_cabinet_1_base",
+    "17": "hand:white_cabinet_1_base",
+    "18": "objwall:white_cabinet_1_cabinet_bottom",
+    "19": "objwall:white_cabinet_1_cabinet_bottom",
+    "20": "hand:white_cabinet_1_base",
+    "21": "hand:white_cabinet_1_base",
+    "22": "objwall:white_cabinet_1_cabinet_bottom",
+    "23": "objwall:white_cabinet_1_cabinet_bottom",
+    "24": "hand:white_cabinet_1_base",
+    "25": "hand:white_cabinet_1_base",
+    "26": "objwall:white_cabinet_1_cabinet_bottom",
+    "27": "objwall:white_cabinet_1_cabinet_bottom",
+    "28": "hand:white_cabinet_1_base",
+    "29": "hand:white_cabinet_1_base",
+    "30": "objwall:white_cabinet_1_cabinet_bottom",
+    "31": "hand:white_cabinet_1_base",
+    "32": "objwall:white_cabinet_1_cabinet_bottom",
+    "33": "hand:white_cabinet_1_base",
+    "34": "objwall:white_cabinet_1_cabinet_bottom",
+    "35": "hand:white_cabinet_1_base"
+   },
+   "candidates": [
+    [
+     0,
+     [
+      0.005,
+      0.148,
+      0.92
+     ],
+     [
+      -0.042,
+      0.151,
+      0.97
+     ]
+    ],
+    [
+     1,
+     [
+      0.005,
+      0.144,
+      0.92
+     ],
+     [
+      -0.042,
+      0.146,
+      0.97
+     ]
+    ],
+    [
+     2,
+     [
+      0.005,
+      0.153,
+      0.92
+     ],
+     [
+      -0.042,
+      0.155,
+      0.97
+     ]
+    ],
+    [
+     3,
+     [
+      0.005,
+      0.148,
+      0.92
+     ],
+     [
+      -0.042,
+      0.151,
+      0.97
+     ]
+    ],
+    [
+     4,
+     [
+      0.005,
+      0.148,
+      0.92
+     ],
+     [
+      -0.042,
+      0.151,
+      0.97
+     ]
+    ],
+    [
+     5,
+     [
+      0.005,
+      0.144,
+      0.92
+     ],
+     [
+      -0.042,
+      0.146,
+      0.97
+     ]
+    ],
+    [
+     6,
+     [
+      0.005,
+      0.153,
+      0.92
+     ],
+     [
+      -0.042,
+      0.155,
+      0.97
+     ]
+    ],
+    [
+     7,
+     [
+      0.005,
+      0.144,
+      0.92
+     ],
+     [
+      -0.042,
+      0.146,
+      0.97
+     ]
+    ],
+    [
+     8,
+     [
+      0.005,
+      0.153,
+      0.92
+     ],
+     [
+      -0.042,
+      0.155,
+      0.97
+     ]
+    ],
+    [
+     9,
+     [
+      0.005,
+      0.157,
+      0.92
+     ],
+     [
+      -0.042,
+      0.16,
+      0.97
+     ]
+    ],
+    [
+     10,
+     [
+      0.005,
+      0.139,
+      0.92
+     ],
+     [
+      -0.042,
+      0.142,
+      0.97
+     ]
+    ],
+    [
+     11,
+     [
+      0.005,
+      0.157,
+      0.92
+     ],
+     [
+      -0.042,
+      0.16,
+      0.97
+     ]
+    ],
+    [
+     12,
+     [
+      0.005,
+      0.118,
+      0.92
+     ],
+     [
+      -0.042,
+      0.12,
+      0.97
+     ]
+    ],
+    [
+     13,
+     [
+      0.005,
+      0.178,
+      0.92
+     ],
+     [
+      -0.042,
+      0.181,
+      0.97
+     ]
+    ],
+    [
+     14,
+     [
+      0.005,
+      0.118,
+      0.92
+     ],
+     [
+      -0.042,
+      0.12,
+      0.97
+     ]
+    ],
+    [
+     15,
+     [
+      0.005,
+      0.118,
+      0.92
+     ],
+     [
+      -0.042,
+      0.12,
+      0.97
+     ]
+    ],
+    [
+     16,
+     [
+      0.005,
+      0.178,
+      0.92
+     ],
+     [
+      -0.042,
+      0.181,
+      0.97
+     ]
+    ],
+    [
+     17,
+     [
+      0.005,
+      0.178,
+      0.92
+     ],
+     [
+      -0.042,
+      0.181,
+      0.97
+     ]
+    ],
+    [
+     18,
+     [
+      0.005,
+      0.118,
+      0.92
+     ],
+     [
+      -0.042,
+      0.12,
+      0.97
+     ]
+    ],
+    [
+     19,
+     [
+      0.005,
+      0.118,
+      0.92
+     ],
+     [
+      -0.042,
+      0.12,
+      0.97
+     ]
+    ],
+    [
+     20,
+     [
+      0.005,
+      0.178,
+      0.92
+     ],
+     [
+      -0.042,
+      0.181,
+      0.97
+     ]
+    ],
+    [
+     21,
+     [
+      0.005,
+      0.178,
+      0.92
+     ],
+     [
+      -0.042,
+      0.181,
+      0.97
+     ]
+    ],
+    [
+     22,
+     [
+      0.005,
+      0.118,
+      0.92
+     ],
+     [
+      -0.042,
+      0.12,
+      0.97
+     ]
+    ],
+    [
+     23,
+     [
+      0.005,
+      0.118,
+      0.92
+     ],
+     [
+      -0.042,
+      0.12,
+      0.97
+     ]
+    ],
+    [
+     24,
+     [
+      0.005,
+      0.178,
+      0.92
+     ],
+     [
+      -0.042,
+      0.181,
+      0.97
+     ]
+    ],
+    [
+     25,
+     [
+      0.005,
+      0.178,
+      0.92
+     ],
+     [
+      -0.042,
+      0.181,
+      0.97
+     ]
+    ],
+    [
+     26,
+     [
+      0.005,
+      0.118,
+      0.92
+     ],
+     [
+      -0.042,
+      0.12,
+      0.97
+     ]
+    ],
+    [
+     27,
+     [
+      0.005,
+      0.118,
+      0.92
+     ],
+     [
+      -0.042,
+      0.12,
+      0.97
+     ]
+    ],
+    [
+     28,
+     [
+      0.005,
+      0.178,
+      0.92
+     ],
+     [
+      -0.042,
+      0.181,
+      0.97
+     ]
+    ],
+    [
+     29,
+     [
+      0.005,
+      0.178,
+      0.92
+     ],
+     [
+      -0.042,
+      0.181,
+      0.97
+     ]
+    ],
+    [
+     30,
+     [
+      0.005,
+      0.103,
+      0.92
+     ],
+     [
+      -0.042,
+      0.105,
+      0.97
+     ]
+    ],
+    [
+     31,
+     [
+      0.005,
+      0.193,
+      0.92
+     ],
+     [
+      -0.042,
+      0.196,
+      0.97
+     ]
+    ],
+    [
+     32,
+     [
+      0.005,
+      0.103,
+      0.92
+     ],
+     [
+      -0.042,
+      0.105,
+      0.97
+     ]
+    ],
+    [
+     33,
+     [
+      0.005,
+      0.193,
+      0.92
+     ],
+     [
+      -0.042,
+      0.196,
+      0.97
+     ]
+    ],
+    [
+     34,
+     [
+      0.005,
+      0.103,
+      0.92
+     ],
+     [
+      -0.042,
+      0.105,
+      0.97
+     ]
+    ],
+    [
+     35,
+     [
+      0.005,
+      0.193,
+      0.92
+     ],
+     [
+      -0.042,
+      0.196,
+      0.97
+     ]
+    ]
+   ],
+   "approach": [
+    0.00363842766585068,
+    -2.1101344467990848e-05,
+    -0.9999933806775192
+   ],
+   "hand_low": 0.025595692873023945,
+   "t_wall": 1790983737.663506,
+   "env_step": 86
+  },
+  {
+   "event": "place_transport_rule",
+   "support_checked": true,
+   "tcp_pre": [
+    -0.044421652419157326,
+    0.10283937503908006,
+    1.0684415699323402
+   ],
+   "tcp_release": [
+    -0.04230429892350051,
+    0.1301372030807821,
+    0.9932727905197404
+   ],
+   "rim_z": 0.9840300000000001,
+   "obj_bottom_at_pre": 1.0306587794125999,
+   "obj_bottom_at_release": 0.9554900000000001,
+   "t_wall": 1790983737.6750493,
+   "env_step": 86
+  },
+  {
+   "event": "ik",
+   "label": "place_transport_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-60ff228e5b",
+   "latency_s": 0.032143178999831434,
+   "t_wall": 1790983737.7080264,
+   "env_step": 86
+  },
+  {
+   "event": "plan",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-0c93612d45",
+   "motion_type": "ANY",
+   "n_states": 51,
+   "duration_s": 0.344119206,
+   "latency_s": 0.016753636999055743,
+   "target_pos": [
+    -0.044421652419157326,
+    0.10283937503908006,
+    1.0684415699323402
+   ],
+   "t_wall": 1790983737.7254202,
+   "env_step": 86
+  },
+  {
+   "event": "execute",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-0c93612d45",
+   "ok": true,
+   "reason": "completed",
+   "steps": 24,
+   "pos_err_max": 0.0079636215433542,
+   "pos_err_mean": 0.004237184748556475,
+   "rot_err_max_deg": 0.7417373315944241,
+   "joint_err_max": 0.07291833161527278,
+   "joint_err_final": 0.07291833161527278,
+   "final_pos_err": 0.0027983719533623656,
+   "final_rot_err_deg": 0.44629703585269515,
+   "planned_duration_s": 0.344119206,
+   "planning_latency_s": 0.016753636999055743,
+   "n_states": 51,
+   "time_scale": 3.276388859799241,
+   "t_wall": 1790983739.3081064,
+   "env_step": 110
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-0c93612d45",
+   "n_checked": 24,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-b08649f2aa",
+   "t_wall": 1790983739.3174455,
+   "env_step": 110
+  },
+  {
+   "event": "place_slip_compensation",
+   "drift_m": 0.0019223878380271026,
+   "xy_correction_m": 0.0009823523662693466,
+   "z_correction_m": -0.018549121608215202,
+   "t_wall": 1790983739.3219626,
+   "env_step": 110
+  },
+  {
+   "event": "plan",
+   "label": "place_transport_correct",
+   "trajectory_id": "PlanTrajectory-22ba489f3b",
+   "motion_type": "LINEAR",
+   "n_states": 27,
+   "duration_s": 0.08503324500000001,
+   "latency_s": 0.032540012998651946,
+   "target_pos": [
+    -0.043595322537631875,
+    0.1023081546531637,
+    1.0684415699323402
+   ],
+   "t_wall": 1790983739.3554888,
+   "env_step": 110
+  },
+  {
+   "event": "execute",
+   "label": "place_transport_correct",
+   "trajectory_id": "PlanTrajectory-22ba489f3b",
+   "ok": true,
+   "reason": "completed",
+   "steps": 3,
+   "pos_err_max": 0.002425714623064945,
+   "pos_err_mean": 0.0013202152973747518,
+   "rot_err_max_deg": 0.3589188794168607,
+   "joint_err_max": 0.01388520697780704,
+   "joint_err_final": 0.01388520697780704,
+   "final_pos_err": 0.002425714623064945,
+   "final_rot_err_deg": 0.3589188794168607,
+   "planned_duration_s": 0.08503324500000001,
+   "planning_latency_s": 0.032540012998651946,
+   "n_states": 27,
+   "time_scale": 1.0,
+   "t_wall": 1790983739.597926,
+   "env_step": 113
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport_correct",
+   "trajectory_id": "PlanTrajectory-22ba489f3b",
+   "n_checked": 3,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-d8d4877ffd",
+   "t_wall": 1790983739.605035,
+   "env_step": 113
+  },
+  {
+   "event": "plan",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-8b2ebe3bd3",
+   "motion_type": "LINEAR",
+   "n_states": 28,
+   "duration_s": 0.346384886,
+   "latency_s": 0.018806333999236813,
+   "target_pos": [
+    -0.04147796904197506,
+    0.12960598269486576,
+    0.9932727905197404
+   ],
+   "t_wall": 1790983739.6832814,
+   "env_step": 113
+  },
+  {
+   "event": "execute",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-8b2ebe3bd3",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.005740020949540241,
+   "pos_err_mean": 0.0029569406433971822,
+   "rot_err_max_deg": 0.22652966194849364,
+   "joint_err_max": 0.015363517602402676,
+   "joint_err_final": 0.010043081278710897,
+   "final_pos_err": 0.0016413689139927682,
+   "final_rot_err_deg": 0.17468901728165723,
+   "planned_duration_s": 0.346384886,
+   "planning_latency_s": 0.018806333999236813,
+   "n_states": 28,
+   "time_scale": 1.5,
+   "t_wall": 1790983740.4716496,
+   "env_step": 125
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-8b2ebe3bd3",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-69401844a3",
+   "t_wall": 1790983740.4793816,
+   "env_step": 125
+  },
+  {
+   "event": "place_verify",
+   "obj_pos": [
+    0.001240000943551312,
+    0.1422803155649308,
+    0.9242399683188403
+   ],
+   "target": [
+    0.005008203323726534,
+    0.1390615097834506,
+    0.92049
+   ],
+   "xy_err": 0.0049558107143885585,
+   "lower_stop": "completed",
+   "in_region_box": true,
+   "t_wall": 1790983741.0767536,
+   "env_step": 135
+  },
+  {
+   "event": "plan",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-12ca92e1bc",
+   "motion_type": "LINEAR",
+   "n_states": 34,
+   "duration_s": 0.37981493400000005,
+   "latency_s": 0.017540406999614788,
+   "target_pos": [
+    -0.04560097291697447,
+    0.0954213204934537,
+    1.0851560644786649
+   ],
+   "t_wall": 1790983741.143924,
+   "env_step": 135
+  },
+  {
+   "event": "execute",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-12ca92e1bc",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.006351481937257895,
+   "pos_err_mean": 0.0030513212203557923,
+   "rot_err_max_deg": 0.25189738087728114,
+   "joint_err_max": 0.019579674564988575,
+   "joint_err_final": 0.019579674564988575,
+   "final_pos_err": 0.00076151366064306,
+   "final_rot_err_deg": 0.11705552985046924,
+   "planned_duration_s": 0.37981493400000005,
+   "planning_latency_s": 0.017540406999614788,
+   "n_states": 34,
+   "time_scale": 1.7461944706533592,
+   "t_wall": 1790983742.1565862,
+   "env_step": 150
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-12ca92e1bc",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-9ab6266a71",
+   "t_wall": 1790983742.1641335,
+   "env_step": 150
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "place",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "xy_err": 0.0049558107143885585,
+    "retreat_ok": true
+   },
+   "t_wall": 1790983742.1642532,
+   "env_step": 150
+  },
+  {
+   "event": "skill",
+   "skill": "place",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 64,
+   "t_wall": 1790983742.1642551,
+   "env_step": 150
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_pre",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-b7d369efb8",
+   "latency_s": 0.04356617500161519,
+   "t_wall": 1790983742.6735313,
+   "env_step": 158
+  },
+  {
+   "event": "precontact_path_check",
+   "n_solutions": 20,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790983751.6905537,
+   "env_step": 158
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-2d5e22cae9",
+   "motion_type": "ANY",
+   "n_states": 139,
+   "duration_s": 0.62966392,
+   "latency_s": 0.02052294399982202,
+   "target_pos": [
+    0.03927021765629339,
+    0.012469802475867826,
+    1.0368752620785908
+   ],
+   "t_wall": 1790983751.7122188,
+   "env_step": 158
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-2d5e22cae9",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.0315328235926429,
+   "pos_err_mean": 0.017311890647380167,
+   "rot_err_max_deg": 3.265040399280733,
+   "joint_err_max": 0.22359762358806123,
+   "joint_err_final": 0.07355570560118045,
+   "final_pos_err": 0.0037373682763805617,
+   "final_rot_err_deg": 0.5043071669673777,
+   "planned_duration_s": 0.62966392,
+   "planning_latency_s": 0.02052294399982202,
+   "n_states": 139,
+   "time_scale": 1.072165033915941,
+   "t_wall": 1790983752.7851963,
+   "env_step": 173
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact_settle",
+   "trajectory_id": "PlanTrajectory-99860c502c",
+   "ok": true,
+   "reason": "completed",
+   "steps": 25,
+   "pos_err_max": 0.016623635331081202,
+   "pos_err_mean": 0.01175939414767803,
+   "rot_err_max_deg": 3.6525493704480305,
+   "joint_err_max": 0.4000028189964384,
+   "joint_err_final": 1.0076207089010314,
+   "final_pos_err": 0.009561257940233922,
+   "final_rot_err_deg": 2.5885132159483524,
+   "planned_duration_s": 0.192863155,
+   "planning_latency_s": 0.013432207000732888,
+   "n_states": 26,
+   "time_scale": 1.0,
+   "t_wall": 1790983754.3568223,
+   "env_step": 198
+  },
+  {
+   "event": "approach_any_fallback",
+   "label": "close_drawer_a_seg0",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen",
+   "t_wall": 1790983754.453112,
+   "env_step": 198
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_seg0_any_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-a76dfd3b27",
+   "latency_s": 0.05530130300030578,
+   "t_wall": 1790983754.509563,
+   "env_step": 198
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-4c4835a723",
+   "motion_type": "ANY",
+   "n_states": 162,
+   "duration_s": 0.8480812940000001,
+   "latency_s": 0.029624129998410353,
+   "target_pos": [
+    0.005068203323726525,
+    0.012469802475867833,
+    0.942906
+   ],
+   "t_wall": 1790983754.5405457,
+   "env_step": 198
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-4c4835a723",
+   "ok": false,
+   "reason": "final_pose_error(0.025m,6.6deg)",
+   "steps": 55,
+   "pos_err_max": 0.027780625746793144,
+   "pos_err_mean": 0.010179589596074066,
+   "rot_err_max_deg": 6.835930491693079,
+   "joint_err_max": 1.2421346647424556,
+   "joint_err_final": 1.239278501337736,
+   "final_pos_err": 0.025267050606933673,
+   "final_rot_err_deg": 6.617348159000163,
+   "planned_duration_s": 0.8480812940000001,
+   "planning_latency_s": 0.029624129998410353,
+   "n_states": 162,
+   "time_scale": 2.0,
+   "t_wall": 1790983758.47235,
+   "env_step": 253
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-4c4835a723",
+   "n_checked": 35,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [0.0157874,1.642,0.0295935,-0.0668226,-0.0237611,1.24034,-0.767402] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:val",
+   "request_id": "CheckCollisions-6f7fb67408",
+   "t_wall": 1790983758.47936,
+   "env_step": 253
+  },
+  {
+   "event": "push_progress",
+   "segment": 0,
+   "satisfied": false,
+   "t_wall": 1790983758.4795032,
+   "env_step": 253
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_a",
+   "attempt": 0,
+   "ok": false,
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "details": {},
+   "t_wall": 1790983758.5625775,
+   "env_step": 253
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen when planning close to joint limits or singular configurations. To avoid this error, please try with other start and/or end pose(s), joint configuration(s), and/or constraint(s) which are further away from joint limits and/or singular joint configurations. ik_solution:  -2.70781  -1.45397   2.08917 -0.806062  0.986746   1.40127  -1.05446; expected_closest_joint_configuration: 0.0159174   1.63568 0.0204169 -0.069801 -0.014722   1.24083  -0.76741; maximum_absolute_joint_configuration_error=3.08965 >= tolerance=0.785398; Error occurred during planning in segment 0. (request PlanTrajectory-36362ffa3f)",
+   "t_wall": 1790983758.6444354,
+   "env_step": 253
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_pre",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-e72b7faeb8",
+   "latency_s": 0.05433638500107918,
+   "t_wall": 1790983759.2315018,
+   "env_step": 261
+  },
+  {
+   "event": "precontact_path_check",
+   "n_solutions": 17,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790983768.2090724,
+   "env_step": 261
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-cbc5985895",
+   "motion_type": "ANY",
+   "n_states": 131,
+   "duration_s": 0.6988854910000001,
+   "latency_s": 0.022374563999619568,
+   "target_pos": [
+    0.03927021765629339,
+    0.012469802475868492,
+    1.0368752620785908
+   ],
+   "t_wall": 1790983768.2325552,
+   "env_step": 261
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-cbc5985895",
+   "ok": true,
+   "reason": "completed",
+   "steps": 35,
+   "pos_err_max": 0.011344109600379149,
+   "pos_err_mean": 0.0056029839616873875,
+   "rot_err_max_deg": 2.460131577183899,
+   "joint_err_max": 1.001527660165411,
+   "joint_err_final": 1.0075868013864924,
+   "final_pos_err": 0.009704969110694127,
+   "final_rot_err_deg": 2.589406107062357,
+   "planned_duration_s": 0.6988854910000001,
+   "planning_latency_s": 0.022374563999619568,
+   "n_states": 131,
+   "time_scale": 1.0,
+   "t_wall": 1790983770.3776035,
+   "env_step": 296
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact_settle",
+   "trajectory_id": "PlanTrajectory-00037f5d6e",
+   "ok": true,
+   "reason": "completed",
+   "steps": 35,
+   "pos_err_max": 0.012834476287130539,
+   "pos_err_mean": 0.0054071592916680586,
+   "rot_err_max_deg": 2.82552590926016,
+   "joint_err_max": 0.9571423035102468,
+   "joint_err_final": 1.0075884101451063,
+   "final_pos_err": 0.009675578751388083,
+   "final_rot_err_deg": 2.5714213696989074,
+   "planned_duration_s": 0.681062004,
+   "planning_latency_s": 0.01901476599960006,
+   "n_states": 131,
+   "time_scale": 1.0,
+   "t_wall": 1790983772.7317135,
+   "env_step": 331
+  },
+  {
+   "event": "approach_any_fallback",
+   "label": "close_drawer_a_seg0",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen",
+   "t_wall": 1790983772.8159547,
+   "env_step": 331
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_seg0_any_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-25f42966c1",
+   "latency_s": 0.05696072499995353,
+   "t_wall": 1790983772.8739398,
+   "env_step": 331
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-2265b6b9d2",
+   "motion_type": "ANY",
+   "n_states": 162,
+   "duration_s": 0.838952734,
+   "latency_s": 0.031002190000435803,
+   "target_pos": [
+    0.005068203323726525,
+    0.0124698024758685,
+    0.942906
+   ],
+   "t_wall": 1790983772.9063332,
+   "env_step": 331
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-2265b6b9d2",
+   "ok": false,
+   "reason": "final_pose_error(0.025m,6.6deg)",
+   "steps": 55,
+   "pos_err_max": 0.028465063251455675,
+   "pos_err_mean": 0.010036581253932919,
+   "rot_err_max_deg": 6.7349345372061515,
+   "joint_err_max": 1.2447744592347165,
+   "joint_err_final": 1.2392784970592012,
+   "final_pos_err": 0.025267103933394406,
+   "final_rot_err_deg": 6.617330017591336,
+   "planned_duration_s": 0.838952734,
+   "planning_latency_s": 0.031002190000435803,
+   "n_states": 162,
+   "time_scale": 2.0,
+   "t_wall": 1790983776.4429154,
+   "env_step": 386
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-2265b6b9d2",
+   "n_checked": 35,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [0.0154948,1.63987,0.0300762,-0.0641828,-0.0240015,1.23806,-0.767529] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:v",
+   "request_id": "CheckCollisions-98a839304a",
+   "t_wall": 1790983776.449386,
+   "env_step": 386
+  },
+  {
+   "event": "push_progress",
+   "segment": 0,
+   "satisfied": false,
+   "t_wall": 1790983776.4495065,
+   "env_step": 386
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_a",
+   "attempt": 1,
+   "ok": false,
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "details": {},
+   "t_wall": 1790983776.5284202,
+   "env_step": 386
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen when planning close to joint limits or singular configurations. To avoid this error, please try with other start and/or end pose(s), joint configuration(s), and/or constraint(s) which are further away from joint limits and/or singular joint configurations. ik_solution:  -2.70785  -1.45396   2.08919 -0.806062  0.986746   1.40127   -1.0546; expected_closest_joint_configuration:  0.0158709    1.63568  0.0205778  -0.069801 -0.0148586    1.24083   -0.76754; maximum_absolute_joint_configuration_error=3.08964 >= tolerance=0.785398; Error occurred during planning in segment 0. (request PlanTrajectory-8fc2ef6449)",
+   "t_wall": 1790983776.6033874,
+   "env_step": 386
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_pre",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-20b7b2c1c3",
+   "latency_s": 0.05497937000109232,
+   "t_wall": 1790983777.1915941,
+   "env_step": 394
+  },
+  {
+   "event": "precontact_path_check",
+   "n_solutions": 17,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790983785.9700959,
+   "env_step": 394
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-ae0c7b60dc",
+   "motion_type": "ANY",
+   "n_states": 131,
+   "duration_s": 0.69888565,
+   "latency_s": 0.021139005999430083,
+   "target_pos": [
+    0.03927021765629339,
+    0.012469802475868492,
+    1.0368752620785908
+   ],
+   "t_wall": 1790983785.9923835,
+   "env_step": 394
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-ae0c7b60dc",
+   "ok": true,
+   "reason": "completed",
+   "steps": 35,
+   "pos_err_max": 0.011344075563261039,
+   "pos_err_mean": 0.005602983915672338,
+   "rot_err_max_deg": 2.4601377296459273,
+   "joint_err_max": 1.001529294039017,
+   "joint_err_final": 1.0075868022241325,
+   "final_pos_err": 0.009705017547474543,
+   "final_rot_err_deg": 2.5894165776699727,
+   "planned_duration_s": 0.69888565,
+   "planning_latency_s": 0.021139005999430083,
+   "n_states": 131,
+   "time_scale": 1.0,
+   "t_wall": 1790983788.3369544,
+   "env_step": 429
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact_settle",
+   "trajectory_id": "PlanTrajectory-bc1c41bf4a",
+   "ok": true,
+   "reason": "completed",
+   "steps": 35,
+   "pos_err_max": 0.012834443345092338,
+   "pos_err_mean": 0.005407152141317696,
+   "rot_err_max_deg": 2.825535386109928,
+   "joint_err_max": 0.9571446440637557,
+   "joint_err_final": 1.0075884108381996,
+   "final_pos_err": 0.009675610996621958,
+   "final_rot_err_deg": 2.5714299240193483,
+   "planned_duration_s": 0.681062004,
+   "planning_latency_s": 0.019032814001548104,
+   "n_states": 131,
+   "time_scale": 1.0,
+   "t_wall": 1790983790.566393,
+   "env_step": 464
+  },
+  {
+   "event": "approach_any_fallback",
+   "label": "close_drawer_a_seg0",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen",
+   "t_wall": 1790983790.6485655,
+   "env_step": 464
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_seg0_any_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-b90f592dbf",
+   "latency_s": 0.06275396700220881,
+   "t_wall": 1790983790.7122066,
+   "env_step": 464
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-edab2bc611",
+   "motion_type": "ANY",
+   "n_states": 162,
+   "duration_s": 0.8389536820000001,
+   "latency_s": 0.030770657998800743,
+   "target_pos": [
+    0.005068203323726525,
+    0.0124698024758685,
+    0.942906
+   ],
+   "t_wall": 1790983790.7443485,
+   "env_step": 464
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-edab2bc611",
+   "ok": false,
+   "reason": "final_pose_error(0.025m,6.6deg)",
+   "steps": 55,
+   "pos_err_max": 0.02846500585741302,
+   "pos_err_mean": 0.010036581064549592,
+   "rot_err_max_deg": 6.73492160184564,
+   "joint_err_max": 1.2447752806525847,
+   "joint_err_final": 1.2392784970578261,
+   "final_pos_err": 0.0252671037218223,
+   "final_rot_err_deg": 6.617330055775344,
+   "planned_duration_s": 0.8389536820000001,
+   "planning_latency_s": 0.030770657998800743,
+   "n_states": 162,
+   "time_scale": 2.0,
+   "t_wall": 1790983794.544936,
+   "env_step": 519
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-edab2bc611",
+   "n_checked": 35,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [0.0154948,1.63987,0.0300772,-0.064182,-0.0240025,1.23806,-0.767529] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:va",
+   "request_id": "CheckCollisions-4572201772",
+   "t_wall": 1790983794.551826,
+   "env_step": 519
+  },
+  {
+   "event": "push_progress",
+   "segment": 0,
+   "satisfied": false,
+   "t_wall": 1790983794.5519838,
+   "env_step": 519
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_a",
+   "attempt": 2,
+   "ok": false,
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "details": {},
+   "t_wall": 1790983794.6352696,
+   "env_step": 519
+  },
+  {
+   "event": "skill",
+   "skill": "close_drawer_a",
+   "ok": false,
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "attempts": 3,
+   "steps": 369,
+   "t_wall": 1790983794.635273,
+   "env_step": 519
+  },
+  {
+   "event": "stage_a_failed_continue",
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "t_wall": 1790983794.6352773,
+   "env_step": 519
+  },
+  {
+   "event": "push_probe_riders_excluded",
+   "riders": [
+    "akita_black_bowl_1_main"
+   ],
+   "t_wall": 1790983795.1557183,
+   "env_step": 527
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    }
+   ],
+   "t_wall": 1790983897.1941025,
+   "env_step": 527
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790983902.211422,
+   "env_step": 527
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790983907.2210722,
+   "env_step": 527
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790983911.9909437,
+   "env_step": 527
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790983916.3398354,
+   "env_step": 527
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 0,
+   "ok": false,
+   "reason": "precontact_unreachable",
+   "details": {},
+   "t_wall": 1790983916.339908,
+   "env_step": 527
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen when planning close to joint limits or singular configurations. To avoid this error, please try with other start and/or end pose(s), joint configuration(s), and/or constraint(s) which are further away from joint limits and/or singular joint configurations. ik_solution:  -2.70099  -1.45859   2.05209 -0.803541   1.03776   1.45151   -1.0574; expected_closest_joint_configuration:  0.0158685    1.62573  0.0196276  -0.069801 -0.0139153    1.30543  -0.767536; maximum_absolute_joint_configuration_error=3.08432 >= tolerance=0.785398; Error occurred during planning in segment 0. (request PlanTrajectory-0bb235c848)",
+   "t_wall": 1790983916.430304,
+   "env_step": 527
+  },
+  {
+   "event": "push_probe_riders_excluded",
+   "riders": [
+    "akita_black_bowl_1_main"
+   ],
+   "t_wall": 1790983916.9366124,
+   "env_step": 535
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    }
+   ],
+   "t_wall": 1790984018.1145794,
+   "env_step": 535
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984023.131136,
+   "env_step": 535
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984028.1416097,
+   "env_step": 535
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984032.698099,
+   "env_step": 535
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984036.9742985,
+   "env_step": 535
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 1,
+   "ok": false,
+   "reason": "precontact_unreachable",
+   "details": {},
+   "t_wall": 1790984036.974384,
+   "env_step": 535
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen when planning close to joint limits or singular configurations. To avoid this error, please try with other start and/or end pose(s), joint configuration(s), and/or constraint(s) which are further away from joint limits and/or singular joint configurations. ik_solution:  -2.69889  -1.45973   2.03994 -0.802725   1.05511   1.47028  -1.05828; expected_closest_joint_configuration:  0.0158668     1.6221  0.0192095  -0.069801 -0.0134894    1.32903  -0.767529; maximum_absolute_joint_configuration_error=3.08183 >= tolerance=0.785398; Error occurred during planning in segment 0. (request PlanTrajectory-7cbd7a749f)",
+   "t_wall": 1790984037.0566382,
+   "env_step": 535
+  },
+  {
+   "event": "push_probe_riders_excluded",
+   "riders": [
+    "akita_black_bowl_1_main"
+   ],
+   "t_wall": 1790984037.5752022,
+   "env_step": 543
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/wine_bottle_1_main"
+    }
+   ],
+   "t_wall": 1790984140.1575751,
+   "env_step": 543
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984145.183639,
+   "env_step": 543
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984150.19432,
+   "env_step": 543
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984154.8745005,
+   "env_step": 543
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984159.116796,
+   "env_step": 543
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 2,
+   "ok": false,
+   "reason": "precontact_unreachable",
+   "details": {},
+   "t_wall": 1790984159.1168537,
+   "env_step": 543
+  },
+  {
+   "event": "skill",
+   "skill": "close_drawer_b",
+   "ok": false,
+   "reason": "precontact_unreachable",
+   "attempts": 3,
+   "steps": 24,
+   "t_wall": 1790984159.116856,
+   "env_step": 543
+  },
+  {
+   "event": "obstacle_relocation",
+   "obstacle": "wine_bottle_1_main",
+   "blockers": [
+    "wine_bottle_1_main"
+   ],
+   "t_wall": 1790984159.1169531,
+   "env_step": 543
+  },
+  {
+   "event": "relocation_spot",
+   "obstacle": "wine_bottle_1_main",
+   "spot": [
+    -0.27,
+    -0.07000000000000012
+   ],
+   "t_wall": 1790984159.1507428,
+   "env_step": 543
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 8,
+   "n_cleared": 8,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790984159.349281,
+   "env_step": 543
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z1.033_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-138fc4980d",
+   "latency_s": 0.03127442299955874,
+   "t_wall": 1790984160.1722968,
+   "env_step": 556
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z1.033_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-47232c60b9",
+   "latency_s": 0.0217411319972598,
+   "t_wall": 1790984160.194795,
+   "env_step": 556
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z1.033_yaw0",
+   "n_solutions": 5,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790984160.2547903,
+   "env_step": 556
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 7,
+   "request_id": "ComputeIk-fe17361adc",
+   "latency_s": 0.04077990500081796,
+   "t_wall": 1790984160.2966673,
+   "env_step": 556
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-031b9b87e0",
+   "motion_type": "ANY",
+   "n_states": 351,
+   "duration_s": 1.3202458080000001,
+   "latency_s": 0.044361573996866355,
+   "target_pos": [
+    -0.14947573058222585,
+    0.04920811912374992,
+    1.1333615331903284
+   ],
+   "t_wall": 1790984160.343277,
+   "env_step": 556
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-031b9b87e0",
+   "ok": false,
+   "reason": "tracking_error_exceeded(0.086m)",
+   "steps": 32,
+   "pos_err_max": 0.08630742918294593,
+   "pos_err_mean": 0.018460455297429165,
+   "rot_err_max_deg": 10.423396499695247,
+   "joint_err_max": 1.673152320068922,
+   "joint_err_final": 2.252330664782044,
+   "final_pos_err": 0.21911676436774685,
+   "final_rot_err_deg": 27.847083832839097,
+   "planned_duration_s": 1.3202458080000001,
+   "planning_latency_s": 0.044361573996866355,
+   "n_states": 351,
+   "time_scale": 1.6464937108327564,
+   "t_wall": 1790984162.996403,
+   "env_step": 588
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-031b9b87e0",
+   "n_checked": 32,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The initial configuration [0.0153349,1.62018,0.018952,-0.0697959,-0.0127879,1.34008,-0.764868] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error",
+   "request_id": "CheckCollisions-37e672ff37",
+   "t_wall": 1790984163.0034406,
+   "env_step": 588
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": false,
+   "reason": "pregrasp_exec:tracking_error_exceeded(0.086m)",
+   "details": {
+    "grasp": "pinch_z1.033_yaw0"
+   },
+   "t_wall": 1790984163.0035272,
+   "env_step": 588
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region was either outside the robot's reachable envelope or that it led to limit violations.; \n Cannot resolve motion target for segment 0 (request PlanTrajectory-35f6771641)",
+   "t_wall": 1790984168.2845795,
+   "env_step": 592
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 7,
+   "n_cleared": 7,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790984168.4878962,
+   "env_step": 592
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z1.033_yaw22",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-3abe77bb79",
+   "latency_s": 0.028485384002124192,
+   "t_wall": 1790984169.3958583,
+   "env_step": 605
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z1.033_yaw22",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-3e5be48923",
+   "latency_s": 0.022788245001720497,
+   "t_wall": 1790984169.4195576,
+   "env_step": 605
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z1.033_yaw22",
+   "n_solutions": 5,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790984169.4780593,
+   "env_step": 605
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 7,
+   "request_id": "ComputeIk-0b4c630d88",
+   "latency_s": 0.028485727998486254,
+   "t_wall": 1790984169.5077903,
+   "env_step": 605
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-7e7b4805f6",
+   "motion_type": "ANY",
+   "n_states": 291,
+   "duration_s": 1.293223955,
+   "latency_s": 0.027113181000459008,
+   "target_pos": [
+    -0.14947573058222585,
+    0.04920811912374992,
+    1.1333615331903284
+   ],
+   "t_wall": 1790984169.5366678,
+   "env_step": 605
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-7e7b4805f6",
+   "ok": false,
+   "reason": "tracking_error_exceeded(0.086m)",
+   "steps": 33,
+   "pos_err_max": 0.08631050041567494,
+   "pos_err_mean": 0.02120633942512584,
+   "rot_err_max_deg": 10.660885943859435,
+   "joint_err_max": 1.6792604768195705,
+   "joint_err_final": 2.2524974565043894,
+   "final_pos_err": 0.2249414776722821,
+   "final_rot_err_deg": 13.742633728230937,
+   "planned_duration_s": 1.293223955,
+   "planning_latency_s": 0.027113181000459008,
+   "n_states": 291,
+   "time_scale": 1.7330067840363348,
+   "t_wall": 1790984171.887906,
+   "env_step": 638
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-7e7b4805f6",
+   "n_checked": 33,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [0.0364997,1.29304,0.0332678,-0.0695064,0.0709484,1.14968,0.514351] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:val",
+   "request_id": "CheckCollisions-00d9980d87",
+   "t_wall": 1790984171.895847,
+   "env_step": 638
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 1,
+   "ok": false,
+   "reason": "pregrasp_exec:tracking_error_exceeded(0.086m)",
+   "details": {
+    "grasp": "pinch_z1.033_yaw22"
+   },
+   "t_wall": 1790984171.895936,
+   "env_step": 638
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region was either outside the robot's reachable envelope or that it led to limit violations.; \n Cannot resolve motion target for segment 0 (request PlanTrajectory-c4210cd317)",
+   "t_wall": 1790984177.1713066,
+   "env_step": 642
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 6,
+   "n_cleared": 6,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790984177.3259487,
+   "env_step": 642
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z1.033_yaw45",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-5eb61b4f5c",
+   "latency_s": 0.029563312000391306,
+   "t_wall": 1790984178.2834651,
+   "env_step": 656
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z1.033_yaw45",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-0c54a73928",
+   "latency_s": 0.0254911850024655,
+   "t_wall": 1790984178.3094919,
+   "env_step": 656
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z1.033_yaw45",
+   "n_solutions": 5,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790984178.3839462,
+   "env_step": 656
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-07644e9a9a",
+   "latency_s": 0.03684761999829789,
+   "t_wall": 1790984178.42216,
+   "env_step": 656
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-33ecbf6425",
+   "motion_type": "ANY",
+   "n_states": 289,
+   "duration_s": 1.293293977,
+   "latency_s": 0.027619420001428807,
+   "target_pos": [
+    -0.14947573058222585,
+    0.04920811912374993,
+    1.1333615331903284
+   ],
+   "t_wall": 1790984178.4516187,
+   "env_step": 656
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-33ecbf6425",
+   "ok": false,
+   "reason": "tracking_error_exceeded(0.086m)",
+   "steps": 33,
+   "pos_err_max": 0.0860131307332457,
+   "pos_err_mean": 0.02127773839816604,
+   "rot_err_max_deg": 10.769074620485245,
+   "joint_err_max": 1.6793966812334953,
+   "joint_err_final": 2.252634268140346,
+   "final_pos_err": 0.2239432881663115,
+   "final_rot_err_deg": 14.364592752712694,
+   "planned_duration_s": 1.293293977,
+   "planning_latency_s": 0.027619420001428807,
+   "n_states": 289,
+   "time_scale": 1.7256342395252293,
+   "t_wall": 1790984180.8873088,
+   "env_step": 689
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-33ecbf6425",
+   "n_checked": 33,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [0.0603519,1.29219,0.0309066,-0.0694308,0.023724,1.14698,0.198758] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:vali",
+   "request_id": "CheckCollisions-7f5dbb723a",
+   "t_wall": 1790984180.8943162,
+   "env_step": 689
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 2,
+   "ok": false,
+   "reason": "pregrasp_exec:tracking_error_exceeded(0.086m)",
+   "details": {
+    "grasp": "pinch_z1.033_yaw45"
+   },
+   "t_wall": 1790984180.8944185,
+   "env_step": 689
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": false,
+   "reason": "pregrasp_exec:tracking_error_exceeded(0.086m)",
+   "attempts": 3,
+   "steps": 146,
+   "t_wall": 1790984180.8944216,
+   "env_step": 689
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer",
+   "attempt": 0,
+   "ok": false,
+   "reason": "relocate_pick:pregrasp_exec:tracking_error_exceeded(0.086m)",
+   "details": {},
+   "t_wall": 1790984180.894435,
+   "env_step": 689
+  },
+  {
+   "event": "skill",
+   "skill": "close_drawer",
+   "ok": false,
+   "reason": "relocate_pick:pregrasp_exec:tracking_error_exceeded(0.086m)",
+   "attempts": 1,
+   "steps": 539,
+   "t_wall": 1790984180.8944364,
+   "env_step": 689
+  }
+ ],
+ "world_sync": {
+  "n_objects": 8,
+  "max_pose_error_m": 0.0,
+  "max_rot_error_deg": 0.0
+ },
+ "goal": [
+  {
+   "predicate": "close",
+   "args": [
+    "white_cabinet_1_bottom_region"
+   ],
+   "subgoal_index": 0
+  },
+  {
+   "predicate": "in",
+   "args": [
+    "akita_black_bowl_1",
+    "white_cabinet_1_bottom_region"
+   ],
+   "subgoal_index": 1
+  }
+ ],
+ "plan": [
+  "pick:akita_black_bowl_1_main",
+  "place:akita_black_bowl_1_main",
+  "close_drawer:white_cabinet_1_cabinet_bottom"
+ ],
+ "failure_stage": "close_drawer:white_cabinet_1_cabinet_bottom",
+ "failure_reason": "relocate_pick:pregrasp_exec:tracking_error_exceeded(0.086m)",
+ "success_at_end": false,
+ "first_done_step": null,
+ "final_state": {
+  "objects": {
+   "akita_black_bowl_1": [
+    0.0012400009436380657,
+    0.1422804562826464,
+    0.9242399683749977
+   ],
+   "wine_bottle_1": [
+    -0.14914316888971785,
+    0.04893795898871286,
+    0.8988609548408878
+   ]
+  },
+  "articulations": {
+   "white_cabinet_1_top_level": 0.0,
+   "white_cabinet_1_middle_level": 0.0,
+   "white_cabinet_1_bottom_level": -0.15449930284655114
+  },
+  "goal_atoms": [
+   {
+    "atom": [
+     "close",
+     "white_cabinet_1_bottom_region"
+    ],
+    "true": false
+   },
+   {
+    "atom": [
+     "in",
+     "akita_black_bowl_1",
+     "white_cabinet_1_bottom_region"
+    ],
+    "true": true
+   }
+  ]
+ },
+ "video": "runs/eval_c3/A/task3/episodes/t3_i18_aa9e6f9f/agentview.mp4",
+ "steps": 689,
+ "t_end": 1790984180.9563336,
+ "wall_time_s": 528.1448705196381
+}

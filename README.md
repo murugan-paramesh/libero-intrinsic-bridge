@@ -16,10 +16,19 @@ per task disjoint from development states, budget 1,200 steps, seed 0):
 |---|---|---|
 | baseline `76267bf` (archived, unchanged) | **62/100** (Wilson 95% CI 52-71%) | 10, 5, 10, 0, 10, 2, 9, 8, 8, 0 |
 | candidate `5b713c6` | **73/100** (CI 64-81%) | 10, 9, 10, 0, 10, 8, 9, 9, 8, 0 |
-| candidate `ce7685b` (**recommended**) | **76/100** (CI 67-83%) | 10, 10, 10, 0, 10, 8, 9, 9, 10, 0 |
-| candidate `9b02207` (later code, archived, not recommended) | 74/100 (CI 65-82%) | 10, 9, 10, 0, 9, 8, 9, 9, 10, 0 |
+| candidate `ce7685b` (verified fallback) | **76/100** (CI 67-83%) | 10, 10, 10, 0, 10, 8, 9, 9, 10, 0 |
+| candidate `9b02207` (archived, not recommended) | 74/100 (CI 65-82%) | 10, 9, 10, 0, 9, 8, 9, 9, 10, 0 |
+| candidate `5e236de` (**C3, recommended**; final pass) | **80/100** (CI 71-87%) | 10, 8, 10, 0, 10, 9, 10, 9, 10, 4 |
 
-Per-task before/after with the episodes that changed: `docs/comparison_ce7685b.md`,
+Candidate 5e236de (C3) is the final pass's result: task 9 (mug in the microwave, door closed) is solved
+on 4 of 10 protocol states and tasks 5/6 gain one episode each; task 1 loses two episodes (butter pick,
+docs/report.md 12.6). Success follows LIBERO's own metric (`libero/lifelong/metric.py`: done at any
+control step; the episode ends there); every success record carries the goal atoms evaluated by
+LIBERO's predicate functions. The 1,296 planned motions of that run (mean 26 ms, max 135 ms, no
+timeouts) are all Intrinsic `PlanTrajectory` results; the 937 "plan failures" counted are rejected
+IK/plan probes of the task 3 contact search (every one logged with its reason).
+Per-task before/after with the episodes that changed: `docs/comparison_5e236de.md`,
+`docs/comparison_ce7685b_to_5e236de.md`, `docs/comparison_ce7685b.md`,
 `docs/comparison_5b713c6_to_ce7685b.md`, `docs/comparison_ce7685b_to_9b02207.md` (the later
 candidate loses one episode each on tasks 1 and 4 and gains none, so ce7685b stays recommended;
 its run was interrupted by a container restart and resumed under the protocol, see
@@ -84,9 +93,12 @@ python scripts/archive_evaluation.py runs/eval_<rev> evaluations/candidate_<rev>
 ## Evidence index (committed)
 | what | where |
 |---|---|
-| 100 episode records per evaluated revision (success flag, steps, every Intrinsic request id, skill events) | `evaluations/baseline_76267bf`, `evaluations/candidate_5b713c6`, `evaluations/heldout_5b713c6`, `evaluations/candidate_ce7685b`, `evaluations/candidate_9b02207` |
+| 100 episode records per evaluated revision (success flag, steps, every Intrinsic request id, skill events, final goal atoms for 5e236de) | `evaluations/baseline_76267bf`, `evaluations/candidate_5b713c6`, `evaluations/heldout_5b713c6`, `evaluations/candidate_ce7685b`, `evaluations/candidate_9b02207`, `evaluations/candidate_5e236de` |
 | results tables and per-task comparisons | `docs/results*.md`, `docs/comparison_*.md`, `docs/heldout_5b713c6.md` |
-| videos + records + Intrinsic request logs for the recommended candidate (one success per solved task, failures for tasks 3, 5, 6, 7, 9) | `evidence/eval_episodes_ce7685b` (`MANIFEST.json` maps task -> episode dir) |
+| videos + records + Intrinsic request logs for the recommended candidate 5e236de (one success per solved task incl. task 9, failures for tasks 1, 3, 5, 7, 9) | `evidence/eval_episodes_5e236de` (`MANIFEST.json` maps task -> episode dir) |
+| same for the fallback candidate ce7685b | `evidence/eval_episodes_ce7685b` |
+| task 9 complete development successes (states 1, 3, 4) with video and RPC log; task 3 stage-lab traces; matched ce7685b comparisons | `evidence/dev_task9_success`, `evidence/dev_task3_lab`, `evidence/dev_matched_ce7685b` |
+| partial/experimental protocol runs of this pass (labelled, not recommended) | `evaluations/partial_4c20556`, `evaluations/partial_c2` |
 | videos + records for the later candidate's new failure modes (task 9 insertion, task 3 stages, task 1/6 regressions) | `evidence/eval_episodes_9b02207` |
 | failure stages with evidence per run | `docs/failure_table.md` |
 | method families, Intrinsic support, experiments, outcomes | `docs/methods.md` |
@@ -100,12 +112,13 @@ container and are not part of the repository.
 python -m pytest -q
 python scripts/validate_kinematics.py --task 0                                # Intrinsic FK/IK vs MuJoCo
 python scripts/demo_motion.py --task 0 --init 0                               # one planned motion in LIBERO
-git checkout ce7685b   # recommended candidate (detached HEAD; `git checkout -` returns)
+git checkout 5e236de   # recommended candidate C3 (detached HEAD; `git checkout -` returns); ce7685b is the fallback
 python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/review/A && python scripts/evaluate.py --tasks 5 6 7 8 9 --out runs/review/B   # ~2.5 h on 4 cores, run the halves in parallel
 git checkout -
 python -m libero_intrinsic.eval.report runs/review --out runs/review/results.json
-python scripts/compare_evaluations.py evaluations/candidate_ce7685b runs/review --labels archived_ce7685b your_rerun
-cat evidence/eval_episodes_ce7685b/MANIFEST.json                              # task -> video/record
+python scripts/compare_evaluations.py evaluations/candidate_5e236de runs/review --labels archived_5e236de your_rerun
+cat evidence/eval_episodes_5e236de/MANIFEST.json                              # task -> video/record
+python scripts/run_task.py --task 9 --inits 3                                 # task 9 complete episode on a development state
 ```
 
 ## Frozen dependency record (final pass)

@@ -133,3 +133,17 @@ task 1 regression 17, task 6 slip 19). The other 94 episodes exist only as recor
 | 9 | TRACK (open) | states 0, 2 (dev) and 10, 12, 14, 19 (protocol, C2 half B): pre-grasp after relocation 2.7-4.6 cm / 7-11 deg off at the joint-2 limit | EXECUTION |
 | 9 | PLACE (open) | states 11, 18 (protocol, C2 half B): ComputeIk NOT_FOUND at the release/pre-place (hand vs microwave frame) | PLANNING (collision) |
 | 1, 7 | GRASP/TRACK (regression, fixed in C3) | 4c20556 / C2: approach tracking 8 cm after a validated-configuration pre-grasp; ce7685b path tracks the same approach with 0.1 rad error | EXECUTION |
+
+## 11. Candidate 5e236de (C3), repeated evaluation (100 episodes, evaluations/candidate_5e236de, 80/100)
+
+| task | failures | stage | observed evidence |
+|---|---|---|---|
+| 1 | 2/10 | GRASP then REACH | butter pick: approach ends 1.3 cm short, fingers close with 0 pad contacts (10) / lift drift 10 cm (11); retry candidates (yaw 0) have no collision-free IK |
+| 3 | 10/10 | ARTIC (stage B 7, relocation pick 3) | stage A: no progress (posture at the reach limit, segment plan NOT_FOUND); stage B: every probed horizontal contact pose rejected (link 5 vs wine rack, wrist vs table, no IK), also after relocating the wine bottle; on 3 states the relocation pick itself fails by tracking (8-9 cm) |
+| 5 | 1/10 | REACH | no reachable grasp (18), as in every candidate |
+| 7 | 1/10 | REACH | cream cheese: no reachable grasp after a failed first attempt (10) |
+| 9 | 6/10 | TRACK (4), PLAN (1), ARTIC (1) | pre-grasp after relocation 2.0-4.5 cm / 5-10 deg off at the joint-2 limit (10, 12, 14, 19); release/pre-place IK hand vs microwave (11); door push segment 0 NOT_FOUND (18) |
+
+Successes with video: `evidence/eval_episodes_5e236de` (task 9 state 13: goal at step 740, door
+qpos +0.003 rad, mug origin inside the heating region).
+

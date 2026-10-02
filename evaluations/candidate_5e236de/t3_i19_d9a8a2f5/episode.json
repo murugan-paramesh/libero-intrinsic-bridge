@@ -1,0 +1,5500 @@
+{
+ "run_id": "t3_i19_d9a8a2f5",
+ "task_index": 3,
+ "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+ "language": "put the black bowl in the bottom drawer of the cabinet and close it",
+ "init_state_index": 19,
+ "seed": 0,
+ "revisions": {
+  "libero_intrinsic_bridge": "5e236def5a8054a7ae41609ddfda0b60d109bd91",
+  "working_tree_dirty_at_start": false,
+  "intrinsic_core": "c61bf075f2335371c6367b61117e8a62bb960c3b",
+  "LIBERO": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+  "robosuite": "1.4.0",
+  "mujoco": "2.3.7",
+  "numpy": "1.23.5"
+ },
+ "observation_mode": "privileged_state",
+ "controller": "OSC_POSE (robosuite 1.4.0 default osc_pose.json, 20 Hz)",
+ "step_budget": 1200,
+ "intrinsic": {
+  "component": "MotionPlannerServiceInProcess + FakeWorldService (intrinsic-core, in-process gRPC)",
+  "binary": "/home/user/bazel_out/execroot/_main/bazel-out/haswell-opt/bin/libero_bridge/libero_planner_server",
+  "world_id": "libero10_task3",
+  "sdf": "runs/eval_c3/A/task3/world/task3.sdf",
+  "addresses": {
+   "world_service": "127.0.0.1:38315",
+   "motion_planner_service": "dns:///localhost:44377",
+   "credentials": "local_tcp"
+  },
+  "n_requests": 1866,
+  "requests_by_rpc": {
+   "CheckCollisions": 13,
+   "ComputeFk": 671,
+   "ComputeIk": 782,
+   "GetObject": 1,
+   "GetTransform": 8,
+   "ListObjects": 2,
+   "PlanTrajectory": 45,
+   "ReparentObject": 12,
+   "UpdateObjectJoints": 29,
+   "UpdateTransform": 296,
+   "note": 7
+  },
+  "plan_latency_s": [
+   0.06590668100034236,
+   0.01871504299924709,
+   0.09229345999847283,
+   0.024261161997856107,
+   0.04986836900206981,
+   0.023138304997701198,
+   0.02750827400086564,
+   0.0345129179986543,
+   0.014618325996707426,
+   0.0429864190009539,
+   0.01680263599700993,
+   0.04230998700222699,
+   0.018609192997246282,
+   0.08831472500241944,
+   0.028465212999435607,
+   0.012748018001730088,
+   0.06890062899765326,
+   0.042921796997688944,
+   0.05201976999887847,
+   0.06211347900170949,
+   0.061614220998308156,
+   0.02747508399988874,
+   0.02049726499899407,
+   0.0996320359990932,
+   0.0370614530002058,
+   0.05906778200005647,
+   0.06185108399949968,
+   0.06218464999983553,
+   0.018937379001727095,
+   0.020506374999968102,
+   0.07263087100000121,
+   0.03379609100011294,
+   0.05207694199998514,
+   0.06278877200020361,
+   0.07348161399931996,
+   0.03187443500064546,
+   0.017394667000189656,
+   0.02984526799991727,
+   5.013266267997096,
+   0.03383579600267694,
+   0.019395876999624306,
+   0.02751142799752415,
+   5.016338891000487,
+   0.036312431999249384,
+   0.026316141000279458
+  ],
+  "plan_failures": 19,
+  "plan_timeouts": 0,
+  "linear_replans": 7
+ },
+ "t_start": 1790984180.9711485,
+ "success": false,
+ "error": null,
+ "skills": [
+  {
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 93,
+   "details": {
+    "grasp": "pinch_z0.932_yaw22",
+    "width": 0.010396220056314583,
+    "lifted": 0.08757681987244237,
+    "drift": 0.017053848128899447
+   }
+  },
+  {
+   "skill": "place",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 71,
+   "details": {
+    "xy_err": 0.005644234737867518,
+    "retreat_ok": true
+   }
+  },
+  {
+   "skill": "close_drawer",
+   "ok": false,
+   "reason": "relocate_pick:pregrasp_exec:tracking_error_exceeded(0.082m)",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 552,
+   "details": {}
+  }
+ ],
+ "events": [
+  {
+   "event": "grasp_candidates",
+   "n_total": 68,
+   "n_cleared": 40,
+   "n_tilted": 0,
+   "blockers": {
+    "white_cabinet_1_cabinet_bottom": 20,
+    "wine_rack_1_main": 8
+   },
+   "t_wall": 1790984184.609423,
+   "env_step": 0
+  },
+  {
+   "event": "grasp_placement_filter",
+   "n_checked": 24,
+   "n_compatible": 15,
+   "first": "pinch_z0.932_yaw22",
+   "first_drop_m": 0.06012199999999994,
+   "incompatible_examples": [
+    [
+     "pinch_z0.932_yaw68",
+     "hand:white_cabinet_1_base"
+    ],
+    [
+     "pinch_z0.932_yaw90",
+     "hand:white_cabinet_1_base"
+    ],
+    [
+     "pinch_z0.932_yaw90",
+     "hand:white_cabinet_1_cabinet_top"
+    ],
+    [
+     "pinch_z0.932_yaw45",
+     "hand:white_cabinet_1_base"
+    ],
+    [
+     "pinch_z0.932_yaw90",
+     "hand:white_cabinet_1_base"
+    ],
+    [
+     "pinch_z0.932_yaw45",
+     "hand:white_cabinet_1_cabinet_top"
+    ]
+   ],
+   "ranked": [
+    [
+     "pinch_z0.932_yaw22",
+     0.06
+    ],
+    [
+     "pinch_z0.932_yaw45",
+     0.06
+    ],
+    [
+     "pinch_z0.932_yaw68",
+     0.06
+    ],
+    [
+     "pinch_z0.932_yaw45",
+     0.06
+    ],
+    [
+     "pinch_z0.932_yaw68",
+     0.06
+    ],
+    [
+     "pinch_z0.932_yaw68",
+     0.06
+    ],
+    [
+     "pinch_z0.932_yaw22",
+     0.06
+    ],
+    [
+     "pinch_z0.932_yaw0",
+     0.06
+    ]
+   ],
+   "t_wall": 1790984268.2252984,
+   "env_step": 0
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.932_yaw22",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-ddef79cf5b",
+   "latency_s": 0.06147672900260659,
+   "t_wall": 1790984269.1689084,
+   "env_step": 13
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z0.932_yaw22",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-ffc5d77c43",
+   "latency_s": 0.07781604800038622,
+   "t_wall": 1790984269.2478907,
+   "env_step": 13
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z0.932_yaw22",
+   "n_solutions": 4,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790984269.370704,
+   "env_step": 13
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-8b03ee45d8",
+   "latency_s": 0.048986010002408875,
+   "t_wall": 1790984269.4207103,
+   "env_step": 13
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-1f7adac2d7",
+   "motion_type": "ANY",
+   "n_states": 143,
+   "duration_s": 0.745233577,
+   "latency_s": 0.01871504299924709,
+   "target_pos": [
+    0.03726622947077256,
+    -0.0807983074756995,
+    1.031892545268207
+   ],
+   "t_wall": 1790984269.4406214,
+   "env_step": 13
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-1f7adac2d7",
+   "ok": true,
+   "reason": "completed",
+   "steps": 38,
+   "pos_err_max": 0.006604120410359093,
+   "pos_err_mean": 0.004793583124000518,
+   "rot_err_max_deg": 1.0643122586420979,
+   "joint_err_max": 0.04920285714070714,
+   "joint_err_final": 0.044011317542305584,
+   "final_pos_err": 0.00534682645875332,
+   "final_rot_err_deg": 0.9997649166875764,
+   "planned_duration_s": 0.745233577,
+   "planning_latency_s": 0.01871504299924709,
+   "n_states": 143,
+   "time_scale": 2.4403594315547554,
+   "t_wall": 1790984271.82476,
+   "env_step": 51
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-1f7adac2d7",
+   "n_checked": 38,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-8e307f5b99",
+   "t_wall": 1790984271.834771,
+   "env_step": 51
+  },
+  {
+   "event": "plan",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-e8ea45f03e",
+   "motion_type": "LINEAR",
+   "n_states": 34,
+   "duration_s": 0.350625994,
+   "latency_s": 0.024261161997856107,
+   "target_pos": [
+    0.03726622947077256,
+    -0.0807983074756995,
+    0.931892545268207
+   ],
+   "t_wall": 1790984271.95304,
+   "env_step": 51
+  },
+  {
+   "event": "execute",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-e8ea45f03e",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.006090414550569023,
+   "pos_err_mean": 0.003536989544901004,
+   "rot_err_max_deg": 0.22550258198545475,
+   "joint_err_max": 0.013759805747210141,
+   "joint_err_final": 0.011780837799659348,
+   "final_pos_err": 0.0018645689542176943,
+   "final_rot_err_deg": 0.20077625015534525,
+   "planned_duration_s": 0.350625994,
+   "planning_latency_s": 0.024261161997856107,
+   "n_states": 34,
+   "time_scale": 1.9949219236888254,
+   "t_wall": 1790984272.938821,
+   "env_step": 66
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-e8ea45f03e",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-a6fdf77926",
+   "t_wall": 1790984272.9464917,
+   "env_step": 66
+  },
+  {
+   "event": "grasp_verify",
+   "finger_gap": 0.010165326768178402,
+   "pad_contacts": 7,
+   "grasp": "pinch_z0.932_yaw22",
+   "t_wall": 1790984273.6548882,
+   "env_step": 78
+  },
+  {
+   "event": "plan",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-948a592532",
+   "motion_type": "LINEAR",
+   "n_states": 30,
+   "duration_s": 0.366370905,
+   "latency_s": 0.023138304997701198,
+   "target_pos": [
+    0.035643916421528546,
+    -0.08154926900555373,
+    1.0305723026076574
+   ],
+   "t_wall": 1790984273.7419186,
+   "env_step": 78
+  },
+  {
+   "event": "execute",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-948a592532",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.007358398995104942,
+   "pos_err_mean": 0.003531148827686764,
+   "rot_err_max_deg": 0.3096592054061009,
+   "joint_err_max": 0.019694031005861756,
+   "joint_err_final": 0.013539834028745146,
+   "final_pos_err": 0.0015436284821983733,
+   "final_rot_err_deg": 0.3096592054061009,
+   "planned_duration_s": 0.366370905,
+   "planning_latency_s": 0.023138304997701198,
+   "n_states": 30,
+   "time_scale": 1.8478793337043289,
+   "t_wall": 1790984274.7926502,
+   "env_step": 93
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-948a592532",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-ffcd93205d",
+   "t_wall": 1790984274.8000257,
+   "env_step": 93
+  },
+  {
+   "event": "lift_verify",
+   "lifted_m": 0.08757681987244237,
+   "tcp_obj_drift_m": 0.017053848128899447,
+   "pad_contacts": 8,
+   "t_wall": 1790984274.800655,
+   "env_step": 93
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "grasp": "pinch_z0.932_yaw22",
+    "width": 0.010396220056314583,
+    "lifted": 0.08757681987244237,
+    "drift": 0.017053848128899447
+   },
+   "t_wall": 1790984274.8009467,
+   "env_step": 93
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 93,
+   "t_wall": 1790984274.8009486,
+   "env_step": 93
+  },
+  {
+   "event": "place_attachment_refresh",
+   "drift_m": 0.017053848128899447,
+   "t_wall": 1790984274.835072,
+   "env_step": 93
+  },
+  {
+   "event": "place_fit_rotation",
+   "yaw_deg": [
+    0.0,
+    25.367296685995427,
+    -64.63270331400457,
+    90.0,
+    -90.0,
+    115.36729668599541
+   ],
+   "overhang_m": 0.0,
+   "t_wall": 1790984274.8420928,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 0,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.13179010791636303,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.113533,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 1,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.12692100705407267,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1135426,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 2,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.1366592087786534,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984275.1135468,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 3,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.13179010791636303,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1135514,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 4,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.13179010791636303,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1135554,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 5,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.12692100705407267,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1135595,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 6,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.1366592087786534,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984275.113564,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 7,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.12692100705407267,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1135676,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 8,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.1366592087786534,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984275.1135716,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 9,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    0.009000965055466839,
+    0.1220519061917823,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1135755,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 10,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.14152830964094376,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984275.1135798,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 11,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    0.009000965055466839,
+    0.1220519061917823,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1135833,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 12,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    0.009000965055466839,
+    0.10154610791636304,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1135871,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 13,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.16203410791636308,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984275.113591,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 14,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    0.009000965055466839,
+    0.10154610791636304,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1135943,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 15,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    0.009000965055466839,
+    0.10154610791636304,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1135974,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 16,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.16203410791636308,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984275.1136012,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 17,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.16203410791636308,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984275.1136048,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 18,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    0.009000965055466839,
+    0.10154610791636304,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.113609,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 19,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    0.009000965055466839,
+    0.10154610791636304,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1136138,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 20,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.16203410791636308,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984275.1136184,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 21,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.009000965055466839,
+    0.16203410791636308,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984275.1136224,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 22,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    0.009000965055466839,
+    0.10154610791636304,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.113627,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 0,
+   "event": "place_spot_rejected",
+   "candidate": 23,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    0.009000965055466839,
+    0.10154610791636304,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984275.1136303,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 0,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.15129392269115371,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.623618,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 1,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.14642482182886335,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.623627,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 2,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.15616302355344408,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.623638,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 3,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.15129392269115371,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.6236424,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 4,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.15129392269115371,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.6236463,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 5,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.14642482182886335,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.6236513,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 6,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.15616302355344408,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.6236558,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 7,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.14642482182886335,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.6236603,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 8,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.15616302355344408,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.6236653,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 9,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.14155572096657298,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.623669,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 10,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.16103212441573445,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.623672,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 11,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_cabinet_top",
+   "tcp": [
+    -0.03980769255878452,
+    0.14155572096657298,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.623675,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 12,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "objwall:white_cabinet_1_cabinet_bottom",
+   "tcp": [
+    -0.03980769255878452,
+    0.12104992269115371,
+    0.9850876593960556
+   ],
+   "trace": [
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984277.6236784,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 13,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    -0.03980769255878452,
+    0.18153792269115376,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.6236823,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 14,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "objwall:white_cabinet_1_cabinet_bottom",
+   "tcp": [
+    -0.03980769255878452,
+    0.12104992269115371,
+    0.9850876593960556
+   ],
+   "trace": [
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984277.623686,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 15,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "objwall:white_cabinet_1_cabinet_bottom",
+   "tcp": [
+    -0.03980769255878452,
+    0.12104992269115371,
+    0.9850876593960556
+   ],
+   "trace": [
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984277.62369,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 16,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    -0.03980769255878452,
+    0.18153792269115376,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.623693,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 17,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    -0.03980769255878452,
+    0.18153792269115376,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.6236968,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 18,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "objwall:white_cabinet_1_cabinet_bottom",
+   "tcp": [
+    -0.03980769255878452,
+    0.12104992269115371,
+    0.9850876593960556
+   ],
+   "trace": [
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984277.6237006,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 19,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "objwall:white_cabinet_1_cabinet_bottom",
+   "tcp": [
+    -0.03980769255878452,
+    0.12104992269115371,
+    0.9850876593960556
+   ],
+   "trace": [
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984277.6237118,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 20,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    -0.03980769255878452,
+    0.18153792269115376,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.623719,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 21,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    -0.03980769255878452,
+    0.18153792269115376,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.6237226,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 22,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "objwall:white_cabinet_1_cabinet_bottom",
+   "tcp": [
+    -0.03980769255878452,
+    0.12104992269115371,
+    0.9850876593960556
+   ],
+   "trace": [
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984277.623728,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 23,
+   "blocker": "hand:white_cabinet_1_cabinet_top",
+   "first_blocker": "objwall:white_cabinet_1_cabinet_bottom",
+   "tcp": [
+    -0.03980769255878452,
+    0.12104992269115371,
+    0.9850876593960556
+   ],
+   "trace": [
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984277.6237319,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 0,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.19381917484598116,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8933227,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 1,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.1889500739836908,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8933332,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 2,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.19868827570827152,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8933399,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 3,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.19381917484598116,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8933456,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 4,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.19381917484598116,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8933506,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 5,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.1889500739836908,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8933568,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 6,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.19868827570827152,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8933618,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 7,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.1889500739836908,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.893366,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 8,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.19868827570827152,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8933737,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 9,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.18408097312140043,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8933785,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 10,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.2035573765705619,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934097,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 11,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.18408097312140043,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934171,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 12,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.16357517484598116,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934238,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 13,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.2240631748459812,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.893429,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 14,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.16357517484598116,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934348,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 15,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.16357517484598116,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934395,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 16,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.2240631748459812,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934438,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 17,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.2240631748459812,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934479,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 18,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.16357517484598116,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.893452,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 19,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.16357517484598116,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934565,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 20,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.2240631748459812,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934605,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 21,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.2240631748459812,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934643,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 22,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.16357517484598116,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.893468,
+   "env_step": 93
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 23,
+   "blocker": "hand:white_cabinet_1_base",
+   "first_blocker": "hand:white_cabinet_1_base",
+   "tcp": [
+    0.018934052197690385,
+    0.16357517484598116,
+    0.9850876593960556
+   ],
+   "trace": [
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_base"
+   ],
+   "t_wall": 1790984277.8934712,
+   "env_step": 93
+  },
+  {
+   "event": "place_rotation_choice",
+   "options": [
+    [
+     null,
+     null
+    ],
+    [
+     0.045,
+     1.119
+    ],
+    [
+     0.055,
+     1.105
+    ],
+    [
+     0.045,
+     1.049
+    ],
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     null
+    ]
+   ],
+   "chosen": 1,
+   "t_wall": 1790984277.8935716,
+   "env_step": 93
+  },
+  {
+   "event": "place_release_tilted",
+   "candidate": 12,
+   "tilt_deg": -20.0,
+   "raised_m": 0.03,
+   "t_wall": 1790984278.2630813,
+   "env_step": 93
+  },
+  {
+   "event": "place_release_raised",
+   "candidate": 12,
+   "raised_m": 0.03,
+   "blockers": [
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top",
+    "hand:white_cabinet_1_base",
+    "obj:white_cabinet_1_cabinet_middle",
+    "hand:white_cabinet_1_base",
+    "objwall:white_cabinet_1_cabinet_bottom",
+    "hand:white_cabinet_1_cabinet_top"
+   ],
+   "t_wall": 1790984278.2630901,
+   "env_step": 93
+  },
+  {
+   "event": "place_release_search",
+   "chosen": 12,
+   "raised_m": 0.03,
+   "n_candidates": 36,
+   "target": [
+    -0.005651456364263495,
+    0.13570234411088405,
+    0.92049
+   ],
+   "tcp": [
+    0.012114631979792892,
+    0.09991780287419276,
+    1.014679963853017
+   ],
+   "rejected": {
+    "0": "hand:white_cabinet_1_base",
+    "1": "hand:white_cabinet_1_base",
+    "2": "hand:white_cabinet_1_base",
+    "3": "hand:white_cabinet_1_base",
+    "4": "hand:white_cabinet_1_base",
+    "5": "hand:white_cabinet_1_base",
+    "6": "hand:white_cabinet_1_base",
+    "7": "hand:white_cabinet_1_base",
+    "8": "hand:white_cabinet_1_base",
+    "9": "hand:white_cabinet_1_cabinet_top",
+    "10": "hand:white_cabinet_1_base",
+    "11": "hand:white_cabinet_1_cabinet_top",
+    "12": "hand:white_cabinet_1_cabinet_top",
+    "13": "hand:white_cabinet_1_base",
+    "14": "hand:white_cabinet_1_cabinet_top",
+    "15": "hand:white_cabinet_1_cabinet_top",
+    "16": "hand:white_cabinet_1_base",
+    "17": "hand:white_cabinet_1_base",
+    "18": "hand:white_cabinet_1_cabinet_top",
+    "19": "hand:white_cabinet_1_cabinet_top",
+    "20": "hand:white_cabinet_1_base",
+    "21": "hand:white_cabinet_1_base",
+    "22": "hand:white_cabinet_1_cabinet_top",
+    "23": "hand:white_cabinet_1_cabinet_top",
+    "24": "hand:white_cabinet_1_base",
+    "25": "hand:white_cabinet_1_base",
+    "26": "hand:white_cabinet_1_cabinet_top",
+    "27": "hand:white_cabinet_1_cabinet_top",
+    "28": "hand:white_cabinet_1_base",
+    "29": "hand:white_cabinet_1_base",
+    "30": "hand:white_cabinet_1_cabinet_top",
+    "31": "hand:white_cabinet_1_base",
+    "32": "hand:white_cabinet_1_cabinet_top",
+    "33": "hand:white_cabinet_1_base",
+    "34": "hand:white_cabinet_1_cabinet_top",
+    "35": "hand:white_cabinet_1_base"
+   },
+   "candidates": [
+    [
+     0,
+     [
+      -0.006,
+      0.166,
+      0.92
+     ],
+     [
+      0.022,
+      0.141,
+      0.985
+     ]
+    ],
+    [
+     1,
+     [
+      -0.006,
+      0.161,
+      0.92
+     ],
+     [
+      0.022,
+      0.136,
+      0.985
+     ]
+    ],
+    [
+     2,
+     [
+      -0.006,
+      0.171,
+      0.92
+     ],
+     [
+      0.022,
+      0.146,
+      0.985
+     ]
+    ],
+    [
+     3,
+     [
+      -0.006,
+      0.166,
+      0.92
+     ],
+     [
+      0.022,
+      0.141,
+      0.985
+     ]
+    ],
+    [
+     4,
+     [
+      -0.006,
+      0.166,
+      0.92
+     ],
+     [
+      0.022,
+      0.141,
+      0.985
+     ]
+    ],
+    [
+     5,
+     [
+      -0.006,
+      0.161,
+      0.92
+     ],
+     [
+      0.022,
+      0.136,
+      0.985
+     ]
+    ],
+    [
+     6,
+     [
+      -0.006,
+      0.171,
+      0.92
+     ],
+     [
+      0.022,
+      0.146,
+      0.985
+     ]
+    ],
+    [
+     7,
+     [
+      -0.006,
+      0.161,
+      0.92
+     ],
+     [
+      0.022,
+      0.136,
+      0.985
+     ]
+    ],
+    [
+     8,
+     [
+      -0.006,
+      0.171,
+      0.92
+     ],
+     [
+      0.022,
+      0.146,
+      0.985
+     ]
+    ],
+    [
+     9,
+     [
+      -0.006,
+      0.156,
+      0.92
+     ],
+     [
+      0.022,
+      0.132,
+      0.985
+     ]
+    ],
+    [
+     10,
+     [
+      -0.006,
+      0.176,
+      0.92
+     ],
+     [
+      0.022,
+      0.151,
+      0.985
+     ]
+    ],
+    [
+     11,
+     [
+      -0.006,
+      0.156,
+      0.92
+     ],
+     [
+      0.022,
+      0.132,
+      0.985
+     ]
+    ],
+    [
+     12,
+     [
+      -0.006,
+      0.136,
+      0.92
+     ],
+     [
+      0.022,
+      0.111,
+      0.985
+     ]
+    ],
+    [
+     13,
+     [
+      -0.006,
+      0.196,
+      0.92
+     ],
+     [
+      0.022,
+      0.172,
+      0.985
+     ]
+    ],
+    [
+     14,
+     [
+      -0.006,
+      0.136,
+      0.92
+     ],
+     [
+      0.022,
+      0.111,
+      0.985
+     ]
+    ],
+    [
+     15,
+     [
+      -0.006,
+      0.136,
+      0.92
+     ],
+     [
+      0.022,
+      0.111,
+      0.985
+     ]
+    ],
+    [
+     16,
+     [
+      -0.006,
+      0.196,
+      0.92
+     ],
+     [
+      0.022,
+      0.172,
+      0.985
+     ]
+    ],
+    [
+     17,
+     [
+      -0.006,
+      0.196,
+      0.92
+     ],
+     [
+      0.022,
+      0.172,
+      0.985
+     ]
+    ],
+    [
+     18,
+     [
+      -0.006,
+      0.136,
+      0.92
+     ],
+     [
+      0.022,
+      0.111,
+      0.985
+     ]
+    ],
+    [
+     19,
+     [
+      -0.006,
+      0.136,
+      0.92
+     ],
+     [
+      0.022,
+      0.111,
+      0.985
+     ]
+    ],
+    [
+     20,
+     [
+      -0.006,
+      0.196,
+      0.92
+     ],
+     [
+      0.022,
+      0.172,
+      0.985
+     ]
+    ],
+    [
+     21,
+     [
+      -0.006,
+      0.196,
+      0.92
+     ],
+     [
+      0.022,
+      0.172,
+      0.985
+     ]
+    ],
+    [
+     22,
+     [
+      -0.006,
+      0.136,
+      0.92
+     ],
+     [
+      0.022,
+      0.111,
+      0.985
+     ]
+    ],
+    [
+     23,
+     [
+      -0.006,
+      0.136,
+      0.92
+     ],
+     [
+      0.022,
+      0.111,
+      0.985
+     ]
+    ],
+    [
+     24,
+     [
+      -0.006,
+      0.196,
+      0.92
+     ],
+     [
+      0.022,
+      0.172,
+      0.985
+     ]
+    ],
+    [
+     25,
+     [
+      -0.006,
+      0.196,
+      0.92
+     ],
+     [
+      0.022,
+      0.172,
+      0.985
+     ]
+    ],
+    [
+     26,
+     [
+      -0.006,
+      0.136,
+      0.92
+     ],
+     [
+      0.022,
+      0.111,
+      0.985
+     ]
+    ],
+    [
+     27,
+     [
+      -0.006,
+      0.136,
+      0.92
+     ],
+     [
+      0.022,
+      0.111,
+      0.985
+     ]
+    ],
+    [
+     28,
+     [
+      -0.006,
+      0.196,
+      0.92
+     ],
+     [
+      0.022,
+      0.172,
+      0.985
+     ]
+    ],
+    [
+     29,
+     [
+      -0.006,
+      0.196,
+      0.92
+     ],
+     [
+      0.022,
+      0.172,
+      0.985
+     ]
+    ],
+    [
+     30,
+     [
+      -0.006,
+      0.121,
+      0.92
+     ],
+     [
+      0.022,
+      0.096,
+      0.985
+     ]
+    ],
+    [
+     31,
+     [
+      -0.006,
+      0.211,
+      0.92
+     ],
+     [
+      0.022,
+      0.187,
+      0.985
+     ]
+    ],
+    [
+     32,
+     [
+      -0.006,
+      0.121,
+      0.92
+     ],
+     [
+      0.022,
+      0.096,
+      0.985
+     ]
+    ],
+    [
+     33,
+     [
+      -0.006,
+      0.211,
+      0.92
+     ],
+     [
+      0.022,
+      0.187,
+      0.985
+     ]
+    ],
+    [
+     34,
+     [
+      -0.006,
+      0.121,
+      0.92
+     ],
+     [
+      0.022,
+      0.096,
+      0.985
+     ]
+    ],
+    [
+     35,
+     [
+      -0.006,
+      0.211,
+      0.92
+     ],
+     [
+      0.022,
+      0.187,
+      0.985
+     ]
+    ]
+   ],
+   "approach": [
+    0.0033288258539725087,
+    0.0014141654723291506,
+    -0.9999934595058364
+   ],
+   "hand_low": 0.025712447194752762,
+   "t_wall": 1790984278.263354,
+   "env_step": 93
+  },
+  {
+   "event": "place_transport_rule",
+   "support_checked": true,
+   "tcp_pre": [
+    -0.006472162934834621,
+    0.07950334887461799,
+    1.0897651229904979
+   ],
+   "tcp_release": [
+    0.012114631979792892,
+    0.09991780287419276,
+    1.014679963853017
+   ],
+   "rim_z": 0.9840300000000001,
+   "obj_bottom_at_pre": 1.0405751591374808,
+   "obj_bottom_at_release": 0.96549,
+   "t_wall": 1790984278.2729552,
+   "env_step": 93
+  },
+  {
+   "event": "ik",
+   "label": "place_transport_goal",
+   "n_solutions": 7,
+   "request_id": "ComputeIk-005bc975da",
+   "latency_s": 0.0432304589994601,
+   "t_wall": 1790984278.3169532,
+   "env_step": 93
+  },
+  {
+   "event": "plan",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-3dc166ca7b",
+   "motion_type": "ANY",
+   "n_states": 91,
+   "duration_s": 0.404343475,
+   "latency_s": 0.02750827400086564,
+   "target_pos": [
+    -0.006472162934834621,
+    0.07950334887461799,
+    1.0897651229904979
+   ],
+   "t_wall": 1790984278.3454456,
+   "env_step": 93
+  },
+  {
+   "event": "execute",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-3dc166ca7b",
+   "ok": true,
+   "reason": "completed",
+   "steps": 30,
+   "pos_err_max": 0.011471478257084293,
+   "pos_err_mean": 0.0073338663727009566,
+   "rot_err_max_deg": 1.5027579340669754,
+   "joint_err_max": 0.12495516946502899,
+   "joint_err_final": 0.11297907449756744,
+   "final_pos_err": 0.004952004960055939,
+   "final_rot_err_deg": 0.6618035039453821,
+   "planned_duration_s": 0.404343475,
+   "planning_latency_s": 0.02750827400086564,
+   "n_states": 91,
+   "time_scale": 2.891487085425406,
+   "t_wall": 1790984280.4892619,
+   "env_step": 123
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-3dc166ca7b",
+   "n_checked": 25,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-7be76deda3",
+   "t_wall": 1790984280.5021286,
+   "env_step": 123
+  },
+  {
+   "event": "place_slip_compensation",
+   "drift_m": 0.00011226074507919971,
+   "xy_correction_m": 0.0005538797501844978,
+   "z_correction_m": -0.029475855351453917,
+   "t_wall": 1790984280.5065339,
+   "env_step": 123
+  },
+  {
+   "event": "plan",
+   "label": "place_transport_correct",
+   "trajectory_id": "PlanTrajectory-19cc3fff71",
+   "motion_type": "LINEAR",
+   "n_states": 26,
+   "duration_s": 0.08544789500000001,
+   "latency_s": 0.014618325996707426,
+   "target_pos": [
+    -0.007025421390140315,
+    0.07947712180277991,
+    1.0897651229904979
+   ],
+   "t_wall": 1790984280.5569272,
+   "env_step": 123
+  },
+  {
+   "event": "execute",
+   "label": "place_transport_correct",
+   "trajectory_id": "PlanTrajectory-19cc3fff71",
+   "ok": true,
+   "reason": "completed",
+   "steps": 3,
+   "pos_err_max": 0.0013286925745379908,
+   "pos_err_mean": 0.0008635031076686331,
+   "rot_err_max_deg": 0.19774656866171905,
+   "joint_err_max": 0.0084829885930926,
+   "joint_err_final": 0.003439345911885383,
+   "final_pos_err": 0.0007086422745401072,
+   "final_rot_err_deg": 0.08794939272407487,
+   "planned_duration_s": 0.08544789500000001,
+   "planning_latency_s": 0.014618325996707426,
+   "n_states": 26,
+   "time_scale": 1.0,
+   "t_wall": 1790984280.7175841,
+   "env_step": 126
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport_correct",
+   "trajectory_id": "PlanTrajectory-19cc3fff71",
+   "n_checked": 3,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-a8d85cf19f",
+   "t_wall": 1790984280.724119,
+   "env_step": 126
+  },
+  {
+   "event": "plan",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-e807b3ec2a",
+   "motion_type": "LINEAR",
+   "n_states": 30,
+   "duration_s": 0.372820716,
+   "latency_s": 0.01680263599700993,
+   "target_pos": [
+    0.011561373524487198,
+    0.09989157580235468,
+    1.014679963853017
+   ],
+   "t_wall": 1790984280.7856176,
+   "env_step": 126
+  },
+  {
+   "event": "execute",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-e807b3ec2a",
+   "ok": true,
+   "reason": "completed",
+   "steps": 13,
+   "pos_err_max": 0.005272024438570234,
+   "pos_err_mean": 0.002952564918803926,
+   "rot_err_max_deg": 0.33732904370640965,
+   "joint_err_max": 0.016923217628521114,
+   "joint_err_final": 0.016819256342363642,
+   "final_pos_err": 0.002092650507148762,
+   "final_rot_err_deg": 0.2268520325857426,
+   "planned_duration_s": 0.372820716,
+   "planning_latency_s": 0.01680263599700993,
+   "n_states": 30,
+   "time_scale": 1.5,
+   "t_wall": 1790984281.634897,
+   "env_step": 139
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-e807b3ec2a",
+   "n_checked": 13,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-b7a7dd1b7c",
+   "t_wall": 1790984281.6422994,
+   "env_step": 139
+  },
+  {
+   "event": "place_verify",
+   "obj_pos": [
+    -7.403174642371623e-06,
+    0.13565707415530623,
+    0.9274784884400095
+   ],
+   "target": [
+    -0.005651456364263495,
+    0.13570234411088405,
+    0.92049
+   ],
+   "xy_err": 0.005644234737867518,
+   "lower_stop": "completed",
+   "in_region_box": true,
+   "t_wall": 1790984282.1616445,
+   "env_step": 149
+  },
+  {
+   "event": "plan",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-4ac87f3d8b",
+   "motion_type": "LINEAR",
+   "n_states": 37,
+   "duration_s": 0.416915444,
+   "latency_s": 0.018609192997246282,
+   "target_pos": [
+    -0.01319614150710579,
+    0.07454979496198047,
+    1.1061789435178881
+   ],
+   "t_wall": 1790984282.2419224,
+   "env_step": 149
+  },
+  {
+   "event": "execute",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-4ac87f3d8b",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.0066772921897880425,
+   "pos_err_mean": 0.003240401106959474,
+   "rot_err_max_deg": 0.223959583367339,
+   "joint_err_max": 0.022428355737156846,
+   "joint_err_final": 0.022428355737156846,
+   "final_pos_err": 0.0013469804250357644,
+   "final_rot_err_deg": 0.19366179826853022,
+   "planned_duration_s": 0.416915444,
+   "planning_latency_s": 0.018609192997246282,
+   "n_states": 37,
+   "time_scale": 1.662220748792028,
+   "t_wall": 1790984283.32002,
+   "env_step": 164
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-4ac87f3d8b",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-ad4892e5fe",
+   "t_wall": 1790984283.327875,
+   "env_step": 164
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "place",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "xy_err": 0.005644234737867518,
+    "retreat_ok": true
+   },
+   "t_wall": 1790984283.3280087,
+   "env_step": 164
+  },
+  {
+   "event": "skill",
+   "skill": "place",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 71,
+   "t_wall": 1790984283.3280113,
+   "env_step": 164
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_pre",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-495a7e15ae",
+   "latency_s": 0.042041619002702646,
+   "t_wall": 1790984283.8422823,
+   "env_step": 172
+  },
+  {
+   "event": "precontact_path_check",
+   "n_solutions": 20,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790984293.0394785,
+   "env_step": 172
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-cbfbdf4ca5",
+   "motion_type": "ANY",
+   "n_states": 151,
+   "duration_s": 0.606098547,
+   "latency_s": 0.028465212999435607,
+   "target_pos": [
+    0.028610557968303363,
+    0.03028538130516093,
+    1.0368752620785908
+   ],
+   "t_wall": 1790984293.0691888,
+   "env_step": 172
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-cbfbdf4ca5",
+   "ok": true,
+   "reason": "completed",
+   "steps": 14,
+   "pos_err_max": 0.027959981590886907,
+   "pos_err_mean": 0.015250535919162447,
+   "rot_err_max_deg": 5.449651744926175,
+   "joint_err_max": 0.17685578317801864,
+   "joint_err_final": 0.06495005793111144,
+   "final_pos_err": 0.0057045901412104165,
+   "final_rot_err_deg": 1.9459086916571395,
+   "planned_duration_s": 0.606098547,
+   "planning_latency_s": 0.028465212999435607,
+   "n_states": 151,
+   "time_scale": 1.0,
+   "t_wall": 1790984293.9330437,
+   "env_step": 186
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact_settle",
+   "trajectory_id": "PlanTrajectory-49fbb8691d",
+   "ok": true,
+   "reason": "completed",
+   "steps": 25,
+   "pos_err_max": 0.02096865412470959,
+   "pos_err_mean": 0.013740710407468295,
+   "rot_err_max_deg": 4.432471517952656,
+   "joint_err_max": 0.4194373219167348,
+   "joint_err_final": 1.0962725438912404,
+   "final_pos_err": 0.01436953796150136,
+   "final_rot_err_deg": 4.001200562553004,
+   "planned_duration_s": 0.180599627,
+   "planning_latency_s": 0.012748018001730088,
+   "n_states": 28,
+   "time_scale": 1.0,
+   "t_wall": 1790984295.424285,
+   "env_step": 211
+  },
+  {
+   "event": "approach_any_fallback",
+   "label": "close_drawer_a_seg0",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen",
+   "t_wall": 1790984295.509912,
+   "env_step": 211
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_seg0_any_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-e16e1afa49",
+   "latency_s": 0.05220035599995754,
+   "t_wall": 1790984295.5635915,
+   "env_step": 211
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-32aaad8a23",
+   "motion_type": "ANY",
+   "n_states": 176,
+   "duration_s": 0.9098315280000001,
+   "latency_s": 0.042921796997688944,
+   "target_pos": [
+    -0.005591456364263503,
+    0.03028538130516094,
+    0.942906
+   ],
+   "t_wall": 1790984295.6078575,
+   "env_step": 211
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-32aaad8a23",
+   "ok": false,
+   "reason": "final_pose_error(0.030m,8.0deg)",
+   "steps": 58,
+   "pos_err_max": 0.029273733116312744,
+   "pos_err_mean": 0.011424259496405654,
+   "rot_err_max_deg": 8.042221618751983,
+   "joint_err_max": 1.305316559150896,
+   "joint_err_final": 1.3052349716531406,
+   "final_pos_err": 0.030258486737605002,
+   "final_rot_err_deg": 7.998009753142254,
+   "planned_duration_s": 0.9098315280000001,
+   "planning_latency_s": 0.042921796997688944,
+   "n_states": 176,
+   "time_scale": 2.0,
+   "t_wall": 1790984299.4415665,
+   "env_step": 269
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-32aaad8a23",
+   "n_checked": 38,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [0.0410665,1.63775,0.0291784,-0.0695738,-0.0157426,1.2182,-0.741131] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:va",
+   "request_id": "CheckCollisions-b3288855f1",
+   "t_wall": 1790984299.447974,
+   "env_step": 269
+  },
+  {
+   "event": "push_progress",
+   "segment": 0,
+   "satisfied": false,
+   "t_wall": 1790984299.4481158,
+   "env_step": 269
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_a",
+   "attempt": 0,
+   "ok": false,
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "details": {},
+   "t_wall": 1790984299.5166233,
+   "env_step": 269
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen when planning close to joint limits or singular configurations. To avoid this error, please try with other start and/or end pose(s), joint configuration(s), and/or constraint(s) which are further away from joint limits and/or singular joint configurations. ik_solution:  -2.68395  -1.45149   2.09234 -0.805774  0.983942     1.376  -1.03061; expected_closest_joint_configuration:   0.0403343     1.63463    0.023928   -0.069801 -0.00966568     1.21592   -0.741795; maximum_absolute_joint_configuration_error=3.08612 >= tolerance=0.785398; Error occurred during planning in segment 0. (request PlanTrajectory-afeb27c3a2)",
+   "t_wall": 1790984299.5979688,
+   "env_step": 269
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_pre",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-91e91eb5da",
+   "latency_s": 0.05685849700239487,
+   "t_wall": 1790984300.1474626,
+   "env_step": 277
+  },
+  {
+   "event": "precontact_path_check",
+   "n_solutions": 17,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790984309.778672,
+   "env_step": 277
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-bb30656fd0",
+   "motion_type": "ANY",
+   "n_states": 143,
+   "duration_s": 0.738748731,
+   "latency_s": 0.02747508399988874,
+   "target_pos": [
+    0.028610557968303363,
+    0.03028538183353694,
+    1.0368752620785908
+   ],
+   "t_wall": 1790984309.807709,
+   "env_step": 277
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-bb30656fd0",
+   "ok": true,
+   "reason": "completed",
+   "steps": 36,
+   "pos_err_max": 0.01549990148674898,
+   "pos_err_mean": 0.006714671017847684,
+   "rot_err_max_deg": 3.8351563076877366,
+   "joint_err_max": 1.0965146643061436,
+   "joint_err_final": 1.096276308501129,
+   "final_pos_err": 0.01480011634249905,
+   "final_rot_err_deg": 3.9664704853906367,
+   "planned_duration_s": 0.738748731,
+   "planning_latency_s": 0.02747508399988874,
+   "n_states": 143,
+   "time_scale": 1.0,
+   "t_wall": 1790984312.092713,
+   "env_step": 313
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact_settle",
+   "trajectory_id": "PlanTrajectory-5ba90152ef",
+   "ok": true,
+   "reason": "completed",
+   "steps": 36,
+   "pos_err_max": 0.017510893184977238,
+   "pos_err_mean": 0.006517045231672597,
+   "rot_err_max_deg": 3.976891477256414,
+   "joint_err_max": 1.069454980409447,
+   "joint_err_final": 1.096278412961367,
+   "final_pos_err": 0.014744308580752893,
+   "final_rot_err_deg": 3.961841943981803,
+   "planned_duration_s": 0.724469534,
+   "planning_latency_s": 0.02049726499899407,
+   "n_states": 143,
+   "time_scale": 1.0,
+   "t_wall": 1790984314.363361,
+   "env_step": 349
+  },
+  {
+   "event": "approach_any_fallback",
+   "label": "close_drawer_a_seg0",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen",
+   "t_wall": 1790984314.478866,
+   "env_step": 349
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_seg0_any_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-4db2b505a2",
+   "latency_s": 0.08445992099950672,
+   "t_wall": 1790984314.5647883,
+   "env_step": 349
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-5538d73846",
+   "motion_type": "ANY",
+   "n_states": 172,
+   "duration_s": 0.8838056700000001,
+   "latency_s": 0.0370614530002058,
+   "target_pos": [
+    -0.005591456364263503,
+    0.030285381833536948,
+    0.942906
+   ],
+   "t_wall": 1790984314.6038618,
+   "env_step": 349
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-5538d73846",
+   "ok": false,
+   "reason": "final_pose_error(0.030m,8.0deg)",
+   "steps": 57,
+   "pos_err_max": 0.029042311780035916,
+   "pos_err_mean": 0.01157552680136831,
+   "rot_err_max_deg": 8.06705444579617,
+   "joint_err_max": 1.3053358567271545,
+   "joint_err_final": 1.3052349680234014,
+   "final_pos_err": 0.030258911144213765,
+   "final_rot_err_deg": 7.997636822347325,
+   "planned_duration_s": 0.8838056700000001,
+   "planning_latency_s": 0.0370614530002058,
+   "n_states": 172,
+   "time_scale": 2.0,
+   "t_wall": 1790984318.336863,
+   "env_step": 406
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-5538d73846",
+   "n_checked": 37,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [0.0403861,1.63936,0.0320349,-0.0695545,-0.017955,1.21935,-0.741931] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:va",
+   "request_id": "CheckCollisions-5a49832950",
+   "t_wall": 1790984318.3435993,
+   "env_step": 406
+  },
+  {
+   "event": "push_progress",
+   "segment": 0,
+   "satisfied": false,
+   "t_wall": 1790984318.3437283,
+   "env_step": 406
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_a",
+   "attempt": 1,
+   "ok": false,
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "details": {},
+   "t_wall": 1790984318.4154937,
+   "env_step": 406
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen when planning close to joint limits or singular configurations. To avoid this error, please try with other start and/or end pose(s), joint configuration(s), and/or constraint(s) which are further away from joint limits and/or singular joint configurations. ik_solution:  -2.68401  -1.45148   2.09237 -0.805774  0.983941   1.37601  -1.03083; expected_closest_joint_configuration:   0.0402622     1.63463   0.0242873   -0.069801 -0.00999284     1.21592   -0.742013; maximum_absolute_joint_configuration_error=3.08611 >= tolerance=0.785398; Error occurred during planning in segment 0. (request PlanTrajectory-d6b1f470cf)",
+   "t_wall": 1790984318.495157,
+   "env_step": 406
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_pre",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-228406a893",
+   "latency_s": 0.049431433999416186,
+   "t_wall": 1790984319.0524442,
+   "env_step": 414
+  },
+  {
+   "event": "precontact_path_check",
+   "n_solutions": 17,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790984328.5392604,
+   "env_step": 414
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-1d19518ff8",
+   "motion_type": "ANY",
+   "n_states": 143,
+   "duration_s": 0.738749973,
+   "latency_s": 0.018937379001727095,
+   "target_pos": [
+    0.028610557968303363,
+    0.030285381821083708,
+    1.0368752620785908
+   ],
+   "t_wall": 1790984328.561036,
+   "env_step": 414
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact",
+   "trajectory_id": "PlanTrajectory-1d19518ff8",
+   "ok": true,
+   "reason": "completed",
+   "steps": 36,
+   "pos_err_max": 0.015499792089985092,
+   "pos_err_mean": 0.006714657134035021,
+   "rot_err_max_deg": 3.835154910212169,
+   "joint_err_max": 1.0965149482451506,
+   "joint_err_final": 1.0962763092811967,
+   "final_pos_err": 0.014800101017205407,
+   "final_rot_err_deg": 3.9664702992105765,
+   "planned_duration_s": 0.738749973,
+   "planning_latency_s": 0.018937379001727095,
+   "n_states": 143,
+   "time_scale": 1.0,
+   "t_wall": 1790984330.718859,
+   "env_step": 450
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_precontact_settle",
+   "trajectory_id": "PlanTrajectory-ce39b7c42a",
+   "ok": true,
+   "reason": "completed",
+   "steps": 36,
+   "pos_err_max": 0.01751086744295871,
+   "pos_err_mean": 0.006517037683719026,
+   "rot_err_max_deg": 3.9768832416870032,
+   "joint_err_max": 1.0694558005749581,
+   "joint_err_final": 1.096278412825232,
+   "final_pos_err": 0.014744310664093985,
+   "final_rot_err_deg": 3.96184069329454,
+   "planned_duration_s": 0.724469534,
+   "planning_latency_s": 0.020506374999968102,
+   "n_states": 143,
+   "time_scale": 1.0,
+   "t_wall": 1790984333.1357822,
+   "env_step": 486
+  },
+  {
+   "event": "approach_any_fallback",
+   "label": "close_drawer_a_seg0",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen",
+   "t_wall": 1790984333.2270672,
+   "env_step": 486
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_a_seg0_any_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-6a588ccb6a",
+   "latency_s": 0.059876734998397296,
+   "t_wall": 1790984333.2880301,
+   "env_step": 486
+  },
+  {
+   "event": "plan",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-bfa8ab3d81",
+   "motion_type": "ANY",
+   "n_states": 172,
+   "duration_s": 0.8838066160000001,
+   "latency_s": 0.03379609100011294,
+   "target_pos": [
+    -0.005591456364263503,
+    0.030285381821083715,
+    0.942906
+   ],
+   "t_wall": 1790984333.3230865,
+   "env_step": 486
+  },
+  {
+   "event": "execute",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-bfa8ab3d81",
+   "ok": false,
+   "reason": "final_pose_error(0.030m,8.0deg)",
+   "steps": 57,
+   "pos_err_max": 0.029042142829007262,
+   "pos_err_mean": 0.011575535718553943,
+   "rot_err_max_deg": 8.06705578198365,
+   "joint_err_max": 1.3053358579572631,
+   "joint_err_final": 1.305234968022648,
+   "final_pos_err": 0.030258911227902904,
+   "final_rot_err_deg": 7.997636842880485,
+   "planned_duration_s": 0.8838066160000001,
+   "planning_latency_s": 0.03379609100011294,
+   "n_states": 172,
+   "time_scale": 2.0,
+   "t_wall": 1790984337.3183432,
+   "env_step": 543
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_drawer_a_seg0_any",
+   "trajectory_id": "PlanTrajectory-bfa8ab3d81",
+   "n_checked": 37,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [0.0403861,1.63936,0.032035,-0.0695545,-0.0179551,1.21935,-0.741931] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:va",
+   "request_id": "CheckCollisions-66887c480d",
+   "t_wall": 1790984337.3253896,
+   "env_step": 543
+  },
+  {
+   "event": "push_progress",
+   "segment": 0,
+   "satisfied": false,
+   "t_wall": 1790984337.3256223,
+   "env_step": 543
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_a",
+   "attempt": 2,
+   "ok": false,
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "details": {},
+   "t_wall": 1790984337.3912506,
+   "env_step": 543
+  },
+  {
+   "event": "skill",
+   "skill": "close_drawer_a",
+   "ok": false,
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "attempts": 3,
+   "steps": 379,
+   "t_wall": 1790984337.391254,
+   "env_step": 543
+  },
+  {
+   "event": "stage_a_failed_continue",
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "t_wall": 1790984337.3912592,
+   "env_step": 543
+  },
+  {
+   "event": "push_probe_riders_excluded",
+   "riders": [
+    "akita_black_bowl_1_main"
+   ],
+   "t_wall": 1790984337.8677561,
+   "env_step": 551
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    }
+   ],
+   "t_wall": 1790984406.26387,
+   "env_step": 551
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984411.2827158,
+   "env_step": 551
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984416.292075,
+   "env_step": 551
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984420.6080973,
+   "env_step": 551
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984424.7192087,
+   "env_step": 551
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 0,
+   "ok": false,
+   "reason": "precontact_unreachable",
+   "details": {},
+   "t_wall": 1790984424.7192578,
+   "env_step": 551
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen when planning close to joint limits or singular configurations. To avoid this error, please try with other start and/or end pose(s), joint configuration(s), and/or constraint(s) which are further away from joint limits and/or singular joint configurations. ik_solution:  -2.67578  -1.45665   2.04778 -0.802828   1.04516   1.43616  -1.03383; expected_closest_joint_configuration:  0.0402568    1.62237  0.0237535  -0.069801 -0.0093824    1.29331   -0.74203; maximum_absolute_joint_configuration_error=3.07901 >= tolerance=0.785398; Error occurred during planning in segment 0. (request PlanTrajectory-f6c3cb6298)",
+   "t_wall": 1790984424.8041604,
+   "env_step": 551
+  },
+  {
+   "event": "push_probe_riders_excluded",
+   "riders": [
+    "akita_black_bowl_1_main"
+   ],
+   "t_wall": 1790984425.3193922,
+   "env_step": 559
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link6/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link6/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link6/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    }
+   ],
+   "t_wall": 1790984492.7329884,
+   "env_step": 559
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984497.7486413,
+   "env_step": 559
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984502.7598689,
+   "env_step": 559
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984507.039091,
+   "env_step": 559
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984511.0440516,
+   "env_step": 559
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 1,
+   "ok": false,
+   "reason": "precontact_unreachable",
+   "details": {},
+   "t_wall": 1790984511.0441005,
+   "env_step": 559
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen when planning close to joint limits or singular configurations. To avoid this error, please try with other start and/or end pose(s), joint configuration(s), and/or constraint(s) which are further away from joint limits and/or singular joint configurations. ik_solution:  -2.67328   -1.4579   2.03322 -0.801884   1.06609   1.45915  -1.03475; expected_closest_joint_configuration:   0.0402562     1.61792   0.0234707   -0.069801 -0.00908152     1.32212   -0.742039; maximum_absolute_joint_configuration_error=3.07582 >= tolerance=0.785398; Error occurred during planning in segment 0. (request PlanTrajectory-bec81ca075)",
+   "t_wall": 1790984511.1338294,
+   "env_step": 559
+  },
+  {
+   "event": "push_probe_riders_excluded",
+   "riders": [
+    "akita_black_bowl_1_main"
+   ],
+   "t_wall": 1790984511.625755,
+   "env_step": 567
+  },
+  {
+   "event": "push_contact_selection",
+   "chosen": null,
+   "posture": "shoulder_fwd",
+   "tried": [
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "free",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link6/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link6/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link6/wine_rack_1_main"
+    },
+    {
+     "posture": "free",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link5/wine_bottle_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.06,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.045,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.075,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link6/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.03,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:NOT_FOUND"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": -0.09,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.0,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.8,
+     "ok": false,
+     "why": "contact:collision:robot0_link6/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.65,
+     "ok": false,
+     "why": "contact:collision:robot0_link6/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.5,
+     "ok": false,
+     "why": "contact:collision:robot0_link5/wine_rack_1_main"
+    },
+    {
+     "posture": "shoulder_fwd",
+     "lateral": 0.04,
+     "height": 0.4,
+     "ok": false,
+     "why": "end:collision:robot0_link6/table"
+    }
+   ],
+   "t_wall": 1790984578.0335739,
+   "env_step": 567
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984583.049522,
+   "env_step": 567
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984588.0583572,
+   "env_step": 567
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984592.3450644,
+   "env_step": 567
+  },
+  {
+   "event": "ik",
+   "label": "close_drawer_b_pre",
+   "n_solutions": 0,
+   "request_id": "",
+   "latency_s": 0.0,
+   "t_wall": 1790984596.3100023,
+   "env_step": 567
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer_b",
+   "attempt": 2,
+   "ok": false,
+   "reason": "precontact_unreachable",
+   "details": {},
+   "t_wall": 1790984596.310059,
+   "env_step": 567
+  },
+  {
+   "event": "skill",
+   "skill": "close_drawer_b",
+   "ok": false,
+   "reason": "precontact_unreachable",
+   "attempts": 3,
+   "steps": 24,
+   "t_wall": 1790984596.310062,
+   "env_step": 567
+  },
+  {
+   "event": "obstacle_relocation",
+   "obstacle": "wine_bottle_1_main",
+   "blockers": [
+    "wine_bottle_1_main"
+   ],
+   "t_wall": 1790984596.3101501,
+   "env_step": 567
+  },
+  {
+   "event": "relocation_spot",
+   "obstacle": "wine_bottle_1_main",
+   "spot": [
+    -0.27,
+    -0.07000000000000012
+   ],
+   "t_wall": 1790984596.338726,
+   "env_step": 567
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 8,
+   "n_cleared": 8,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790984596.5024927,
+   "env_step": 567
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z1.033_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-b0e9f3c488",
+   "latency_s": 0.029232688000774942,
+   "t_wall": 1790984597.2708263,
+   "env_step": 580
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z1.033_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-f7c63dc9b1",
+   "latency_s": 0.021265129998937482,
+   "t_wall": 1790984597.2925704,
+   "env_step": 580
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z1.033_yaw0",
+   "n_solutions": 5,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790984597.365808,
+   "env_step": 580
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 7,
+   "request_id": "ComputeIk-236059225e",
+   "latency_s": 0.024863073998858454,
+   "t_wall": 1790984597.3913062,
+   "env_step": 580
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-d88edc70b5",
+   "motion_type": "ANY",
+   "n_states": 361,
+   "duration_s": 1.38414823,
+   "latency_s": 0.02984526799991727,
+   "target_pos": [
+    -0.1872952651151395,
+    0.057027211052191155,
+    1.1333615331903284
+   ],
+   "t_wall": 1790984597.4234233,
+   "env_step": 580
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-d88edc70b5",
+   "ok": false,
+   "reason": "tracking_error_exceeded(0.082m)",
+   "steps": 33,
+   "pos_err_max": 0.08157808199171077,
+   "pos_err_mean": 0.017411428553983997,
+   "rot_err_max_deg": 10.74553815507606,
+   "joint_err_max": 1.6554926905558394,
+   "joint_err_final": 2.376411933360601,
+   "final_pos_err": 0.24704650879129006,
+   "final_rot_err_deg": 33.13526190708038,
+   "planned_duration_s": 1.38414823,
+   "planning_latency_s": 0.02984526799991727,
+   "n_states": 361,
+   "time_scale": 1.725921318084239,
+   "t_wall": 1790984599.6824856,
+   "env_step": 613
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-d88edc70b5",
+   "n_checked": 33,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The initial configuration [0.0405117,1.61567,0.0231209,-0.0697975,-0.00888957,1.33539,-0.740486] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_err",
+   "request_id": "CheckCollisions-eedd06180c",
+   "t_wall": 1790984599.6895263,
+   "env_step": 613
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": false,
+   "reason": "pregrasp_exec:tracking_error_exceeded(0.082m)",
+   "details": {
+    "grasp": "pinch_z1.033_yaw0"
+   },
+   "t_wall": 1790984599.6896214,
+   "env_step": 613
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region was either outside the robot's reachable envelope or that it led to limit violations.; \n Cannot resolve motion target for segment 0 (request PlanTrajectory-d1f008dd46)",
+   "t_wall": 1790984604.944198,
+   "env_step": 617
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 7,
+   "n_cleared": 7,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790984605.0829413,
+   "env_step": 617
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z1.033_yaw22",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-8156d721c0",
+   "latency_s": 0.027268493999144994,
+   "t_wall": 1790984605.8451078,
+   "env_step": 630
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z1.033_yaw22",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-4240b3f49b",
+   "latency_s": 0.024207554997701664,
+   "t_wall": 1790984605.869862,
+   "env_step": 630
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z1.033_yaw22",
+   "n_solutions": 5,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790984605.9460557,
+   "env_step": 630
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 7,
+   "request_id": "ComputeIk-ba7c89b9d7",
+   "latency_s": 0.029033583999989787,
+   "t_wall": 1790984605.9760954,
+   "env_step": 630
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-132a8be914",
+   "motion_type": "ANY",
+   "n_states": 307,
+   "duration_s": 1.354330588,
+   "latency_s": 0.02751142799752415,
+   "target_pos": [
+    -0.1872952651151395,
+    0.057027211052191155,
+    1.1333615331903284
+   ],
+   "t_wall": 1790984606.0053837,
+   "env_step": 630
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-132a8be914",
+   "ok": false,
+   "reason": "tracking_error_exceeded(0.091m)",
+   "steps": 34,
+   "pos_err_max": 0.09100527646362838,
+   "pos_err_mean": 0.02247448505494148,
+   "rot_err_max_deg": 10.805215389951421,
+   "joint_err_max": 1.7026236037358304,
+   "joint_err_final": 2.3764733960385156,
+   "final_pos_err": 0.25636072812577765,
+   "final_rot_err_deg": 13.640615831339487,
+   "planned_duration_s": 1.354330588,
+   "planning_latency_s": 0.02751142799752415,
+   "n_states": 307,
+   "time_scale": 1.7679151448517616,
+   "t_wall": 1790984608.3231313,
+   "env_step": 664
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-132a8be914",
+   "n_checked": 34,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [0.0779118,1.28182,0.0377929,-0.069485,0.0292635,1.1221,0.479905] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:valid",
+   "request_id": "CheckCollisions-afa649c555",
+   "t_wall": 1790984608.3296394,
+   "env_step": 664
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 1,
+   "ok": false,
+   "reason": "pregrasp_exec:tracking_error_exceeded(0.091m)",
+   "details": {
+    "grasp": "pinch_z1.033_yaw22"
+   },
+   "t_wall": 1790984608.3297608,
+   "env_step": 664
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region was either outside the robot's reachable envelope or that it led to limit violations.; \n Cannot resolve motion target for segment 0 (request PlanTrajectory-d5b578e7ab)",
+   "t_wall": 1790984613.6092396,
+   "env_step": 668
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 6,
+   "n_cleared": 6,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790984613.7620168,
+   "env_step": 668
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z1.033_yaw45",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-973426207e",
+   "latency_s": 0.02687079499810352,
+   "t_wall": 1790984614.6958218,
+   "env_step": 682
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z1.033_yaw45",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-fc8afba6cf",
+   "latency_s": 0.023215031000290764,
+   "t_wall": 1790984614.719498,
+   "env_step": 682
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z1.033_yaw45",
+   "n_solutions": 5,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790984614.7790565,
+   "env_step": 682
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-a6f64c7c02",
+   "latency_s": 0.02607583499775501,
+   "t_wall": 1790984614.8059359,
+   "env_step": 682
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-20fcb24487",
+   "motion_type": "ANY",
+   "n_states": 303,
+   "duration_s": 1.354383901,
+   "latency_s": 0.026316141000279458,
+   "target_pos": [
+    -0.1872952651151395,
+    0.057027211052191155,
+    1.1333615331903284
+   ],
+   "t_wall": 1790984614.8345141,
+   "env_step": 682
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-20fcb24487",
+   "ok": false,
+   "reason": "tracking_error_exceeded(0.082m)",
+   "steps": 34,
+   "pos_err_max": 0.08245346007487613,
+   "pos_err_mean": 0.020640164082959288,
+   "rot_err_max_deg": 10.899354544204833,
+   "joint_err_max": 1.6644140116242747,
+   "joint_err_final": 2.376741172584635,
+   "final_pos_err": 0.2570425568512204,
+   "final_rot_err_deg": 14.744657562859773,
+   "planned_duration_s": 1.354383901,
+   "planning_latency_s": 0.026316141000279458,
+   "n_states": 303,
+   "time_scale": 1.781915119894184,
+   "t_wall": 1790984617.095391,
+   "env_step": 716
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-20fcb24487",
+   "n_checked": 34,
+   "collision": true,
+   "msg": "INVALID_ARGUMENT: The goal configuration [0.0875185,1.27143,0.0386036,-0.0692507,0.0204373,1.11446,0.220331] (in rad) of the path is not within joint limits. [MotionPlanningError/joint_limit_error:val",
+   "request_id": "CheckCollisions-35d438f3b2",
+   "t_wall": 1790984617.1020017,
+   "env_step": 716
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 2,
+   "ok": false,
+   "reason": "pregrasp_exec:tracking_error_exceeded(0.082m)",
+   "details": {
+    "grasp": "pinch_z1.033_yaw45"
+   },
+   "t_wall": 1790984617.102087,
+   "env_step": 716
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": false,
+   "reason": "pregrasp_exec:tracking_error_exceeded(0.082m)",
+   "attempts": 3,
+   "steps": 149,
+   "t_wall": 1790984617.1020894,
+   "env_step": 716
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_drawer",
+   "attempt": 0,
+   "ok": false,
+   "reason": "relocate_pick:pregrasp_exec:tracking_error_exceeded(0.082m)",
+   "details": {},
+   "t_wall": 1790984617.1020987,
+   "env_step": 716
+  },
+  {
+   "event": "skill",
+   "skill": "close_drawer",
+   "ok": false,
+   "reason": "relocate_pick:pregrasp_exec:tracking_error_exceeded(0.082m)",
+   "attempts": 1,
+   "steps": 552,
+   "t_wall": 1790984617.1021,
+   "env_step": 716
+  }
+ ],
+ "world_sync": {
+  "n_objects": 8,
+  "max_pose_error_m": 0.0,
+  "max_rot_error_deg": 0.0
+ },
+ "goal": [
+  {
+   "predicate": "close",
+   "args": [
+    "white_cabinet_1_bottom_region"
+   ],
+   "subgoal_index": 0
+  },
+  {
+   "predicate": "in",
+   "args": [
+    "akita_black_bowl_1",
+    "white_cabinet_1_bottom_region"
+   ],
+   "subgoal_index": 1
+  }
+ ],
+ "plan": [
+  "pick:akita_black_bowl_1_main",
+  "place:akita_black_bowl_1_main",
+  "close_drawer:white_cabinet_1_cabinet_bottom"
+ ],
+ "failure_stage": "close_drawer:white_cabinet_1_cabinet_bottom",
+ "failure_reason": "relocate_pick:pregrasp_exec:tracking_error_exceeded(0.082m)",
+ "success_at_end": false,
+ "first_done_step": null,
+ "final_state": {
+  "objects": {
+   "akita_black_bowl_1": [
+    -0.0003654563427207897,
+    0.13869194248065544,
+    0.9262821330304104
+   ],
+   "wine_bottle_1": [
+    -0.18694136095470187,
+    0.05674434717527272,
+    0.8988609548408878
+   ]
+  },
+  "articulations": {
+   "white_cabinet_1_top_level": 0.0,
+   "white_cabinet_1_middle_level": 0.0,
+   "white_cabinet_1_bottom_level": -0.14991650549058316
+  },
+  "goal_atoms": [
+   {
+    "atom": [
+     "close",
+     "white_cabinet_1_bottom_region"
+    ],
+    "true": false
+   },
+   {
+    "atom": [
+     "in",
+     "akita_black_bowl_1",
+     "white_cabinet_1_bottom_region"
+    ],
+    "true": true
+   }
+  ]
+ },
+ "video": "runs/eval_c3/A/task3/episodes/t3_i19_d9a8a2f5/agentview.mp4",
+ "steps": 716,
+ "t_end": 1790984617.1645308,
+ "wall_time_s": 436.1933822631836
+}

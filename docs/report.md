@@ -719,3 +719,58 @@ measured finger gap for rim grasps) and is now built from the measured finger ga
 No physical collision was removed from the planner's checks; the only new exclusion is the
 stage-B probe's exclusion of bodies riding in the drawer, which the executed segments re-check at
 their true poses.
+
+### 12.6 Protocol result of candidate C3 (5e236de): 80/100, recommended
+
+Same protocol as every table above; uninterrupted run (half A tasks 0-4, half B tasks 5-9, 21:36-23:47
+UTC); every record names revision 5e236de with a clean tree. Records: `evaluations/candidate_5e236de`;
+tables `docs/results_5e236de.md`; comparisons `docs/comparison_5e236de.md` (vs baseline) and
+`docs/comparison_ce7685b_to_5e236de.md`. Evidence episodes with video: `evidence/eval_episodes_5e236de`.
+
+| task | ce7685b | C3 5e236de | changed episodes (init) | C3 failure stages |
+|---|---|---|---|---|
+| 0 | 10/10 | 10/10 | - | |
+| 1 | 10/10 | 8/10 | lost 10, 11 | butter pick: first attempt closes on nothing (0 pad contacts / lift drift), remaining candidates without collision-free IK |
+| 2 | 10/10 | 10/10 | - | |
+| 3 | 0/10 | 0/10 | - | stage B contact search: no collision-free contact pose (7), relocation pick tracking error (3) |
+| 4 | 10/10 | 10/10 | - | |
+| 5 | 8/10 | 9/10 | gained 12 | no reachable grasp (18) |
+| 6 | 9/10 | 10/10 | gained 18 | |
+| 7 | 9/10 | 9/10 | gained 11, lost 10 | no reachable grasp (10) |
+| 8 | 10/10 | 10/10 | - | |
+| 9 | 0/10 | 4/10 | gained 13, 15, 16, 17 | pre-grasp after relocation 2-4.5 cm off (10, 12, 14, 19); release IK hand vs microwave (11); door push segment 0 NOT_FOUND (18) |
+| all | **76/100** (CI 67-83%) | **80/100** (CI 71-87%) | +4 | |
+
+Integration numbers: 1,296 `PlanTrajectory` calls, mean 26 ms, max 135 ms, 0 timeouts; 44 of 1,220
+executed-path audits report a collision; 76 of the 80 successes are within 600 steps (the four task 9
+successes end at steps 740-791 within the declared 1,200-step budget). The 937 rejected IK/plan
+requests are the task 3 contact-search probes (56 poses x up to 4 seeds x 3 attempts per episode,
+each rejection logged with its collision pair or NOT_FOUND). Task 3 episodes take 13 min of wall
+time each for that reason.
+
+Success accounting: LIBERO's own metric (`done` at any control step, episode terminated there);
+for every success the goal atoms evaluated by LIBERO's predicate functions at termination are
+stored (`final_state.goal_atoms`, both true in all 80). Persistence of the goal after termination
+is not part of LIBERO's metric and is not measured by this protocol. The earlier candidates were
+scored with the stricter between-skills check; their numbers are unchanged.
+
+Candidate decision by the declared criteria: valid integration (both); overall 80 vs 76 with
+overlapping intervals; per-task: one regression (task 1, -2) against gains on tasks 5 (+1), 6 (+1)
+and 9 (+4), task 7 unchanged (one episode flipped each way); generalization: task 9 also succeeds
+on development states 1, 3, 4 of 5 (`evidence/dev_task9_success`); runtime cost: task 3 probes
+(13 min per episode) and no timeouts; reproducibility: full uninterrupted run, revision stamped.
+**5e236de (C3) is the recommended candidate; ce7685b stays preserved as the verified fallback.**
+The task 1 regression is documented, not root-caused: the same grasp was selected with the same
+planned pre-grasp and approach targets as under ce7685b, the approach ended 1.3 cm short and the
+fingers closed above the butter (0 contacts); the only upstream difference in that chain is that the
+cream cheese is now released 3 cm lower in the basket (no raising over a wall blocker), which changes
+the arm posture from which the second pick starts (hypothesis; `evidence/eval_episodes_5e236de/task1_failure_*`).
+
+### 12.7 Status
+Strong reproducible partial solution: 8 tasks at 8-10/10, task 9 partially solved (4/10 protocol,
+3/5 development) with the remaining failures measured (pre-grasp posture at the joint-2 limit, one
+release IK collision, one door segment), task 3 unsolved with the search space and the geometric
+reason recorded (12.2). Held-out states 20-29 were used once (5b713c6) and inspected afterwards;
+states 30-49 remain untouched but were not run in this pass (time reserved for the frozen
+evaluation), so no held-out claim is made for 5e236de.
+
