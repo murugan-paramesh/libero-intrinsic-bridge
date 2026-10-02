@@ -593,7 +593,7 @@ Status: **reproducible partial submission** (classification 2): 8 of 10 tasks ar
 one classical system whose planning is computed by Intrinsic Core; tasks 3 and 9 have
 reproducible blockers with the evidence above.
 
-Next experiment, defined before running it (not started in this session):
+Next experiment (defined before running it, then run at the end of this session; outcome below):
 hypothesis: on task 9, applying Intrinsic's mesh-level collision verdict (a `CheckCollisions`
 or IK probe of the hand at each candidate release pose) inside the release search, instead of
 the adapter's box model, will discard the hand-vs-microwave targets early and either expose a
@@ -603,3 +603,21 @@ observable: `place_spot_rejected` reasons from Intrinsic vs the box model, and w
 release pose passes IK; decision: keep if a release pose is reached on either dev state,
 otherwise record task 9 as geometrically infeasible with a level hand and move to a two-contact
 (push-in) insertion.
+
+**Outcome of that experiment (02:30-02:50 UTC, hypothesis eliminated).** The verdict hook
+(collision-checked `ComputeIk` on each geometrically valid release and pre-place pose, patch
+`experiments/task9_intrinsic_verdict_hook.patch`) never rejected a candidate in 5 dev episodes
+(states 0-4; records of 3-4 in `evidence/dev_task9_verdict`): on states 0-2 the pick after
+relocation fails as on the protocol (TRACK); on states 3-4 the box model and Intrinsic accept
+the same candidate, the ANY transport to the pre-place pose plans and executes, but the arm
+arrives 8 cm short of it (`place_slip_compensation`: xy correction 0.079-0.081 m with 1 mm
+attachment drift, i.e. a controller tracking shortfall, not a slip), and the LINEAR correction
+is rejected by Intrinsic as an invalid initial configuration: `robot0_link6` against
+`microwave_1_microdoorroot` at the reached posture. The start-state recovery (5 cm retreat with
+that pair excluded) also finds no collision-free IK. After the failed correction the mug has
+slipped 6-8 cm in the fingers and the second attempt finds no collision-free hand pose. So the
+active task 9 blocker is the executed posture at the pre-place pose (the OSC null-space drift
+of 11.2 near the joint-2 limit), not the release-search model. The hook was not retained (no
+effect; source reverted to 9b02207) and the work queue in `docs/methods.md` section 5 now ranks
+an ANY re-plan from the reached configuration with the full collision check, plus a
+posture-margin IK target for the transport, as the next task 9 experiment.

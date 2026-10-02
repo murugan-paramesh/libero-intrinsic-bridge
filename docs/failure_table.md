@@ -113,3 +113,10 @@ Evidence episodes (video + record + request log) for this run: `evidence/eval_ep
 (task 9 insertion failure 13, task 9 tracking failure 10, task 3 stage A 10 and stage B 11,
 task 1 regression 17, task 6 slip 19). The other 94 episodes exist only as records
 (`evaluations/candidate_9b02207`); their videos are in the temporary `runs/` directory.
+
+## 9. Task 9 dev experiment after the 9b02207 run (states 0-4, runs/dev2/task9_verdict*, records of states 3-4 in evidence/dev_task9_verdict; code = 9b02207 + experiments/task9_intrinsic_verdict_hook.patch, not retained)
+
+| state | stage | observed evidence | hypothesis |
+|---|---|---|---|
+| 0, 1, 2 | TRACK | pre-grasp after relocation 3.2-4.6 cm / 8-11 deg off | joint-2-limit posture (report 11.2) |
+| 3, 4 | TRACK then PLAN | verdict IK accepted the release/pre-place poses (0 rejections); transport plan OK and executed; arm 7.9-8.1 cm short of the pre-place pose with 1 mm attachment drift; LINEAR correction rejected (invalid initial configuration: robot0_link6 vs microwave_1_microdoorroot); start-state recovery IK NOT_FOUND; mug then slipped 6-8 cm; second attempt: no collision-free hand pose (fingers/hand vs microwave_1_main) | OSC does not reach the planned pre-place configuration near the joint-2 limit; the reached posture touches the open door |

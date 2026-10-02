@@ -156,3 +156,13 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
   documented with records and videos).
 - Next experiment (defined, not started): Intrinsic collision verdict inside the task 9 release
   search (methods.md section 5, rank 1).
+
+### 2026-10-02 02:50 UTC (session 5): task 9 verdict-hook experiment run and rejected
+- Experiment per methods.md rank 1 (Intrinsic IK verdict in the release search): 5 dev episodes,
+  hook never triggered; blocker moved to the executed pre-place posture (8 cm short, link 6 vs
+  open door). Patch kept at experiments/task9_intrinsic_verdict_hook.patch, src reverted to
+  9b02207 (git diff 9b02207 HEAD -- src configs empty). Records: evidence/dev_task9_verdict.
+- Recommended candidate unchanged: ce7685b (76/100). Report 11.7, failure table 9, methods
+  (session 5 rows + queue) updated. Regression suite not needed (no source change retained).
+- Next: methods.md section 5 rank 1 (ANY re-plan from the reached configuration for the
+  pre-place correction; posture-margin transport IK), then task 3 two-contact strategy.

@@ -1,0 +1,90 @@
+diff --git a/src/libero_intrinsic/skills/manipulation.py b/src/libero_intrinsic/skills/manipulation.py
+index 527969a..ee7760e 100644
+--- a/src/libero_intrinsic/skills/manipulation.py
++++ b/src/libero_intrinsic/skills/manipulation.py
+@@ -80,6 +80,26 @@ def nearest_ik(ctx: SkillContext, pos, rot, q_now, cs, n: int = 8, joint_limits=
+     return sols, rid, lat
+ 
+ 
++_IK_PAIR_RE = re.compile(r"Left object: (\S+)\s+Right objects?: (\S+)")
++
++
++def ik_collision_blocker(ctx: SkillContext, pos, rot, q_seed, cs, n: int = 4) -> str:
++    """Intrinsic's verdict on a candidate tcp pose: "" when ComputeIk (collision checked with `cs`,
++    attached objects included) returns a solution; otherwise the first colliding pair reported
++    by Intrinsic ("hand:microwave_1_main" style) or "ik:unreachable" when no solution exists at
++    all. Used to confirm a release pose that the adapter's box model accepted (task 9: the box
++    model accepted hand poses inside the microwave that Intrinsic's mesh check rejects)."""
++    try:
++        sols, _, _ = ctx.client.ik(pos, rot, q_seed, max_solutions=n, collision_settings=cs)
++    except IntrinsicRequestError as e:
++        m = _IK_PAIR_RE.search(str(e))
++        if m:
++            a, b = m.group(1).replace("panda.", "").split(".")[0], m.group(2).split(".")[0]
++            return f"{a}:{b}"
++        return "ik:" + ("unreachable" if "NOT_FOUND" in str(e) else str(e)[:40])
++    return "" if sols else "ik:unreachable"
++
++
+ _START_STATE_RE = re.compile(r"Invalid initial joint configuration.*?Left object: (\S+)[^\n]*\n\s*Right objects?: (\S+)", re.S)
+ 
+ 
+@@ -493,8 +513,25 @@ class PlaceSkill(Skill):
+         obj_local = (geo.object_point_cloud(env, self.body, spacing=0.012) - rs.tcp_pos) @ rs.tcp_rot
+         width = float(2 * max(np.abs(obj_local[:, 0]).max(), 0.005))
+         targets = self._region_box_targets(ctx, targets, obj_origin_above_bottom)
++        # Intrinsic's verdict on each geometrically valid release/pre-place pose (collision-checked
++        # IK with the carried object attached, support contact allowed as in transport). The box
++        # model alone accepted hand poses inside the microwave that Intrinsic rejects (task 9).
++        # The pre-place pose is checked with the transport settings (the carried object must be
++        # clear of its support there too: observed on task 9, the box model passed a pre-place
++        # pose where Intrinsic reports mug vs microwave); at the release pose the support is
++        # excluded (the object is lowered onto it from there).
++        cs_verdict_rel = sync.transport_collision_settings(self.support)
++        cs_verdict_pre = sync.transport_collision_settings(())
++        rot_v = R_tcp
++
++        def verdict(tcp_rel, tcp_pre_c):
++            b = ik_collision_blocker(ctx, tcp_rel, rot_v, rs.q, cs_verdict_rel)
++            if b:
++                return "release/" + b
++            b = ik_collision_blocker(ctx, tcp_pre_c, rot_v, rs.q, cs_verdict_pre)
++            return ("pre/" + b) if b else ""
+         found = self._release_search(env, sync, targets, tcp_t_obj_p, R_tcp, obj_local, width, obj_origin_above_bottom,
+-                                     record=ctx.record)
++                                     record=ctx.record, verdict=verdict)
+         if found is None:
+             target_origin, support_z = targets[0]
+             release_origin = np.array([target_origin[0], target_origin[1], support_z + self.p.release_gap + obj_origin_above_bottom])
+@@ -676,11 +713,15 @@ class PlaceSkill(Skill):
+                 return False
+         return True
+ 
+-    def _release_search(self, env, sync, targets, tcp_t_obj_p, R_tcp, obj_local, width, obj_origin_above_bottom, record=None):
++    def _release_search(self, env, sync, targets, tcp_t_obj_p, R_tcp, obj_local, width, obj_origin_above_bottom, record=None,
++                        verdict=None, verdict_budget: int = 12):
+         """Choose the first placement candidate whose release AND pre-place poses are geometrically
+         valid: hand/fingers clear of every other body, carried object clear of every non-support
+         body (8 mm) and of the support's walls (5 mm), object above a container rim at the
+         pre-place pose. The release pose is raised (1 cm steps, <= 15 cm) until valid.
++        `verdict(tcp_release, tcp_pre) -> blocker` (optional, at most `verdict_budget` calls) lets
++        Intrinsic's collision-checked IK confirm a geometrically valid candidate; a rejected
++        candidate is skipped and the search continues (event place_spot_rejected_intrinsic).
+         Returns (target_origin, support_z, tcp_release, tcp_pre, raised) or None."""
+         from scipy.spatial import cKDTree
+         rim_z = max(geo.object_box(env, b).top_z for b in self.support)
+@@ -787,6 +828,14 @@ class PlaceSkill(Skill):
+                 if approach[2] > -0.9 and cand[2] + top_off > box_top + 0.01:
+                     continue      # horizontal insertion: the object cannot be lifted out of the region box (roof)
+                 ok, blocker, pre = valid(cand)
++                if ok and verdict is not None and verdict_budget > 0:
++                    verdict_budget -= 1
++                    vb = verdict(cand, pre)
++                    if vb:
++                        ok, blocker = False, "intrinsic:" + vb
++                        if record:
++                            record(event="place_spot_rejected_intrinsic", candidate=k, raised_m=float(raised), blocker=vb,
++                                   tcp=[float(v) for v in cand], budget_left=int(verdict_budget))
+                 if ok:
+                     if raised > 0 and record:
+                         record(event="place_release_raised", candidate=k, raised_m=float(raised), blockers=traces[k][:16])
