@@ -130,3 +130,16 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
 - Evidence for ce7685b committed: evidence/eval_episodes_ce7685b (13 episodes: videos, records, RPC logs, MANIFEST.json).
 - Next: if reg3 is clean, run the protocol on 9b02207: python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/eval_9b02207/A ; --tasks 5 6 7 8 9 --out runs/eval_9b02207/B (about 2.5 h wall: task 3 episodes 10-25 min each). Then report/compare/archive as for ce7685b (docs/results_9b02207, docs/comparison_9b02207.md, evaluations/candidate_9b02207). If interrupted: the partial run is NOT a result; keep ce7685b as the recommended candidate and report 9b02207 as "interrupted before final validation".
 - 23:47 UTC: reg3 16/16 at 9b02207; protocol run of 9b02207 launched -> runs/eval_9b02207/{A,B} (A.log/B.log; done when each has 50 run_id lines and no evaluate.py process). Source frozen (HEAD ae2d539 differs from 9b02207 in docs only).
+
+### 2026-10-02 00:54 UTC (session 5, continued): protocol run of 9b02207 interrupted and resumed
+- The container restarted at ~23:56 UTC (session idle); both evaluate.py processes died after 26
+  completed episodes (A: task 0 inits 10-16; B: task 5 inits 10-19, task 6 inits 10-18). The
+  incomplete episode dir A/task0/episodes/t0_i17_39430ccc (no episode.json) was moved out of the run.
+- 00:55 UTC: resumed under the same protocol (same config, task order, init states, seed, budget,
+  no completed episode re-run, source identical to 9b02207): `--tasks 0 --inits 17 18 19` then
+  `--tasks 1 2 3 4` into A; `--tasks 6 --inits 19` then `--tasks 7 8 9` into B. Details:
+  runs/eval_9b02207/resume_manifest.json; the original protocol.json files are kept as
+  protocol_original.json (evaluate.py rewrites protocol.json per invocation).
+- Resume consequence to disclose: tasks 0 and 6 were completed by a fresh TaskSession (new planner
+  server process) for their last 3 / 1 init states; everything else is as in an uninterrupted run.
+- If interrupted again: repeat the same procedure for the missing (task, init) pairs only.
