@@ -1,46 +1,158 @@
-# Demonstration walkthrough (and how to explain the system)
+# Walkthrough: LIBERO-10 with a classical Intrinsic Core stack
 
-## 10-minute demo
-```bash
-source .venv/bin/activate && export MUJOCO_GL=egl
-# 1. The robot model agrees with LIBERO: Intrinsic FK/IK vs MuJoCo over random configurations
-python scripts/validate_kinematics.py --task 0          # -> runs/dev/kinematics_validation.json
-# 2. One Intrinsic-planned motion executed by the benchmark controller (video + request/response protos)
-python scripts/demo_motion.py --task 0 --init 0         # -> runs/dev/demo_motion/{demo_motion.mp4,summary.json,intrinsic_protos/}
-# 3. Task 0 end to end on a development init state (video + episode record + RPC log)
-python scripts/run_task.py --task 0 --inits 0           # -> runs/dev/task0/episodes/<run_id>/
-# 4. The results table from saved records
-python -m libero_intrinsic.eval.report runs/eval        # -> docs/results.md is the committed copy
+This is the reviewer's guide. Every claim below points to code, a command and a saved artifact.
+Numbers are the measured protocol results recorded in `evaluations/` (see section 15).
+
+## 1. Assignment objective
+Solve the ten LIBERO-10 tasks with a classical (non-learned) manipulation system whose
+kinematics, collision checking and motion planning are computed by Intrinsic Core, executed in
+the unmodified LIBERO/MuJoCo environment through LIBERO's standard OSC_POSE controller, and
+evaluated under a declared, reproducible protocol.
+
+## 2. System architecture
 ```
-What to look at in an episode directory: `episode.json` (goal atoms from BDDL, skill outcomes,
-every executed trajectory id, tracking errors, executed-path collision audits, official success),
-`intrinsic_requests.jsonl` (one line per Intrinsic RPC with id, latency, status), `agentview.mp4`.
+LIBERO task (BDDL goal) + MuJoCo simulator state
+        | task_spec.py: goal atoms -> skill sequence (planner.py)
+        v
+classical skills: pick / place / push (drawer, door) / knob / relocation composites
+        | object-relative grasp and contact candidates (geometry.py, placement.py)
+        v
+Intrinsic Core (pinned c61bf07, in-process gRPC server intrinsic_stack/cc/libero_planner_server.cc)
+        |-- world: one SDF model per LIBERO body (scene_to_sdf.py), poses re-synchronised every skill step
+        |-- ComputeFk, ComputeIk (collision checked, JointPositionLimits posture families, seeds)
+        |-- CheckCollisions (executed-path audit)
+        '-- PlanTrajectory (ANY / LINEAR / JOINT, per-segment CollisionSettings, TOPP timing)
+        v
+returned joint trajectory -> TCP references via Intrinsic FK -> OSC_POSE deltas at 20 Hz (executor.py)
+        v
+measured reached state (joint error, TCP error, contacts) -> world sync -> replan / recovery
+        v
+official LIBERO success predicate (libero/lifelong/metric.py semantics: done at any control step)
+```
+Module map: `docs/architecture.md`. Every executed motion carries the id of the `PlanTrajectory`
+request that produced it (`plan` and `execute` events in each `episode.json`;
+`intrinsic_requests.jsonl` holds every RPC with status, latency and error text).
 
-## How to explain it (talking points)
-1. **Where Intrinsic is used.** LIBERO gives us a MuJoCo scene; we convert the compiled model to
-   SDF and load it into Intrinsic's world (`WorldFromSdf`). Intrinsic's world service holds the
-   scene (we push object poses before every plan, re-parent grasped objects to the flange frame)
-   and Intrinsic's motion-planner service computes FK, IK, collision checks and collision-free,
-   time-parameterized trajectories (RRT-Connect + shortcutting + linear Cartesian planner + TOPP
-   in the OSS build). Our C++ file only wires those services into one process because the
-   production k3s runtime cannot run here; the algorithms are untouched.
-2. **Why we trust the model.** 200 random joint configurations: FK error 5e-9 m; IK round trip
-   through the LIBERO robot 1e-6 m; the collision checker flags an arm-in-table configuration
-   that MuJoCo also reports as contact.
-3. **How a plan becomes benchmark actions.** LIBERO only accepts Cartesian deltas at 20 Hz. We
-   sample the Intrinsic joint trajectory, map each sample to a TCP pose with Intrinsic FK, and
-   command the delta toward it; the trajectory is slowed until the OSC controller can follow it
-   (2-5 mm error). Because OSC controls only the TCP, we audit the configurations actually reached
-   with Intrinsic `CheckCollisions` after every motion.
-4. **Classical skills, one library.** Goal atoms are read from the BDDL; predicates map to
-   Pick/Place/TurnKnob/Push. Grasps are sampled on the object's own collision boxes and checked
-   geometrically (pad/finger/palm zones), then by Intrinsic IK with collision settings that name
-   the intentional contacts (target object, its support, fingers). Placement is object-relative
-   (region slots, free-spot search, container rules).
-5. **Honest evaluation.** Dev init states 0-4 were used for development; evaluation is on states
-   10-19, one episode each, budget 1200 steps, recovery counted, no re-runs, official
-   `check_success()`. Infrastructure errors are counted separately from task failures.
-6. **What does not work yet** (see docs/report.md Section 8): closing the drawer after placing
-   the bowl (arm posture vs the wine rack), inserting the mug into the microwave (a horizontal
-   grasp near table height is not reachable/collision-free from this base pose), and the book
-   insertion occasionally releases off-target after the wrist rotation.
+## 3. Why this is a classical robotics solution
+No learned policy, no demonstration replay, no vision model. Decisions are made from geometry
+(object boxes and point clouds from the simulator's collision model), from Intrinsic's kinematic
+and collision answers, and from measured execution feedback. Object poses are read from the
+simulator (privileged state) and labelled as such everywhere; perception is replaceable.
+
+## 4. LIBERO -> Intrinsic bridge
+`src/libero_intrinsic/model/scene_to_sdf.py` converts the compiled MuJoCo model (Panda chain,
+fingers, every environment body with collision geometry) into SDF; the C++ server loads it with
+`WorldFromSdf`, serves `ObjectWorldService` and `MotionPlannerService`. `world_sync.py` pushes
+robot joints, object poses (including fixtures, whose poses LIBERO re-samples on every reset),
+finger offsets and grasp attachments (`ReparentObject`) before every plan. The world is reset at
+episode start (attachment leak fix, report 10.4).
+
+## 5. Forward kinematics
+`client.fk` -> `ComputeFk`. Validation against MuJoCo over random configurations:
+`python scripts/validate_kinematics.py --task 0` (evidence: `evidence/milestone0_kinematics`).
+The executor converts every planned joint sample to a TCP reference with Intrinsic FK.
+
+## 6. Inverse kinematics
+`client.ik` -> `ComputeIk` with `starting_joints` seeds, `max_num_solutions`, CollisionSettings,
+and `JointPositionLimits` intersected with the pose target for posture families (shoulder
+forward, elbow bent, task-specific). Grasp, pre-grasp, release, pre-contact, mid- and end-of-travel
+poses are all IK-probed before any motion (`ik` events; rejection pairs in `push_contact_selection`).
+
+## 7. Collision checking
+Every IK and plan request is collision checked by Intrinsic with explicit, physically justified
+exclusions only: fingers vs the grasped object, resting-object/support pairs (sub-millimetre
+MuJoCo penetration), the pushed body during a push, the carried object vs its support while
+lowering. `CheckCollisions` audits the configurations the OSC controller actually reached
+(`executed_path_audit` events). Model-vs-reality checks of this pass: the drawer/cabinet point
+clouds matched MuJoCo geometry exactly; fixture poses are re-sampled by LIBERO at every reset and
+are synchronised per episode (section 12).
+
+## 8. Motion planning
+`client.plan_to_pose` / `plan_to_joints` -> `PlanTrajectory` with MotionType ANY (free space),
+LINEAR (approach, insertion, push segments, lowering), JOINT (settle); the LINEAR re-plan protocol
+(target joint configuration reached by Intrinsic's path IK) is logged as a `note`. Pushes are split
+into <= 4 cm segments, each planned after a world sync so moved objects are at their true poses.
+
+## 9. Grasp generation
+`geometry.grasp_candidates` (top-down pinches on geom centres and cross sections, yaws every
+22.5 deg, tilt variants) and `side_grasp_candidates` (level/pitched side grasps restricted to a
+container's opening normal). Candidates pass: scene clearance (hand/finger zones vs point clouds)
+-> placement-aware ranking (`PlaceSkill.grasp_compatible`: the same release search that runs at
+place time, cost = drop height + slot distance) -> Intrinsic IK at pre-grasp and grasp -> LINEAR
+dry-run of the approach (side grasps) -> execution with grasp verification (finger gap, pad contacts, lift).
+
+## 10. Trajectory execution
+`env/executor.py`: TCP references from Intrinsic FK, OSC_POSE position/orientation deltas,
+velocity-scaled timing, tracking-error abort (8 cm), final-pose check, planned-vs-reached joint
+error recorded for every motion (`execute` events: `pos_err_max`, `joint_err_final`, ...).
+
+## 11. OSC_POSE limitation
+The benchmark controller tracks the TCP pose only; its null space drifts, so the joint
+configuration reached can differ from the planned one by 0.3-2.3 rad while the TCP is within
+1 cm. Consequences handled explicitly: pre-grasp/pre-contact configurations are chosen among the
+IK solutions nearest to the current configuration (same branch), every next segment is planned
+from the measured configuration, LINEAR failures from a drifted branch fall back to a
+collision-checked ANY plan to the same pose (recorded), start-state collisions trigger a bounded
+retreat. Documented limit: report 11.2.
+
+## 12. Task 3 strategy and outcome (unsolved)
+Backward chain: closed drawer <- flat bowl deep in the drawer <- release/retreat <- grasp <-
+push posture. Measured first divergence (`runs/lab/t3_*`, stage lab): the bowl was released
+3-4 cm above a spot whose footprint overlapped the drawer's inner front wall and landed tilted
+30 deg. Every deeper spot is rejected because a level top-down hand over a flat bowl intersects
+the handles of the drawers above (handle points at y >= 0.197, z 1.007-1.097 vs a 10.4 cm tall
+hand); release tilts of 10-20 deg move the hand clear but then the bowl's rim touches the middle
+handle; the hand's wide axis must lie across the drawer (yaw-90 grasps), which the ranking now
+covers. Pushing: a top-down push cannot finish the travel (hand above the panel hits the upper
+handles); a horizontal push has no collision-free contact pose on the tested states (forearm vs the
+wine rack fixture, wrist vs table, no IK), with or without relocating the wine bottle, in three
+posture families; a side-push family (hand pointing along the reach direction) was blocked by the
+relocated bottle in the arm corridor. No feasible solution was found within the tested classical
+search; the search space, rejection reasons and geometry are in `docs/failure_table.md` section 10
+and `docs/report.md` section 12.
+
+## 13. Task 9 strategy and outcome
+Backward chain: door closed <- hand withdrawn <- mug released on the cavity floor inside the
+heating region <- level insertion along the opening normal <- level side grasp 4.5 cm above the
+mug bottom <- the porcelain mug relocated out of the approach. Measured first divergence of the
+previous candidates: the slip-compensation step mistook the 8 cm pre-place offset of a side
+approach for grasp slip and drove the hand 8 cm deeper into the microwave (fixed); then the
+door push: the pre-contact configuration 2.3 rad from the current one (fixed by same-branch
+ordering), LINEAR segments failing near the wrist limit (configuration-space fallback for later
+segments), the door rebounding after the retreat (the goal is re-checked after the retreat and
+the push repeated). Complete official successes on development states 1, 3, 4; states 0 and 2
+fail at the pick after relocation (pre-grasp posture at the joint-2 limit). Protocol result:
+section 15.
+
+## 14. Evaluation methodology
+`configs/eval_frozen.yaml`: tasks 0-9 in order, official init states 10-19 (development states
+0-4, held-out 20-29 used once for 5b713c6), seed 0, budget 1,200 control steps, bounded per-skill
+retries, no episode re-runs, privileged object poses. Success = LIBERO's own metric semantics
+(`libero/lifelong/metric.py`: an episode counts when `done` is reported at any step; the runner
+terminates at that step and also records `success_at_end` and the goal atoms). Candidates before
+C3 evaluated the predicate only at skill boundaries and at the end (stricter); their numbers are
+unchanged in the tables. Totals are generated from episode records (`eval/report.py`).
+
+## 15. Final results
+See `README.md` (headline table) and `docs/results_*.md`; the per-task before/after tables are
+`docs/comparison_*.md`. The recommended candidate and the reasons for the choice are stated in
+`docs/report.md` section 12.
+
+## 16. Limitations
+Privileged object poses; OSC_POSE null-space drift; task 3 unsolved; task 9 partially solved
+(pick posture on some states); planner randomness makes individual episodes vary between runs
+(documented flips on tasks 6 and 7); runtime of task 3 episodes (IK probe matrix with 5 s solver
+timeouts).
+
+## 17. Exact reproduction
+```bash
+# setup: README "Setup (pinned)" (Intrinsic Core c61bf07, LIBERO 8f1084e, Bazel 8.8.1, Python 3.10)
+python -m pytest -q
+python scripts/validate_kinematics.py --task 0          # FK/IK agreement
+python scripts/demo_motion.py --task 0 --init 0         # one Intrinsic-planned motion
+python scripts/run_task.py --task 9 --inits 3            # task 9 complete episode (dev state)
+python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/review/A & python scripts/evaluate.py --tasks 5 6 7 8 9 --out runs/review/B; wait
+python -m libero_intrinsic.eval.report runs/review --out runs/review/results.json
+python scripts/compare_evaluations.py evaluations/candidate_ce7685b runs/review --labels ce7685b rerun
+python scripts/stage_lab.py --task 3 --init 0 --until place --execute 4 --out runs/lab/t3   # task 3 diagnosis (dev only)
+```

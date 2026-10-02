@@ -120,3 +120,16 @@ task 1 regression 17, task 6 slip 19). The other 94 episodes exist only as recor
 |---|---|---|---|
 | 0, 1, 2 | TRACK | pre-grasp after relocation 3.2-4.6 cm / 8-11 deg off | joint-2-limit posture (report 11.2) |
 | 3, 4 | TRACK then PLAN | verdict IK accepted the release/pre-place poses (0 rejections); transport plan OK and executed; arm 7.9-8.1 cm short of the pre-place pose with 1 mm attachment drift; LINEAR correction rejected (invalid initial configuration: robot0_link6 vs microwave_1_microdoorroot); start-state recovery IK NOT_FOUND; mug then slipped 6-8 cm; second attempt: no collision-free hand pose (fingers/hand vs microwave_1_main) | OSC does not reach the planned pre-place configuration near the joint-2 limit; the reached posture touches the open door |
+
+## 10. Final pass diagnostics (development states; records in evidence/dev_task3_lab, evidence/dev_task9_success, runs/lab, runs/dev2)
+
+| task | stage | observed evidence | classification |
+|---|---|---|---|
+| 3 | PLACE (first divergence) | bowl released 3 cm above a spot overlapping the inner front wall; lands tilted 30 deg (contacts: bowl g4 vs drawer inner wall g35, bowl bottom vs floor); 24 deeper spots rejected: palm vs upper drawers' handles (y >= 0.188, z 1.007-1.097) for every rotation and release tilt | MODEL (box clearance) + geometry: 9.2 cm entry width for a 10.8 cm bowl |
+| 3 | ARTIC stage A | pre-contact reached with 0.99 rad joint error (reach limit, elbow straight); LINEAR seg0 FinePathIK; ANY fallback ends 2.4 cm short at the joint-4 limit | EXECUTION (OSC branch) |
+| 3 | ARTIC stage B | 84/84 contact poses rejected in 3 posture families: link 5 vs wine rack (contact), link 6 vs table (end), no IK (contact/end); after relocating the bottle: same; side-push family: 84/84 end poses blocked by the relocated bottle (link 5/6) | PLANNING (collision) |
+| 9 | PLACE (first divergence, fixed) | slip compensation moved the hand 8 cm deeper (xy_correction 0.079-0.081 m with 1 mm drift); lowering plan: hand vs microwave_1_main | TASK-LOGIC bug |
+| 9 | ARTIC (fixed) | pre-contact 2.3 rad from the current configuration; seg1 FinePathIK at the joint-5 limit; door rebounds to -0.28 rad after the retreat | EXECUTION (OSC branch) + CONTACT |
+| 9 | TRACK (open) | states 0, 2 (dev) and 10, 12, 14, 19 (protocol, C2 half B): pre-grasp after relocation 2.7-4.6 cm / 7-11 deg off at the joint-2 limit | EXECUTION |
+| 9 | PLACE (open) | states 11, 18 (protocol, C2 half B): ComputeIk NOT_FOUND at the release/pre-place (hand vs microwave frame) | PLANNING (collision) |
+| 1, 7 | GRASP/TRACK (regression, fixed in C3) | 4c20556 / C2: approach tracking 8 cm after a validated-configuration pre-grasp; ce7685b path tracks the same approach with 0.1 rad error | EXECUTION |

@@ -621,3 +621,101 @@ of 11.2 near the joint-2 limit), not the release-search model. The hook was not 
 effect; source reverted to 9b02207) and the work queue in `docs/methods.md` section 5 now ranks
 an ANY re-plan from the reached configuration with the full collision check, plus a
 posture-margin IK target for the transport, as the next task 9 experiment.
+
+## 12. Final engineering pass (session 6): execution-first diagnosis of tasks 3 and 9
+
+Code of this pass: 4c20556 (experimental, partial run), 8e24149 (C2, half run), 5e236de (C3, full
+protocol run; see 12.6). The verified fallback throughout was ce7685b (76/100). Pinned
+dependencies were not changed: Intrinsic Core c61bf075f2335371c6367b61117e8a62bb960c3b (Bazel
+8.8.1, target `//libero_bridge:libero_planner_server`, protos `intrinsic_proto.motion_planning.v1`
+and `intrinsic_proto.world`), LIBERO 8f1084e3132a39270c3a13ebe37270a43ece2a01, robosuite 1.4.0,
+mujoco 2.3.7, numpy 1.23.5, Python 3.10.
+
+### 12.1 Stage lab (reproducible bounded experiment runner)
+`scripts/stage_lab.py` runs the task's real skill sequence up to a stage, audits the physical
+state (object pose and tilt, contacts, articulation, goal atoms), then searches a geometry-relative
+candidate family through geometric filter -> Intrinsic `ComputeIk` (pre/contact/mid/end poses,
+seeds x posture families) -> Intrinsic LINEAR dry-runs -> physical execution through the real
+`PushSkill`, restoring the simulator state between executed candidates (development only; the
+evaluation runner never restores state). Every candidate's rejection reason is cached in
+`candidates.jsonl`. Records of this pass: `runs/lab/t3_*` (temporary) and
+`evidence/dev_task3_lab` (committed excerpts).
+
+### 12.2 Task 3: first measured divergence and what was tested
+Measured (`evidence/dev_task3_lab/place_search_trace_i0.json`): after the place, the bowl rests
+at (0.013, 0.117, 0.936) tilted 30 deg, in contact with the drawer's inner front wall and floor;
+the release search had accepted the shallowest spot (origin 1.2 cm behind the region's front
+face, footprint 3.3 cm over the inner wall) by raising the release 3 cm, because all 24
+footprint-inside spots were rejected for the hand: the palm of a level top-down hand over a flat
+bowl intersects the handles of the two drawers above (point clouds at y >= 0.188-0.197, z
+1.007-1.097; LIBERO re-samples the cabinet pose by up to 1.5 cm at every reset, which is
+synchronised to Intrinsic per episode). Carried-object rotations (0, +-90, 180, PCA angles)
+and release tilts (+-10, +-20 deg about the closing axis) were added to the search: the hand's
+wide axis must lie across the drawer (yaw-90 rim grasps, now assessed), the untilted hand still
+hits the handles 7 mm short, the tilted release clears the hand but the tilted bowl's rear rim
+reaches the middle handle (8 mm margin) or the pre-place pose puts the bowl into the top handle.
+A geometric argument from the measured dimensions: between the drawer's inner front wall and the
+handle zone there are 9.2 cm of free entry width for a 10.8 cm bowl, so a level bowl cannot be
+lowered straight into the rear of the drawer; a 20-25 deg rear-down insertion would thread the
+0.9-1.0 cm window between the panel top and the middle handle. This was not implemented (it
+exceeds the OSC tracking accuracy measured elsewhere, 1-3 cm).
+Pushing with the tilted-at-the-front bowl: top-down candidates cannot finish the travel (the
+hand above the panel reaches the upper handles); horizontal candidates had no collision-free
+contact pose on state 0 in three posture families (forearm vs the wine-rack fixture 14/28 per
+family, wrist vs table, no IK), the stage-B probe now excludes bodies riding in the drawer and
+relocates only bodies with a free joint (the wine rack was wrongly picked as an obstacle); a
+side-push family (hand pointing along the reach direction, wide face on the panel) had IK at the
+contact but was blocked at the end of the travel by the relocated bottle in the arm corridor
+(84/84), and a corridor-aware relocation spot could not be tested because the relocation pick
+failed by tracking. Conclusion: no feasible solution was found within the tested classical search
+(placement families x push families x posture families on development states 0-1). Task 3 stays
+0/10 in every candidate.
+
+### 12.3 Task 9: first measured divergence and the fixes that led to complete successes
+1. `place_slip_compensation` compared the carried object's position at the PRE-place pose with
+   the release target: for a side approach the 8 cm approach offset was treated as slip, the
+   "correction" moved the hand 8 cm deeper into the microwave and the lowering plan was rejected
+   (hand vs microwave frame strip at x >= 0.078). Fix: predict the object position at the release
+   from the measured tcp->object offset. Effect: insertion, lowering and release succeed on
+   development states 3 and 4 (mug on the cavity floor, origin inside the heating region).
+2. Door closing: the pre-contact configuration was chosen by joint-limit margin and lay 2.3 rad
+   from the current one; the controller reached the TCP in another branch at the joint-5 limit
+   and no LINEAR segment could follow. Fix: order pre-contact configurations by weighted joint
+   distance within the current branch. Later arc segments failing with FinePathIK fall back to a
+   collision-checked ANY move once the door has moved; a start-state collision near a joint limit
+   uses a configuration-space retreat.
+3. The door closed during the push but rebounded to -0.28 rad after the retreat (observed on two
+   states): the push now holds the contact briefly, re-checks the goal after the retreat and
+   repeats the push when it was lost.
+4. Official success accounting: LIBERO's metric (`libero/lifelong/metric.py`) counts an episode as
+   successful when `done` is reported at any control step and stops the episode there; the runner
+   now does the same (`GoalReached`), and records `success_at_end`, `terminated_on_goal_step` and
+   the goal atoms. Earlier candidates checked the predicate only between skills, which is stricter;
+   their archived results are unchanged.
+Complete official successes: development states 1, 3, 4 (`evidence/dev_task9_success`); states
+0 and 2 fail at the pick after relocation (pre-grasp 3-5 cm / 8-11 deg off at the joint-2 limit).
+
+### 12.4 Regressions found by the protocol and how they were resolved
+The experimental code 4c20556 (all task-3 and task-9 changes together) was run under the
+protocol: tasks 1 and 7 lost 3 episodes each (pick stage: approach tracking errors of 8 cm, lift
+failures, exhausted candidates) while tasks 5, 6 gained one each and task 9 gained three
+(`evaluations/partial_4c20556`, 84 episodes; the run was stopped by the operator once the cause was
+found). Matched comparison on development states (`evidence/dev_matched_ce7685b`): the wider yaw
+assessment plus tilted-for-placement candidates changed the butter/cream-cheese grasps, and the
+validated-configuration pre-grasp path (dry-run selection + joint-space settle) produced the
+8 cm approach tracking errors; ce7685b's nearest-IK pre-grasp path tracked the same approach
+with 0.1 rad joint error. C2 (8e24149) reverted the ranking changes (task 1 back to 5/5 on
+development states) but kept the pre-grasp path: task 7 stayed at 7/10 on the protocol half B.
+C3 (5e236de) restores ce7685b's pre-grasp path for top-down picks and keeps the validated path
+for side grasps only (task 9): development gate tasks 1 and 7 = 9/10 (the one failure, task 7
+state 2, also fails under ce7685b), regression suite of the pass 16/16.
+
+### 12.5 Model-versus-reality audit of this pass
+Cabinet, drawer and handle point clouds equal the MuJoCo geoms (no inflation); LIBERO moves
+fixtures (cabinet, microwave) by up to 1.5 cm at every reset, and every exported body's pose is
+pushed to Intrinsic at every sync, so the planner world follows. The adapter's hand box model
+was over-conservative in one place (the finger zone opened to the object's extent instead of the
+measured finger gap for rim grasps) and is now built from the measured finger gap at place time.
+No physical collision was removed from the planner's checks; the only new exclusion is the
+stage-B probe's exclusion of bodies riding in the drawer, which the executed segments re-check at
+their true poses.

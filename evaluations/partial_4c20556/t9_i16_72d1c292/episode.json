@@ -1,0 +1,4944 @@
+{
+ "run_id": "t9_i16_72d1c292",
+ "task_index": 9,
+ "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+ "language": "put the yellow and white mug in the microwave and close it",
+ "init_state_index": 16,
+ "seed": 0,
+ "revisions": {
+  "libero_intrinsic_bridge": "4c2055627ba6d158a3301c537be8714ac3975c96",
+  "working_tree_dirty_at_start": false,
+  "intrinsic_core": "c61bf075f2335371c6367b61117e8a62bb960c3b",
+  "LIBERO": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+  "robosuite": "1.4.0",
+  "mujoco": "2.3.7",
+  "numpy": "1.23.5"
+ },
+ "observation_mode": "privileged_state",
+ "controller": "OSC_POSE (robosuite 1.4.0 default osc_pose.json, 20 Hz)",
+ "step_budget": 1200,
+ "intrinsic": {
+  "component": "MotionPlannerServiceInProcess + FakeWorldService (intrinsic-core, in-process gRPC)",
+  "binary": "/home/user/bazel_out/execroot/_main/bazel-out/haswell-opt/bin/libero_bridge/libero_planner_server",
+  "world_id": "libero10_task9",
+  "sdf": "runs/eval_4c20556/B/task9/world/task9.sdf",
+  "addresses": {
+   "world_service": "127.0.0.1:34561",
+   "motion_planner_service": "dns:///localhost:33225",
+   "credentials": "local_tcp"
+  },
+  "n_requests": 1302,
+  "requests_by_rpc": {
+   "CheckCollisions": 13,
+   "ComputeFk": 1008,
+   "ComputeIk": 31,
+   "GetObject": 1,
+   "GetTransform": 5,
+   "ListObjects": 2,
+   "PlanTrajectory": 46,
+   "ReparentObject": 11,
+   "UpdateObjectJoints": 20,
+   "UpdateTransform": 149,
+   "note": 16
+  },
+  "plan_latency_s": [
+   0.06029119699996954,
+   0.01922431800085178,
+   0.023238845000378205,
+   0.05043841400038218,
+   0.019173505999788176,
+   0.035032552001212025,
+   0.017337834000500152,
+   0.01633954000135418,
+   0.04694573000051605,
+   0.020984456001315266,
+   0.04313482799989288,
+   0.02025784199940972,
+   0.12769619500068075,
+   0.01990117800050939,
+   0.02556923900010588,
+   0.013486393998391577,
+   0.17687925399877713,
+   0.12251054899934388,
+   0.021518519999517594,
+   0.11293241400016996,
+   0.02088189399910334,
+   0.10434098100085976,
+   0.030826554000668693,
+   0.020800616000997252,
+   0.08933963700110326,
+   0.016100910001114244,
+   0.08734306799851765,
+   0.012724722000712063,
+   0.08934180099822697,
+   0.01937735200044699,
+   0.07103528100014955,
+   0.015791357000125572,
+   0.07775965200016799,
+   0.011436143999162596,
+   0.054892151998501504,
+   0.021410060000562225,
+   0.12073812000016915,
+   0.05504537699926004,
+   0.015854442999625462,
+   0.10372523699879821,
+   0.019902011999874958,
+   0.02385008799865318,
+   0.06397592300163524,
+   0.13961852600004931,
+   0.020423416999619803,
+   0.03140507600073761
+  ],
+  "plan_failures": 20,
+  "plan_timeouts": 0,
+  "linear_replans": 16
+ },
+ "t_start": 1790973557.6194663,
+ "success": false,
+ "error": null,
+ "skills": [
+  {
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 290,
+   "details": {
+    "grasp": "side_z0.956_yaw90_roll0",
+    "width": 0.017520151507452016,
+    "lifted": 0.10058862804506152,
+    "drift": 0.0025813616874991382
+   }
+  },
+  {
+   "skill": "place",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "recoveries": 0,
+   "steps": 78,
+   "details": {
+    "xy_err": 0.0004735056818994779,
+    "retreat_ok": true
+   }
+  },
+  {
+   "skill": "close_microwave",
+   "ok": false,
+   "reason": "precontact_exec:final_pose_error(0.051m,13.1deg)",
+   "attempts": 3,
+   "recoveries": 2,
+   "steps": 494,
+   "details": {}
+  }
+ ],
+ "events": [
+  {
+   "event": "opening_normal",
+   "region": "microwave_1_heating_region",
+   "normal": [
+    0.0,
+    0.9999999989999999,
+    0.0
+   ],
+   "t_wall": 1790973561.2322447,
+   "env_step": 0
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 85,
+   "n_cleared": 4,
+   "n_tilted": 0,
+   "blockers": {
+    "porcelain_mug_1_main": 26,
+    "table": 6
+   },
+   "t_wall": 1790973561.6763904,
+   "env_step": 0
+  },
+  {
+   "event": "grasp_placement_filter",
+   "n_checked": 4,
+   "n_compatible": 0,
+   "first": "side_z0.956_yaw65_roll0_pitch35",
+   "first_drop_m": null,
+   "incompatible_examples": [
+    [
+     "side_z0.956_yaw65_roll0_pitch35",
+     "hand:microwave_1_main"
+    ],
+    [
+     "side_z0.980_yaw90_roll0_pitch35",
+     "hand:microwave_1_main"
+    ],
+    [
+     "side_z0.980_yaw65_roll0_pitch35",
+     "hand:microwave_1_main"
+    ],
+    [
+     "side_z0.980_yaw115_roll0_pitch35",
+     "hand:microwave_1_main"
+    ]
+   ],
+   "ranked": [],
+   "t_wall": 1790973562.856608,
+   "env_step": 0
+  },
+  {
+   "event": "obstacle_relocation",
+   "obstacle": "porcelain_mug_1_main",
+   "blockers": [
+    "porcelain_mug_1_main"
+   ],
+   "stage": "pick",
+   "assessment": {
+    "n_cleared": 4,
+    "n_compatible": 0,
+    "blockers": {
+     "porcelain_mug_1_main": 26,
+     "table": 6
+    }
+   },
+   "t_wall": 1790973562.8566976,
+   "env_step": 0
+  },
+  {
+   "event": "relocation_spot",
+   "obstacle": "porcelain_mug_1_main",
+   "spot": [
+    -0.17000000000000004,
+    -0.37000000000000005
+   ],
+   "t_wall": 1790973562.8832114,
+   "env_step": 0
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 4,
+   "n_cleared": 4,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790973562.987939,
+   "env_step": 0
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.981_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-47a3ed2fcc",
+   "latency_s": 0.03557562400055758,
+   "t_wall": 1790973564.1248982,
+   "env_step": 16
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z0.981_yaw0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-9c34721e9b",
+   "latency_s": 0.036641770999267465,
+   "t_wall": 1790973564.1621492,
+   "env_step": 16
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z0.981_yaw0",
+   "n_solutions": 4,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790973564.2604167,
+   "env_step": 16
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-c66372b7bc",
+   "motion_type": "ANY",
+   "n_states": 91,
+   "duration_s": 0.583174089,
+   "latency_s": 0.01922431800085178,
+   "target_pos": [
+    -0.08049737038933553,
+    -0.1957382346085613,
+    1.0808032236047933
+   ],
+   "t_wall": 1790973564.2804747,
+   "env_step": 16
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-c66372b7bc",
+   "ok": true,
+   "reason": "completed",
+   "steps": 32,
+   "pos_err_max": 0.006653380191363781,
+   "pos_err_mean": 0.004460192261806592,
+   "rot_err_max_deg": 1.7384759022393228,
+   "joint_err_max": 0.12246914782698853,
+   "joint_err_final": 0.11157288896319908,
+   "final_pos_err": 0.0037656269697714717,
+   "final_rot_err_deg": 0.6971065621011009,
+   "planned_duration_s": 0.583174089,
+   "planning_latency_s": 0.01922431800085178,
+   "n_states": 91,
+   "time_scale": 2.5783137020985936,
+   "t_wall": 1790973566.6217701,
+   "env_step": 48
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp_settle",
+   "trajectory_id": "PlanTrajectory-c7c0c60d28",
+   "ok": true,
+   "reason": "completed",
+   "steps": 6,
+   "pos_err_max": 0.0012425829548509226,
+   "pos_err_mean": 0.000717642876937998,
+   "rot_err_max_deg": 0.20534060997180492,
+   "joint_err_max": 0.10144866811056538,
+   "joint_err_final": 0.10144866811056538,
+   "final_pos_err": 0.0008840048219140452,
+   "final_rot_err_deg": 0.16287212452936328,
+   "planned_duration_s": 0.238378413,
+   "planning_latency_s": 0.023238845000378205,
+   "n_states": 25,
+   "time_scale": 1.0,
+   "t_wall": 1790973567.0921135,
+   "env_step": 54
+  },
+  {
+   "event": "plan",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-e8cc0c1ee8",
+   "motion_type": "LINEAR",
+   "n_states": 34,
+   "duration_s": 0.369971435,
+   "latency_s": 0.019173505999788176,
+   "target_pos": [
+    -0.08049737038933553,
+    -0.1957382346085613,
+    0.9808032236047933
+   ],
+   "t_wall": 1790973567.1636188,
+   "env_step": 54
+  },
+  {
+   "event": "execute",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-e8cc0c1ee8",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.0063697510056580295,
+   "pos_err_mean": 0.003653616424563491,
+   "rot_err_max_deg": 0.26148802213396777,
+   "joint_err_max": 0.014505401780430027,
+   "joint_err_final": 0.011349841824148665,
+   "final_pos_err": 0.0023423930068516615,
+   "final_rot_err_deg": 0.26148802213396777,
+   "planned_duration_s": 0.369971435,
+   "planning_latency_s": 0.019173505999788176,
+   "n_states": 34,
+   "time_scale": 1.767066035403036,
+   "t_wall": 1790973568.4387584,
+   "env_step": 69
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-e8cc0c1ee8",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-939f0b38d5",
+   "t_wall": 1790973568.446981,
+   "env_step": 69
+  },
+  {
+   "event": "grasp_verify",
+   "finger_gap": 0.03830638677250674,
+   "pad_contacts": 5,
+   "grasp": "pinch_z0.981_yaw0",
+   "t_wall": 1790973569.3072467,
+   "env_step": 81
+  },
+  {
+   "event": "plan",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-46a4cfaed6",
+   "motion_type": "LINEAR",
+   "n_states": 34,
+   "duration_s": 0.37330285100000005,
+   "latency_s": 0.017337834000500152,
+   "target_pos": [
+    -0.08312028424960172,
+    -0.19681167750717946,
+    1.0786039878353595
+   ],
+   "t_wall": 1790973569.3727958,
+   "env_step": 81
+  },
+  {
+   "event": "execute",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-46a4cfaed6",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.006176410062892042,
+   "pos_err_mean": 0.003061254914264675,
+   "rot_err_max_deg": 0.2845326532789511,
+   "joint_err_max": 0.01635392623998355,
+   "joint_err_final": 0.00950148771957618,
+   "final_pos_err": 0.00129851151349779,
+   "final_rot_err_deg": 0.1731955722693146,
+   "planned_duration_s": 0.37330285100000005,
+   "planning_latency_s": 0.017337834000500152,
+   "n_states": 34,
+   "time_scale": 1.748353936188379,
+   "t_wall": 1790973570.5172179,
+   "env_step": 96
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-46a4cfaed6",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-9e08067bef",
+   "t_wall": 1790973570.525579,
+   "env_step": 96
+  },
+  {
+   "event": "lift_verify",
+   "lifted_m": 0.09993151763682495,
+   "tcp_obj_drift_m": 0.0020113017743037687,
+   "pad_contacts": 7,
+   "t_wall": 1790973570.5265567,
+   "env_step": 96
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "grasp": "pinch_z0.981_yaw0",
+    "width": 0.04175337289260045,
+    "lifted": 0.09993151763682495,
+    "drift": 0.0020113017743037687
+   },
+   "t_wall": 1790973570.5266666,
+   "env_step": 96
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 96,
+   "t_wall": 1790973570.5266697,
+   "env_step": 96
+  },
+  {
+   "event": "place_attachment_refresh",
+   "drift_m": 0.0020113017743037687,
+   "t_wall": 1790973570.5385056,
+   "env_step": 96
+  },
+  {
+   "event": "place_release_search",
+   "chosen": 0,
+   "raised_m": 0.0,
+   "n_candidates": 1,
+   "target": [
+    -0.16863402216557394,
+    -0.374516022793601,
+    0.9
+   ],
+   "tcp": [
+    -0.17101990994230457,
+    -0.32816350683079076,
+    0.9941710179924017
+   ],
+   "rejected": {},
+   "candidates": [
+    [
+     0,
+     [
+      -0.169,
+      -0.375,
+      0.9
+     ],
+     [
+      -0.171,
+      -0.328,
+      0.994
+     ]
+    ]
+   ],
+   "approach": [
+    0.0005840655402060649,
+    -0.0030221560648832748,
+    -0.9999952627088614
+   ],
+   "hand_low": 0.025648841888039304,
+   "t_wall": 1790973570.570817,
+   "env_step": 96
+  },
+  {
+   "event": "place_transport_rule",
+   "support_checked": true,
+   "tcp_pre": [
+    -0.17106663518552104,
+    -0.3279217343456001,
+    1.0741706390091106
+   ],
+   "tcp_release": [
+    -0.17101990994230457,
+    -0.32816350683079076,
+    0.9941710179924017
+   ],
+   "rim_z": 0.9,
+   "obj_bottom_at_pre": 0.9949996210167092,
+   "obj_bottom_at_release": 0.9150000000000004,
+   "t_wall": 1790973570.5799892,
+   "env_step": 96
+  },
+  {
+   "event": "ik",
+   "label": "place_transport_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-f5ff70c13c",
+   "latency_s": 0.04011713399995642,
+   "t_wall": 1790973570.6211185,
+   "env_step": 96
+  },
+  {
+   "event": "plan",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-2673c842a1",
+   "motion_type": "ANY",
+   "n_states": 43,
+   "duration_s": 0.258950701,
+   "latency_s": 0.01633954000135418,
+   "target_pos": [
+    -0.17106663518552104,
+    -0.3279217343456001,
+    1.0741706390091106
+   ],
+   "t_wall": 1790973570.6383052,
+   "env_step": 96
+  },
+  {
+   "event": "execute",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-2673c842a1",
+   "ok": true,
+   "reason": "completed",
+   "steps": 22,
+   "pos_err_max": 0.004775434527014326,
+   "pos_err_mean": 0.0032476893243368835,
+   "rot_err_max_deg": 0.459195197438771,
+   "joint_err_max": 0.1164012521814507,
+   "joint_err_final": 0.11601356291178022,
+   "final_pos_err": 0.0023460149619514287,
+   "final_rot_err_deg": 0.31212855560246083,
+   "planned_duration_s": 0.258950701,
+   "planning_latency_s": 0.01633954000135418,
+   "n_states": 43,
+   "time_scale": 3.9048769592723023,
+   "t_wall": 1790973572.5061016,
+   "env_step": 118
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-2673c842a1",
+   "n_checked": 22,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-42627d7620",
+   "t_wall": 1790973572.5147617,
+   "env_step": 118
+  },
+  {
+   "event": "place_slip_compensation",
+   "drift_m": 0.0007271071796216413,
+   "xy_correction_m": 0.0006449913582925133,
+   "z_correction_m": 0.0009907865216847167,
+   "t_wall": 1790973572.5176077,
+   "env_step": 118
+  },
+  {
+   "event": "plan",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-cfb18bcc64",
+   "motion_type": "LINEAR",
+   "n_states": 34,
+   "duration_s": 0.342816239,
+   "latency_s": 0.020984456001315266,
+   "target_pos": [
+    -0.17101990994230457,
+    -0.32816350683079076,
+    0.9941710179924017
+   ],
+   "t_wall": 1790973572.5871696,
+   "env_step": 118
+  },
+  {
+   "event": "execute",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-cfb18bcc64",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.005944337561787875,
+   "pos_err_mean": 0.003342530164467068,
+   "rot_err_max_deg": 0.33836390458741694,
+   "joint_err_max": 0.014900766877291204,
+   "joint_err_final": 0.014900766877291204,
+   "final_pos_err": 0.0030207481158116872,
+   "final_rot_err_deg": 0.33786283209761175,
+   "planned_duration_s": 0.342816239,
+   "planning_latency_s": 0.020984456001315266,
+   "n_states": 34,
+   "time_scale": 1.5,
+   "t_wall": 1790973573.5126915,
+   "env_step": 130
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-cfb18bcc64",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-268e743cb5",
+   "t_wall": 1790973573.5195422,
+   "env_step": 130
+  },
+  {
+   "event": "place_verify",
+   "obj_pos": [
+    -0.17208530892578575,
+    -0.3780822083802951,
+    0.8976027365888082
+   ],
+   "target": [
+    -0.16863402216557394,
+    -0.374516022793601,
+    0.9
+   ],
+   "xy_err": 0.00496276736710053,
+   "lower_stop": "completed",
+   "in_region_box": null,
+   "t_wall": 1790973574.3938282,
+   "env_step": 143
+  },
+  {
+   "event": "plan",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-945e05fe93",
+   "motion_type": "LINEAR",
+   "n_states": 39,
+   "duration_s": 0.37833641900000003,
+   "latency_s": 0.02025784199940972,
+   "target_pos": [
+    -0.1756178447634571,
+    -0.3297813374056977,
+    1.0905739839447204
+   ],
+   "t_wall": 1790973574.476359,
+   "env_step": 143
+  },
+  {
+   "event": "execute",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-945e05fe93",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.0060153986786110804,
+   "pos_err_mean": 0.0032045668582640257,
+   "rot_err_max_deg": 0.36566556969527003,
+   "joint_err_max": 0.018068195297825884,
+   "joint_err_final": 0.016498763516146736,
+   "final_pos_err": 0.002354746031423515,
+   "final_rot_err_deg": 0.32806909519930033,
+   "planned_duration_s": 0.37833641900000003,
+   "planning_latency_s": 0.02025784199940972,
+   "n_states": 39,
+   "time_scale": 1.741904624547945,
+   "t_wall": 1790973575.5788262,
+   "env_step": 158
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-945e05fe93",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-e968bee99d",
+   "t_wall": 1790973575.5850863,
+   "env_step": 158
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "place",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "xy_err": 0.00496276736710053,
+    "retreat_ok": true
+   },
+   "t_wall": 1790973575.5851572,
+   "env_step": 158
+  },
+  {
+   "event": "skill",
+   "skill": "place",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 62,
+   "t_wall": 1790973575.5851586,
+   "env_step": 158
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 85,
+   "n_cleared": 30,
+   "n_tilted": 0,
+   "blockers": {
+    "table": 6
+   },
+   "t_wall": 1790973575.9544804,
+   "env_step": 158
+  },
+  {
+   "event": "grasp_placement_filter",
+   "n_checked": 30,
+   "n_compatible": 8,
+   "first": "side_z0.945_yaw90_roll0",
+   "first_drop_m": 0.03003297788709368,
+   "incompatible_examples": [
+    [
+     "side_z0.945_yaw65_roll0_pitch20",
+     "hand:microwave_1_main"
+    ],
+    [
+     "side_z0.956_yaw65_roll0_pitch20",
+     "hand:microwave_1_main"
+    ],
+    [
+     "side_z0.956_yaw65_roll0_pitch35",
+     "hand:microwave_1_main"
+    ],
+    [
+     "side_z0.925_yaw65_roll0_pitch20",
+     "hand:microwave_1_main"
+    ],
+    [
+     "side_z0.980_yaw90_roll0_pitch20",
+     "hand:microwave_1_main"
+    ],
+    [
+     "side_z0.980_yaw90_roll0_pitch35",
+     "hand:microwave_1_main"
+    ]
+   ],
+   "ranked": [
+    [
+     "side_z0.945_yaw90_roll0",
+     0.03
+    ],
+    [
+     "side_z0.956_yaw90_roll0",
+     0.03
+    ],
+    [
+     "side_z0.980_yaw90_roll0",
+     0.036
+    ],
+    [
+     "side_z0.945_yaw90_roll0",
+     0.036
+    ],
+    [
+     "side_z0.945_yaw65_roll0",
+     0.017
+    ],
+    [
+     "side_z0.956_yaw65_roll0",
+     0.017
+    ],
+    [
+     "side_z0.945_yaw65_roll0",
+     0.021
+    ],
+    [
+     "side_z0.980_yaw65_roll0",
+     0.021
+    ]
+   ],
+   "t_wall": 1790973584.4835503,
+   "env_step": 158
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "side_z0.945_yaw90_roll0",
+   "n_solutions": 0,
+   "request_id": "ComputeIk-04ce7a422c",
+   "error": "ComputeIk failed [NOT_FOUND] \nIK could not find a collision free configuration.\nSee below for more information about the collisions detected for the solutions f",
+   "t_wall": 1790973585.5921416,
+   "env_step": 172
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "side_z0.956_yaw90_roll0",
+   "n_solutions": 3,
+   "request_id": "ComputeIk-916f5d82d9",
+   "latency_s": 0.11699703299927933,
+   "t_wall": 1790973586.772275,
+   "env_step": 186
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "side_z0.956_yaw90_roll0",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-217f932099",
+   "latency_s": 0.1132007779997366,
+   "t_wall": 1790973586.8861217,
+   "env_step": 186
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "side_z0.956_yaw90_roll0",
+   "n_solutions": 3,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790973587.153298,
+   "env_step": 186
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-0959a66b50",
+   "motion_type": "ANY",
+   "n_states": 311,
+   "duration_s": 0.933566887,
+   "latency_s": 0.02556923900010588,
+   "target_pos": [
+    -0.02175687620735486,
+    -0.13946906676081744,
+    0.9560677517390211
+   ],
+   "t_wall": 1790973587.180691,
+   "env_step": 186
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-0959a66b50",
+   "ok": true,
+   "reason": "completed",
+   "steps": 56,
+   "pos_err_max": 0.016159567992819236,
+   "pos_err_mean": 0.0069810590068006065,
+   "rot_err_max_deg": 3.9652187290864127,
+   "joint_err_max": 0.38087196782527993,
+   "joint_err_final": 0.5797218552006647,
+   "final_pos_err": 0.005714483912406607,
+   "final_rot_err_deg": 1.4657476744685798,
+   "planned_duration_s": 0.933566887,
+   "planning_latency_s": 0.02556923900010588,
+   "n_states": 311,
+   "time_scale": 1.957124573353505,
+   "t_wall": 1790973591.7209816,
+   "env_step": 242
+  },
+  {
+   "event": "pregrasp_settle_failed",
+   "reason": "PlanTrajectory failed [INVALID_ARGUMENT] Invalid initial joint configuration.;Configuration [-0.636732,1.55833,0.250559,",
+   "t_wall": 1790973591.7350535,
+   "env_step": 242
+  },
+  {
+   "event": "start_state_recovery",
+   "label": "pick_approach",
+   "pair": [
+    "robot0_link6",
+    "porcelain_mug_1_main"
+   ],
+   "t_wall": 1790973591.9171503,
+   "env_step": 242
+  },
+  {
+   "event": "execute",
+   "label": "pick_approach_recover",
+   "trajectory_id": "PlanTrajectory-6ea97e9269",
+   "ok": true,
+   "reason": "completed",
+   "steps": 9,
+   "pos_err_max": 0.005074746552178389,
+   "pos_err_mean": 0.0034250584309625442,
+   "rot_err_max_deg": 0.914283388511127,
+   "joint_err_max": 0.1140645418930415,
+   "joint_err_final": 0.1140645418930415,
+   "final_pos_err": 0.0035051209143941195,
+   "final_rot_err_deg": 0.743268873246103,
+   "planned_duration_s": 0.377362803,
+   "planning_latency_s": 0.021518519999517594,
+   "n_states": 39,
+   "time_scale": 1.0,
+   "t_wall": 1790973592.8942907,
+   "env_step": 251
+  },
+  {
+   "event": "plan",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-0858c7a6db",
+   "motion_type": "LINEAR",
+   "n_states": 44,
+   "duration_s": 0.33710559,
+   "latency_s": 0.02088189399910334,
+   "target_pos": [
+    -0.021756876207354857,
+    -0.07946906676081743,
+    0.9560677517390211
+   ],
+   "t_wall": 1790973593.0394242,
+   "env_step": 251
+  },
+  {
+   "event": "execute",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-0858c7a6db",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.007227987077212892,
+   "pos_err_mean": 0.0035619598026392437,
+   "rot_err_max_deg": 0.6212634992685295,
+   "joint_err_max": 0.062238555188671676,
+   "joint_err_final": 0.062238555188671676,
+   "final_pos_err": 0.002438897987216709,
+   "final_rot_err_deg": 0.5306205581003646,
+   "planned_duration_s": 0.33710559,
+   "planning_latency_s": 0.02088189399910334,
+   "n_states": 44,
+   "time_scale": 1.5527184826218294,
+   "t_wall": 1790973593.9436867,
+   "env_step": 263
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_approach",
+   "trajectory_id": "PlanTrajectory-0858c7a6db",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-23ecdcf1ed",
+   "t_wall": 1790973593.9521463,
+   "env_step": 263
+  },
+  {
+   "event": "grasp_verify",
+   "finger_gap": 0.0186259528251122,
+   "pad_contacts": 4,
+   "grasp": "side_z0.956_yaw90_roll0",
+   "t_wall": 1790973594.7916343,
+   "env_step": 275
+  },
+  {
+   "event": "plan",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-806e6e2054",
+   "motion_type": "LINEAR",
+   "n_states": 37,
+   "duration_s": 0.417833408,
+   "latency_s": 0.030826554000668693,
+   "target_pos": [
+    -0.030720240145029318,
+    -0.06858925642477268,
+    1.0605424939760824
+   ],
+   "t_wall": 1790973594.936898,
+   "env_step": 275
+  },
+  {
+   "event": "execute",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-806e6e2054",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.007732706098918559,
+   "pos_err_mean": 0.004220634207112517,
+   "rot_err_max_deg": 1.8770930183847716,
+   "joint_err_max": 0.08343269781712426,
+   "joint_err_final": 0.030509481726494134,
+   "final_pos_err": 0.002173273073329276,
+   "final_rot_err_deg": 0.5207239974951593,
+   "planned_duration_s": 0.417833408,
+   "planning_latency_s": 0.030826554000668693,
+   "n_states": 37,
+   "time_scale": 1.6708719141459112,
+   "t_wall": 1790973596.2106977,
+   "env_step": 290
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_lift",
+   "trajectory_id": "PlanTrajectory-806e6e2054",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-9e0bfd02b2",
+   "t_wall": 1790973596.2200327,
+   "env_step": 290
+  },
+  {
+   "event": "lift_verify",
+   "lifted_m": 0.10058862804506152,
+   "tcp_obj_drift_m": 0.0025813616874991382,
+   "pad_contacts": 8,
+   "t_wall": 1790973596.2208195,
+   "env_step": 290
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "grasp": "side_z0.956_yaw90_roll0",
+    "width": 0.017520151507452016,
+    "lifted": 0.10058862804506152,
+    "drift": 0.0025813616874991382
+   },
+   "t_wall": 1790973596.2209196,
+   "env_step": 290
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 132,
+   "t_wall": 1790973596.2209213,
+   "env_step": 290
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "grasp": "side_z0.956_yaw90_roll0",
+    "width": 0.017520151507452016,
+    "lifted": 0.10058862804506152,
+    "drift": 0.0025813616874991382
+   },
+   "t_wall": 1790973596.2209356,
+   "env_step": 290
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 290,
+   "t_wall": 1790973596.220937,
+   "env_step": 290
+  },
+  {
+   "event": "place_attachment_refresh",
+   "drift_m": 0.0025813616874991382,
+   "t_wall": 1790973596.25976,
+   "env_step": 290
+  },
+  {
+   "event": "place_fit_rotation",
+   "yaw_deg": [
+    0.0,
+    4.369172580097658,
+    -85.63082741990235,
+    90.0,
+    -90.0,
+    94.36917258009765
+   ],
+   "overhang_m": 0.0,
+   "t_wall": 1790973596.2686617,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 0,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.3057475031268859,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4881759,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 1,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.30804447714898886,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4881861,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 2,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.303450529104783,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4881911,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 3,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.30115355508268005,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.488196,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 4,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.3103414511710918,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882007,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 5,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.2988565810605771,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882052,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 6,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.31263842519319474,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.48821,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 7,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.29655960703847417,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882143,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 8,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.3149353992152977,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882185,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 9,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.003991857776845312,
+    0.3057475031268859,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882228,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 10,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.027486347899436506,
+    0.3057475031268859,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882274,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 11,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.003991857776845312,
+    0.303450529104783,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882317,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 12,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.289047503126886,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.488244,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 13,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.32244750312688597,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.488251,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 14,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.012252754938704397,
+    0.289047503126886,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882548,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 15,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.012252754938704397,
+    0.32244750312688597,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882593,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 16,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.03574724506129559,
+    0.289047503126886,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882638,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 17,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.03574724506129559,
+    0.32244750312688597,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882689,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 18,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.3391475031268859,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.488273,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 19,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.011747245061295597,
+    0.27234750312688594,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882774,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 20,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.012252754938704397,
+    0.3391475031268859,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882815,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 21,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.03574724506129559,
+    0.3391475031268859,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882865,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 22,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.012252754938704397,
+    0.27234750312688594,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.488291,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 1,
+   "event": "place_spot_rejected",
+   "candidate": 23,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.03574724506129559,
+    0.27234750312688594,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.4882948,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 0,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.36090266884648686,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5278563,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 1,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.3631996428685898,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5278652,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 2,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.3586056948243839,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5278757,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 3,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.356308720802281,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5278792,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 4,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.36549661689069274,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5278823,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 5,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.35401174678017805,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5278864,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 6,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.3677935909127957,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5278897,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 7,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.3517147727580751,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5278935,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 8,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.3700905649348986,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5278976,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 9,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.0631770194466355,
+    0.36090266884648686,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.527901,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 10,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.03169881377035367,
+    0.36090266884648686,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279043,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 11,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.0631770194466355,
+    0.3586056948243839,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279083,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 12,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.34420266884648687,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279164,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 13,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.37760266884648686,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279212,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 14,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.07143791660849458,
+    0.34420266884648687,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.527925,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 15,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.07143791660849458,
+    0.37760266884648686,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279295,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 16,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.023437916608494584,
+    0.34420266884648687,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279336,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 17,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.023437916608494584,
+    0.37760266884648686,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279377,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 18,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.39430266884648685,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279408,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 19,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.04743791660849458,
+    0.3275026688464869,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.527944,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 20,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.07143791660849458,
+    0.39430266884648685,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279474,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 21,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.023437916608494584,
+    0.39430266884648685,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279517,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 22,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.07143791660849458,
+    0.3275026688464869,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279555,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 2,
+   "event": "place_spot_rejected",
+   "candidate": 23,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.023437916608494584,
+    0.3275026688464869,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5279582,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 0,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.36299846079528575,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.565933,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 1,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.3652954348173887,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659401,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 2,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.3607014867731828,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659432,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 3,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.3584045127510799,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659463,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 4,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.3675924088394916,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659525,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 5,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.35610753872897694,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659556,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 6,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.36988938286159456,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659587,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 7,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.353810564706874,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659618,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 8,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.3721863568836975,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659695,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 9,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.048902013078245966,
+    0.36299846079528575,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659723,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 10,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.08038021875452778,
+    0.36299846079528575,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659752,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 11,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.048902013078245966,
+    0.3607014867731828,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.565978,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 12,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.34629846079528576,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.565981,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 13,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.37969846079528574,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659835,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 14,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.04064111591638688,
+    0.34629846079528576,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.565987,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 15,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.04064111591638688,
+    0.37969846079528574,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.56599,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 16,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.08864111591638688,
+    0.34629846079528576,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659952,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 17,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.08864111591638688,
+    0.37969846079528574,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5659993,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 18,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.39639846079528573,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5660036,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 19,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06464111591638687,
+    0.32959846079528576,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5660062,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 20,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.04064111591638688,
+    0.39639846079528573,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5660095,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 21,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.08864111591638688,
+    0.39639846079528573,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.566012,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 22,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.04064111591638688,
+    0.32959846079528576,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.566015,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 3,
+   "event": "place_spot_rejected",
+   "candidate": 23,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.08864111591638688,
+    0.32959846079528576,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.5660179,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 0,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.3651781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.601368,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 1,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.36747508930375844,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6013746,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 2,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.36288114125955256,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.601378,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 3,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.3605841672374496,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.601381,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 4,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.3697720633258614,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6013844,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 5,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.3582871932153467,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6013873,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 6,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.3720690373479643,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6013908,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 7,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.35599021919324375,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6013935,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 8,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.37436601137006725,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6013975,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 9,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.06325696701590415,
+    0.3651781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014009,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 10,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.031778761339622326,
+    0.3651781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014042,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 11,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.06325696701590415,
+    0.36288114125955256,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014068,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 12,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.3484781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.601411,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 13,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.3818781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014159,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 14,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.07151786417776324,
+    0.3484781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014192,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 15,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.07151786417776324,
+    0.3818781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014223,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 16,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.02351786417776324,
+    0.3484781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014256,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 17,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.02351786417776324,
+    0.3818781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014283,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 18,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.3985781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014328,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 19,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.047517864177763235,
+    0.3317781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014361,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 20,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.07151786417776324,
+    0.3985781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014385,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 21,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.02351786417776324,
+    0.3985781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014414,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 22,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.07151786417776324,
+    0.3317781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014435,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 4,
+   "event": "place_spot_rejected",
+   "candidate": 23,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    -0.02351786417776324,
+    0.3317781152816555,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6014462,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 0,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.36727390723045444,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6370738,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 1,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.3695708812525574,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6370819,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 2,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.3649769332083515,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6370852,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 3,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.36267995918624857,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6370885,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 4,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.3718678552746603,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6370914,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 5,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.36038298516414563,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6370943,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 6,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.37416482929676326,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6370971,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 7,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.3580860111420427,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6370997,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 8,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.3764618033188662,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371024,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 9,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.0488220655089773,
+    0.36727390723045444,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.637105,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 10,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.08030027118525912,
+    0.36727390723045444,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371076,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 11,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.0488220655089773,
+    0.3649769332083515,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371102,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 12,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.35057390723045445,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371129,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 13,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.38397390723045444,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.637117,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 14,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.04056116834711822,
+    0.35057390723045445,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371226,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 15,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.04056116834711822,
+    0.38397390723045444,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371276,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 16,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.0885611683471182,
+    0.35057390723045445,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371305,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 17,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.0885611683471182,
+    0.38397390723045444,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371331,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 18,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.40067390723045443,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371355,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 19,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.06456116834711821,
+    0.33387390723045446,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.637138,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 20,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.04056116834711822,
+    0.40067390723045443,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371408,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 21,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.0885611683471182,
+    0.40067390723045443,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.6371434,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 22,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.04056116834711822,
+    0.33387390723045446,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.637146,
+   "env_step": 290
+  },
+  {
+   "rotation_option": 5,
+   "event": "place_spot_rejected",
+   "candidate": 23,
+   "blocker": "hand:microwave_1_main",
+   "first_blocker": "hand:microwave_1_main",
+   "tcp": [
+    0.0885611683471182,
+    0.33387390723045446,
+    1.0113172068085905
+   ],
+   "trace": [
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main",
+    "hand:microwave_1_main"
+   ],
+   "t_wall": 1790973596.637149,
+   "env_step": 290
+  },
+  {
+   "event": "place_rotation_choice",
+   "options": [
+    [
+     0.015,
+     0.841
+    ],
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     null
+    ],
+    [
+     null,
+     null
+    ]
+   ],
+   "chosen": 0,
+   "t_wall": 1790973596.6371891,
+   "env_step": 290
+  },
+  {
+   "event": "place_release_search",
+   "chosen": 14,
+   "raised_m": 0.0,
+   "n_candidates": 36,
+   "target": [
+    -0.015438374130688175,
+    0.34504617657046305,
+    0.936
+   ],
+   "tcp": [
+    -0.01652820137387306,
+    0.28896668652338797,
+    1.0113172068085905
+   ],
+   "rejected": {
+    "0": "hand:microwave_1_main",
+    "1": "hand:microwave_1_main",
+    "2": "hand:microwave_1_main",
+    "3": "hand:microwave_1_main",
+    "4": "hand:microwave_1_main",
+    "5": "hand:microwave_1_main",
+    "6": "hand:microwave_1_main",
+    "7": "hand:microwave_1_main",
+    "8": "hand:microwave_1_main",
+    "9": "hand:microwave_1_main",
+    "10": "hand:microwave_1_main",
+    "11": "hand:microwave_1_main",
+    "12": "hand:microwave_1_main",
+    "13": "hand:microwave_1_main"
+   },
+   "candidates": [
+    [
+     0,
+     [
+      0.009,
+      0.362,
+      0.936
+     ],
+     [
+      0.007,
+      0.306,
+      1.011
+     ]
+    ],
+    [
+     1,
+     [
+      0.009,
+      0.364,
+      0.936
+     ],
+     [
+      0.007,
+      0.308,
+      1.011
+     ]
+    ],
+    [
+     2,
+     [
+      0.009,
+      0.359,
+      0.936
+     ],
+     [
+      0.007,
+      0.303,
+      1.011
+     ]
+    ],
+    [
+     3,
+     [
+      0.009,
+      0.357,
+      0.936
+     ],
+     [
+      0.007,
+      0.301,
+      1.011
+     ]
+    ],
+    [
+     4,
+     [
+      0.009,
+      0.366,
+      0.936
+     ],
+     [
+      0.007,
+      0.31,
+      1.011
+     ]
+    ],
+    [
+     5,
+     [
+      0.009,
+      0.355,
+      0.936
+     ],
+     [
+      0.007,
+      0.299,
+      1.011
+     ]
+    ],
+    [
+     6,
+     [
+      0.009,
+      0.369,
+      0.936
+     ],
+     [
+      0.007,
+      0.313,
+      1.011
+     ]
+    ],
+    [
+     7,
+     [
+      0.009,
+      0.353,
+      0.936
+     ],
+     [
+      0.007,
+      0.296,
+      1.011
+     ]
+    ],
+    [
+     8,
+     [
+      0.009,
+      0.371,
+      0.936
+     ],
+     [
+      0.007,
+      0.315,
+      1.011
+     ]
+    ],
+    [
+     9,
+     [
+      -0.007,
+      0.362,
+      0.936
+     ],
+     [
+      -0.008,
+      0.306,
+      1.011
+     ]
+    ],
+    [
+     10,
+     [
+      0.024,
+      0.362,
+      0.936
+     ],
+     [
+      0.023,
+      0.306,
+      1.011
+     ]
+    ],
+    [
+     11,
+     [
+      -0.007,
+      0.359,
+      0.936
+     ],
+     [
+      -0.008,
+      0.303,
+      1.011
+     ]
+    ],
+    [
+     12,
+     [
+      0.009,
+      0.345,
+      0.936
+     ],
+     [
+      0.007,
+      0.289,
+      1.011
+     ]
+    ],
+    [
+     13,
+     [
+      0.009,
+      0.378,
+      0.936
+     ],
+     [
+      0.007,
+      0.322,
+      1.011
+     ]
+    ],
+    [
+     14,
+     [
+      -0.015,
+      0.345,
+      0.936
+     ],
+     [
+      -0.017,
+      0.289,
+      1.011
+     ]
+    ],
+    [
+     15,
+     [
+      -0.015,
+      0.378,
+      0.936
+     ],
+     [
+      -0.017,
+      0.322,
+      1.011
+     ]
+    ],
+    [
+     16,
+     [
+      0.033,
+      0.345,
+      0.936
+     ],
+     [
+      0.031,
+      0.289,
+      1.011
+     ]
+    ],
+    [
+     17,
+     [
+      0.033,
+      0.378,
+      0.936
+     ],
+     [
+      0.031,
+      0.322,
+      1.011
+     ]
+    ],
+    [
+     18,
+     [
+      0.009,
+      0.395,
+      0.936
+     ],
+     [
+      0.007,
+      0.339,
+      1.011
+     ]
+    ],
+    [
+     19,
+     [
+      0.009,
+      0.328,
+      0.936
+     ],
+     [
+      0.007,
+      0.272,
+      1.011
+     ]
+    ],
+    [
+     20,
+     [
+      -0.015,
+      0.395,
+      0.936
+     ],
+     [
+      -0.017,
+      0.339,
+      1.011
+     ]
+    ],
+    [
+     21,
+     [
+      0.033,
+      0.395,
+      0.936
+     ],
+     [
+      0.031,
+      0.339,
+      1.011
+     ]
+    ],
+    [
+     22,
+     [
+      -0.015,
+      0.328,
+      0.936
+     ],
+     [
+      -0.017,
+      0.272,
+      1.011
+     ]
+    ],
+    [
+     23,
+     [
+      0.033,
+      0.328,
+      0.936
+     ],
+     [
+      0.031,
+      0.272,
+      1.011
+     ]
+    ],
+    [
+     24,
+     [
+      0.009,
+      0.312,
+      0.936
+     ],
+     [
+      0.007,
+      0.256,
+      1.011
+     ]
+    ],
+    [
+     25,
+     [
+      0.009,
+      0.412,
+      0.936
+     ],
+     [
+      0.007,
+      0.356,
+      1.011
+     ]
+    ],
+    [
+     26,
+     [
+      -0.039,
+      0.345,
+      0.936
+     ],
+     [
+      -0.041,
+      0.289,
+      1.011
+     ]
+    ],
+    [
+     27,
+     [
+      -0.039,
+      0.378,
+      0.936
+     ],
+     [
+      -0.041,
+      0.322,
+      1.011
+     ]
+    ],
+    [
+     28,
+     [
+      0.057,
+      0.345,
+      0.936
+     ],
+     [
+      0.055,
+      0.289,
+      1.011
+     ]
+    ],
+    [
+     29,
+     [
+      0.057,
+      0.378,
+      0.936
+     ],
+     [
+      0.055,
+      0.322,
+      1.011
+     ]
+    ],
+    [
+     30,
+     [
+      -0.015,
+      0.312,
+      0.936
+     ],
+     [
+      -0.017,
+      0.256,
+      1.011
+     ]
+    ],
+    [
+     31,
+     [
+      -0.015,
+      0.412,
+      0.936
+     ],
+     [
+      -0.017,
+      0.356,
+      1.011
+     ]
+    ],
+    [
+     32,
+     [
+      0.033,
+      0.312,
+      0.936
+     ],
+     [
+      0.031,
+      0.256,
+      1.011
+     ]
+    ],
+    [
+     33,
+     [
+      0.033,
+      0.412,
+      0.936
+     ],
+     [
+      0.031,
+      0.356,
+      1.011
+     ]
+    ],
+    [
+     34,
+     [
+      -0.039,
+      0.328,
+      0.936
+     ],
+     [
+      -0.041,
+      0.272,
+      1.011
+     ]
+    ],
+    [
+     35,
+     [
+      -0.039,
+      0.395,
+      0.936
+     ],
+     [
+      -0.041,
+      0.339,
+      1.011
+     ]
+    ]
+   ],
+   "approach": [
+    0.010712300826626288,
+    0.9998586191690232,
+    -0.012961029450410111
+   ],
+   "hand_low": -0.037282094906357484,
+   "t_wall": 1790973596.668889,
+   "env_step": 290
+  },
+  {
+   "event": "place_transport_rule",
+   "support_checked": true,
+   "tcp_pre": [
+    -0.017385185440003163,
+    0.20897799698986613,
+    1.0323540891646232
+   ],
+   "tcp_release": [
+    -0.01652820137387306,
+    0.28896668652338797,
+    1.0113172068085905
+   ],
+   "rim_z": 1.1070000000000002,
+   "obj_bottom_at_pre": 0.9720368823560328,
+   "obj_bottom_at_release": 0.9510000000000001,
+   "t_wall": 1790973596.6799476,
+   "env_step": 290
+  },
+  {
+   "event": "ik",
+   "label": "place_transport_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-6ca0a2e814",
+   "latency_s": 0.14032378400042944,
+   "t_wall": 1790973596.821139,
+   "env_step": 290
+  },
+  {
+   "event": "plan",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-f2481f58f2",
+   "motion_type": "ANY",
+   "n_states": 67,
+   "duration_s": 0.34770837000000004,
+   "latency_s": 0.020800616000997252,
+   "target_pos": [
+    -0.017385185440003163,
+    0.20897799698986613,
+    1.0323540891646232
+   ],
+   "t_wall": 1790973596.842918,
+   "env_step": 290
+  },
+  {
+   "event": "execute",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-f2481f58f2",
+   "ok": true,
+   "reason": "completed",
+   "steps": 38,
+   "pos_err_max": 0.009005813936525598,
+   "pos_err_mean": 0.005185857151273066,
+   "rot_err_max_deg": 1.6109492395479028,
+   "joint_err_max": 0.06912468397989424,
+   "joint_err_final": 0.057053029711268105,
+   "final_pos_err": 0.0017501532476231969,
+   "final_rot_err_deg": 0.33511740155530045,
+   "planned_duration_s": 0.34770837000000004,
+   "planning_latency_s": 0.020800616000997252,
+   "n_states": 67,
+   "time_scale": 5.179431817203928,
+   "t_wall": 1790973599.6667402,
+   "env_step": 328
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_transport",
+   "trajectory_id": "PlanTrajectory-f2481f58f2",
+   "n_checked": 38,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-f3ab9904c1",
+   "t_wall": 1790973599.6756763,
+   "env_step": 328
+  },
+  {
+   "event": "place_slip_compensation",
+   "drift_m": 0.0016101149573595436,
+   "xy_correction_m": 0.0012934036002497542,
+   "z_correction_m": 0.0021536743123116153,
+   "t_wall": 1790973599.6793344,
+   "env_step": 328
+  },
+  {
+   "event": "plan",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-ef61bb90ee",
+   "motion_type": "LINEAR",
+   "n_states": 28,
+   "duration_s": 0.23989554400000002,
+   "latency_s": 0.016100910001114244,
+   "target_pos": [
+    -0.01652820137387306,
+    0.28896668652338797,
+    1.0113172068085905
+   ],
+   "t_wall": 1790973599.7864363,
+   "env_step": 328
+  },
+  {
+   "event": "execute",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-ef61bb90ee",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.006252948965906987,
+   "pos_err_mean": 0.0032083874397300003,
+   "rot_err_max_deg": 0.179239826251135,
+   "joint_err_max": 0.026863891002081974,
+   "joint_err_final": 0.023477576615914764,
+   "final_pos_err": 0.0009467345287015772,
+   "final_rot_err_deg": 0.0726669043247257,
+   "planned_duration_s": 0.23989554400000002,
+   "planning_latency_s": 0.016100910001114244,
+   "n_states": 28,
+   "time_scale": 2.21015753621662,
+   "t_wall": 1790973600.8228476,
+   "env_step": 340
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_lower",
+   "trajectory_id": "PlanTrajectory-ef61bb90ee",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-fc3ccd11d9",
+   "t_wall": 1790973600.831324,
+   "env_step": 340
+  },
+  {
+   "event": "plan",
+   "label": "place_settle",
+   "trajectory_id": "PlanTrajectory-97c1b00e7b",
+   "motion_type": "LINEAR",
+   "n_states": 26,
+   "duration_s": 0.256983634,
+   "latency_s": 0.012724722000712063,
+   "target_pos": [
+    -0.016981399680473314,
+    0.28974182908715007,
+    0.9710159079338452
+   ],
+   "t_wall": 1790973600.933152,
+   "env_step": 340
+  },
+  {
+   "event": "execute",
+   "label": "place_settle",
+   "trajectory_id": "PlanTrajectory-97c1b00e7b",
+   "ok": false,
+   "reason": "contact:support_contact",
+   "steps": 2,
+   "pos_err_max": 0.0024449470657289816,
+   "pos_err_mean": 0.001781837292826261,
+   "rot_err_max_deg": 0.165565826829358,
+   "joint_err_max": 0.00462654486742986,
+   "joint_err_final": 0.09161472878908405,
+   "final_pos_err": 0.036396488961202976,
+   "final_rot_err_deg": 0.1625698016211058,
+   "planned_duration_s": 0.256983634,
+   "planning_latency_s": 0.012724722000712063,
+   "n_states": 26,
+   "time_scale": 1.5,
+   "t_wall": 1790973601.1219864,
+   "env_step": 342
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_settle",
+   "trajectory_id": "PlanTrajectory-97c1b00e7b",
+   "n_checked": 2,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-9ca3ec2d57",
+   "t_wall": 1790973601.1350002,
+   "env_step": 342
+  },
+  {
+   "event": "place_verify",
+   "obj_pos": [
+    -0.01589011168412131,
+    0.3449042582361671,
+    0.9451191904260143
+   ],
+   "target": [
+    -0.015438374130688175,
+    0.34504617657046305,
+    0.936
+   ],
+   "xy_err": 0.0004735056818994779,
+   "lower_stop": "completed",
+   "in_region_box": true,
+   "t_wall": 1790973602.0396833,
+   "env_step": 353
+  },
+  {
+   "event": "plan",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-68f8a304c6",
+   "motion_type": "LINEAR",
+   "n_states": 29,
+   "duration_s": 0.20666639,
+   "latency_s": 0.01937735200044699,
+   "target_pos": [
+    -0.016340080721665918,
+    0.18839363270654125,
+    1.0060706348388433
+   ],
+   "t_wall": 1790973602.1653242,
+   "env_step": 353
+  },
+  {
+   "event": "execute",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-68f8a304c6",
+   "ok": true,
+   "reason": "completed",
+   "steps": 15,
+   "pos_err_max": 0.0061136788875710705,
+   "pos_err_mean": 0.0028985630365109664,
+   "rot_err_max_deg": 0.2724677173922389,
+   "joint_err_max": 0.05620047835326404,
+   "joint_err_final": 0.05403471343103168,
+   "final_pos_err": 0.0007749716306343833,
+   "final_rot_err_deg": 0.10553835368390631,
+   "planned_duration_s": 0.20666639,
+   "planning_latency_s": 0.01937735200044699,
+   "n_states": 29,
+   "time_scale": 3.3026717729313746,
+   "t_wall": 1790973603.2804232,
+   "env_step": 368
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "place_retreat",
+   "trajectory_id": "PlanTrajectory-68f8a304c6",
+   "n_checked": 15,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-e2a886db03",
+   "t_wall": 1790973603.2887595,
+   "env_step": 368
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "place",
+   "attempt": 0,
+   "ok": true,
+   "reason": "",
+   "details": {
+    "xy_err": 0.0004735056818994779,
+    "retreat_ok": true
+   },
+   "t_wall": 1790973603.2888892,
+   "env_step": 368
+  },
+  {
+   "event": "skill",
+   "skill": "place",
+   "ok": true,
+   "reason": "",
+   "attempts": 1,
+   "steps": 78,
+   "t_wall": 1790973603.2888916,
+   "env_step": 368
+  },
+  {
+   "event": "ik",
+   "label": "close_microwave_pre",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-54898ee89c",
+   "latency_s": 0.07538123999984236,
+   "t_wall": 1790973603.90594,
+   "env_step": 376
+  },
+  {
+   "event": "precontact_path_check",
+   "n_solutions": 25,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790973604.8842933,
+   "env_step": 376
+  },
+  {
+   "event": "plan",
+   "label": "close_microwave_precontact",
+   "trajectory_id": "PlanTrajectory-256bcecadd",
+   "motion_type": "ANY",
+   "n_states": 558,
+   "duration_s": 2.301956046,
+   "latency_s": 0.07775965200016799,
+   "target_pos": [
+    -0.3092461025744932,
+    0.08114708372071607,
+    1.016
+   ],
+   "t_wall": 1790973604.9651134,
+   "env_step": 376
+  },
+  {
+   "event": "execute",
+   "label": "close_microwave_precontact",
+   "trajectory_id": "PlanTrajectory-256bcecadd",
+   "ok": true,
+   "reason": "completed",
+   "steps": 332,
+   "pos_err_max": 0.006545894193596054,
+   "pos_err_mean": 0.0021124335865648205,
+   "rot_err_max_deg": 0.4868270032113565,
+   "joint_err_max": 0.3370613417252949,
+   "joint_err_final": 0.048889153144808295,
+   "final_pos_err": 0.0002896607609895743,
+   "final_rot_err_deg": 0.06851440138755595,
+   "planned_duration_s": 2.301956046,
+   "planning_latency_s": 0.07775965200016799,
+   "n_states": 558,
+   "time_scale": 7.183736295266817,
+   "t_wall": 1790973628.842617,
+   "env_step": 708
+  },
+  {
+   "event": "execute",
+   "label": "close_microwave_precontact_settle",
+   "trajectory_id": "PlanTrajectory-42b2cd9bfd",
+   "ok": true,
+   "reason": "completed",
+   "steps": 4,
+   "pos_err_max": 0.00029960972509344454,
+   "pos_err_mean": 0.0001748791894517983,
+   "rot_err_max_deg": 0.07390196629663084,
+   "joint_err_max": 0.04652741177104219,
+   "joint_err_final": 0.04652741177104219,
+   "final_pos_err": 0.00029960972509344454,
+   "final_rot_err_deg": 0.07390196629663084,
+   "planned_duration_s": 0.14191340300000002,
+   "planning_latency_s": 0.011436143999162596,
+   "n_states": 26,
+   "time_scale": 1.0,
+   "t_wall": 1790973629.1956878,
+   "env_step": 712
+  },
+  {
+   "event": "plan",
+   "label": "close_microwave_seg0",
+   "trajectory_id": "PlanTrajectory-cb096448d4",
+   "motion_type": "LINEAR",
+   "n_states": 44,
+   "duration_s": 0.306816591,
+   "latency_s": 0.021410060000562225,
+   "target_pos": [
+    -0.23327943628144135,
+    0.05606590327959449,
+    1.016
+   ],
+   "t_wall": 1790973629.2815442,
+   "env_step": 712
+  },
+  {
+   "event": "execute",
+   "label": "close_microwave_seg0",
+   "trajectory_id": "PlanTrajectory-cb096448d4",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.00512479058212971,
+   "pos_err_mean": 0.0033253769893499944,
+   "rot_err_max_deg": 1.16160193016557,
+   "joint_err_max": 0.027062159548558118,
+   "joint_err_final": 0.02701494266327563,
+   "final_pos_err": 0.003931335807729276,
+   "final_rot_err_deg": 0.7661562396986512,
+   "planned_duration_s": 0.306816591,
+   "planning_latency_s": 0.021410060000562225,
+   "n_states": 44,
+   "time_scale": 1.7234314405934095,
+   "t_wall": 1790973630.4474864,
+   "env_step": 724
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_microwave_seg0",
+   "trajectory_id": "PlanTrajectory-cb096448d4",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-f885071639",
+   "t_wall": 1790973630.4593625,
+   "env_step": 724
+  },
+  {
+   "event": "push_progress",
+   "segment": 0,
+   "satisfied": false,
+   "t_wall": 1790973630.4595778,
+   "env_step": 724
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_microwave",
+   "attempt": 0,
+   "ok": false,
+   "reason": "segment1_plan_failed:NOT_FOUND",
+   "details": {},
+   "t_wall": 1790973630.5906353,
+   "env_step": 724
+  },
+  {
+   "event": "plan",
+   "label": "close_microwave_recover_up",
+   "trajectory_id": "PlanTrajectory-e3d445df9b",
+   "motion_type": "LINEAR",
+   "n_states": 51,
+   "duration_s": 0.491522732,
+   "latency_s": 0.015854442999625462,
+   "target_pos": [
+    -0.2337117251099572,
+    0.052303386727810104,
+    1.0949484526257665
+   ],
+   "t_wall": 1790973630.675226,
+   "env_step": 724
+  },
+  {
+   "event": "execute",
+   "label": "close_microwave_recover_up",
+   "trajectory_id": "PlanTrajectory-e3d445df9b",
+   "ok": true,
+   "reason": "completed",
+   "steps": 13,
+   "pos_err_max": 0.024742143119771052,
+   "pos_err_mean": 0.01187393688002763,
+   "rot_err_max_deg": 2.0864961985742325,
+   "joint_err_max": 0.1246336317131227,
+   "joint_err_final": 0.05399061257714441,
+   "final_pos_err": 0.004800900438332177,
+   "final_rot_err_deg": 1.5825382931158305,
+   "planned_duration_s": 0.491522732,
+   "planning_latency_s": 0.015854442999625462,
+   "n_states": 51,
+   "time_scale": 1.0,
+   "t_wall": 1790973631.5928845,
+   "env_step": 737
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "close_microwave_recover_up",
+   "trajectory_id": "PlanTrajectory-e3d445df9b",
+   "n_checked": 11,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-0b10a132d6",
+   "t_wall": 1790973631.5994148,
+   "env_step": 737
+  },
+  {
+   "event": "ik",
+   "label": "close_microwave_pre",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-80ef5d73fb",
+   "latency_s": 0.09470704699924681,
+   "t_wall": 1790973632.3393993,
+   "env_step": 745
+  },
+  {
+   "event": "precontact_path_check",
+   "n_solutions": 23,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790973633.2958138,
+   "env_step": 745
+  },
+  {
+   "event": "plan",
+   "label": "close_microwave_precontact",
+   "trajectory_id": "PlanTrajectory-bb30fe6e42",
+   "motion_type": "ANY",
+   "n_states": 267,
+   "duration_s": 0.9986925160000001,
+   "latency_s": 0.02385008799865318,
+   "target_pos": [
+    -0.16737080510207633,
+    0.030916428715067164,
+    1.016
+   ],
+   "t_wall": 1790973633.321267,
+   "env_step": 745
+  },
+  {
+   "event": "execute",
+   "label": "close_microwave_precontact",
+   "trajectory_id": "PlanTrajectory-bb30fe6e42",
+   "ok": false,
+   "reason": "final_pose_error(0.054m,13.6deg)",
+   "steps": 64,
+   "pos_err_max": 0.060332685942102476,
+   "pos_err_mean": 0.020635647478928473,
+   "rot_err_max_deg": 13.531074662357408,
+   "joint_err_max": 1.0360610060694504,
+   "joint_err_final": 0.984946373908008,
+   "final_pos_err": 0.053650005622824785,
+   "final_rot_err_deg": 13.571002163113095,
+   "planned_duration_s": 0.9986925160000001,
+   "planning_latency_s": 0.02385008799865318,
+   "n_states": 267,
+   "time_scale": 2.1366636287312866,
+   "t_wall": 1790973637.7342825,
+   "env_step": 809
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_microwave",
+   "attempt": 1,
+   "ok": false,
+   "reason": "precontact_exec:final_pose_error(0.054m,13.6deg)",
+   "details": {},
+   "t_wall": 1790973637.7346303,
+   "env_step": 809
+  },
+  {
+   "event": "recover_plan_failed",
+   "reason": "PlanTrajectory failed [NOT_FOUND] Could not solve FinePathIK without excessive change in joint config. This might happen when planning close to joint limits or singular configurations. To avoid this error, please try with other start and/or end pose(s), joint configuration(s), and/or constraint(s) which are further away from joint limits and/or singular joint configurations. ik_solution:   1.64522   1.27073 -0.850859  -2.59517  -2.29943   1.88362  -1.51792; expected_closest_joint_configuration:  0.539416  0.639916 -0.240237  -2.68821   -2.8973   1.34829  -2.21318; maximum_absolute_joint_configuration_error=1.1058 >= tolerance=0.785398; Error occurred during planning in segment 0. (request PlanTrajectory-8c8f25b3f7)",
+   "t_wall": 1790973637.8138041,
+   "env_step": 809
+  },
+  {
+   "event": "ik",
+   "label": "close_microwave_pre",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-cd222e3234",
+   "latency_s": 0.06874175500161073,
+   "t_wall": 1790973638.5110455,
+   "env_step": 817
+  },
+  {
+   "event": "precontact_path_check",
+   "n_solutions": 23,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790973639.4521556,
+   "env_step": 817
+  },
+  {
+   "event": "plan",
+   "label": "close_microwave_precontact",
+   "trajectory_id": "PlanTrajectory-1f9426b45d",
+   "motion_type": "ANY",
+   "n_states": 192,
+   "duration_s": 0.8906243170000001,
+   "latency_s": 0.03140507600073761,
+   "target_pos": [
+    -0.1663953631308476,
+    0.03090421501256799,
+    1.016
+   ],
+   "t_wall": 1790973639.4854841,
+   "env_step": 817
+  },
+  {
+   "event": "execute",
+   "label": "close_microwave_precontact",
+   "trajectory_id": "PlanTrajectory-1f9426b45d",
+   "ok": false,
+   "reason": "final_pose_error(0.051m,13.1deg)",
+   "steps": 45,
+   "pos_err_max": 0.0493189670074643,
+   "pos_err_mean": 0.025661315135626986,
+   "rot_err_max_deg": 12.293516139441975,
+   "joint_err_max": 0.9005288517720202,
+   "joint_err_final": 0.9392126533501097,
+   "final_pos_err": 0.05119876819545018,
+   "final_rot_err_deg": 13.054538514499068,
+   "planned_duration_s": 0.8906243170000001,
+   "planning_latency_s": 0.03140507600073761,
+   "n_states": 192,
+   "time_scale": 1.3257391633672235,
+   "t_wall": 1790973642.666819,
+   "env_step": 862
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "close_microwave",
+   "attempt": 2,
+   "ok": false,
+   "reason": "precontact_exec:final_pose_error(0.051m,13.1deg)",
+   "details": {},
+   "t_wall": 1790973642.6673584,
+   "env_step": 862
+  },
+  {
+   "event": "skill",
+   "skill": "close_microwave",
+   "ok": false,
+   "reason": "precontact_exec:final_pose_error(0.051m,13.1deg)",
+   "attempts": 3,
+   "steps": 494,
+   "t_wall": 1790973642.667363,
+   "env_step": 862
+  }
+ ],
+ "world_sync": {
+  "n_objects": 5,
+  "max_pose_error_m": 0.0,
+  "max_rot_error_deg": 1.2074182697257333e-06
+ },
+ "goal": [
+  {
+   "predicate": "in",
+   "args": [
+    "white_yellow_mug_1",
+    "microwave_1_heating_region"
+   ],
+   "subgoal_index": 0
+  },
+  {
+   "predicate": "close",
+   "args": [
+    "microwave_1"
+   ],
+   "subgoal_index": 1
+  }
+ ],
+ "plan": [
+  "pick:white_yellow_mug_1_main",
+  "place:white_yellow_mug_1_main",
+  "close_microwave:microwave_1_microdoorroot"
+ ],
+ "failure_stage": "close_microwave:microwave_1_microdoorroot",
+ "failure_reason": "precontact_exec:final_pose_error(0.051m,13.1deg)",
+ "success_at_end": false,
+ "first_done_step": null,
+ "final_state": {
+  "objects": {
+   "porcelain_mug_1": [
+    -0.1721220232323062,
+    -0.377985275545857,
+    0.897602754245232
+   ],
+   "white_yellow_mug_1": [
+    -0.01592778641007328,
+    0.3449655948051759,
+    0.9451205543855384
+   ]
+  },
+  "articulations": {
+   "microwave_1_microjoint": -1.0379497210973447
+  },
+  "goal_atoms": [
+   {
+    "atom": [
+     "in",
+     "white_yellow_mug_1",
+     "microwave_1_heating_region"
+    ],
+    "true": true
+   },
+   {
+    "atom": [
+     "close",
+     "microwave_1"
+    ],
+    "true": false
+   }
+  ]
+ },
+ "video": "runs/eval_4c20556/B/task9/episodes/t9_i16_72d1c292/agentview.mp4",
+ "steps": 862,
+ "t_end": 1790973642.7507653,
+ "wall_time_s": 85.13129901885986
+}
