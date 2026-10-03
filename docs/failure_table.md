@@ -177,3 +177,15 @@ insertion, door closed; goal at step 986).
 | 1 | 1/10 | REACH | butter: no reachable grasp after a failed first attempt (33) |
 | 3 | 10/10 | ARTIC (stage B 5, relocation pick 4), PLACE (1) | stage B after relocation: every probed contact pose rejected (31, 32, 33, 37, 39); relocation pick pre-grasp tracking error 8.3-9.0 cm (30, 34, 36, 38); place lowering LINEAR FinePathIK (35) |
 | 9 | 4/10 | PLAN (2), TRACK (2) | staging executed; release/pre-place ComputeIk NOT_FOUND hand vs microwave (36, 37); approach 1.9 cm off (32), pre-grasp 1.9 cm / 5.5 deg off (39) |
+
+## 15. Task 3 pass diagnostics (development states; evidence/dev_task3_lab_success, runs/t3lab, evidence/dev_task3_success_c5)
+
+| probe | stage | Intrinsic verdict / observation | classification |
+|---|---|---|---|
+| handle-bar push 30/40 deg | PLAN (pre-contact IK) | link5/link6 vs wine_rack_1_main, kinematic (8/8) | PLANNING (collision, reach) |
+| handle-bar push 50 deg | PLAN + EXEC | IK feasible at pre/contact/mid/closed end, LINEAR dry-runs ok (4/4); executed -0.145 -> -0.061 with the tilted bowl (rim vs middle drawer front), -0.160 -> +0.002 with the level bowl | - |
+| in-cavity bowl push 50/60 deg | PLAN (end IK) | gripper vs white_cabinet_1_cabinet_bottom (palm below the wall tops) 4/4 | GEOMETRY |
+| near-rim regrasp (closing along the drawer axis) | PLAN (IK) | gripper vs cabinet_top (pre), gripper vs cabinet_middle / finger vs drawer (grasp) | GEOMETRY (palm along the drawer) |
+| lateral (+x) rim regrasp, 30/40 deg pitch | GRASP ok (4 pad contacts), PLAN (carry) | attached bowl vs cabinet_middle (lateral rim under the handle bar) | GEOMETRY (5-8 mm window) |
+| near-rim fingertip push | EXEC | 4/4 executed; drawer slid 4 cm, bowl unchanged relative to it | CONTACT DYNAMICS (viscous drawer) |
+| open-fully inside push + standard place + 50 deg push | EXEC | 2/2 lab successes, 5/5 official dev successes + 1 reproduction | - |

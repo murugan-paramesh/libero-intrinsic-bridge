@@ -923,3 +923,98 @@ states are now consumed. Records: `evaluations/heldout_fbabe38`; table
 The held-out result is consistent with the protocol result (overlapping intervals, same failure
 families on tasks 1, 3 and 9, 79 of the 85 successes within 600 steps, goal atoms true for all
 85). It is reported here as a separate number and was not used for any decision.
+
+## 14. Task 3 pass (session 8): a different decomposition solves the drawer task
+
+Objective of this pass: Task 3 only, on a separate experimental branch
+(`claude/youthful-galileo-0wtslh-task3`, from the protected C4 state fc03706; fbabe38 and its
+archives untouched). Development states 0-4 and the stage/lab probes only; no held-out state used.
+
+### 14.1 Inventory of what had been tried (verified from the records and the lab outputs)
+Strategies: top-down bowl grasps (yaws every 22.5 deg, tilt variants), rim grasps, placement-
+aware grasp ranking, release search with raised releases and release tilts (+-10/20 deg about the
+closing axis), carried-object rotations (0, +-90, 180, PCA), stage-A top-down drawer push (20 deg
+tilt, contact at 40 % of the drawer height = the handle bar), stage-B horizontal push (heights
+0.4-0.8, 7 lateral offsets, 3 posture families), side-push family, steeply pitched family (45-70
+deg at 60-80 % height), wine-bottle relocation. Rejection pairs recorded by Intrinsic: stage B
+`robot0_link5`/`link6` vs `wine_rack_1_main` (73 + 25 per episode), `link6` vs table (25), the
+relocated bottle (24-29), no IK (14); stage A's last segment: `robot0_link5` vs
+`white_cabinet_1_cabinet_top` (every IK branch). Executed vs planned: stage A reached the pre-
+contact with 0.07-0.94 rad joint error (branch flips on 7/10 states, elbow straight at the reach
+limit). Deepest stable bowl placement: level on the drawer floor, origin 5.4-6 cm behind the
+region's front face (states 10, 17, 18, 30, 33, 36 of C4); otherwise tilted 25-30 deg on the inner
+front wall with the near rim 1.5-2.5 cm above the drawer top. Maximum closure: -0.049 m (states
+10, 17), never above 0.0. First physical divergence: the bowl's near rim (z 1.00, above the drawer
+top 0.984) meets the middle drawer's front/handle when the drawer closes past -0.06 m, and the
+near-vertical hand's forearm meets the top drawer front at the same travel.
+
+### 14.2 What the task actually requires (from the BDDL and LIBERO's predicates)
+Goal `(And (Close white_cabinet_1_bottom_region) (In akita_black_bowl_1 white_cabinet_1_bottom_region))`.
+`In` for a site region = `check_contain` only (`SiteObjectState.check_contact` is always true):
+the bowl's BODY ORIGIN must lie inside the `bottom_region` box, which rides with the drawer
+(world extents when open: x -0.108..0.096, y 0.096..0.247, z 0.922..0.982); the bowl's orientation
+is irrelevant. `Close` = `bottom_level` qpos > 0.0 (`WhiteCabinet.is_close`, close range
+[0.0, 0.005]); the joint range is [-0.16, +0.01], so the drawer must be pushed 1-10 mm past its
+nominal closed position. LIBERO samples the initial opening in [-0.16, -0.14] per init state.
+
+### 14.3 Measured geometry (live MuJoCo model, development state 0)
+Robot base (-0.66, 0, 0.912); cabinet front y 0.233; bottom drawer open at q = -0.146: inner front
+wall y 0.089-0.096 (top 0.982), floor top 0.926, back wall 0.248, side walls x -0.109/0.097 (top
+0.982), front panel y 0.083-0.088 (top 0.984), handle bar y 0.051-0.067, z 0.938-0.954, x
+-0.057..0.032. Middle drawer (closed): panel y 0.229, z 0.984-1.053, handle bar y 0.197-0.213,
+z 1.007-1.024, posts y 0.213-0.234; top drawer handle z 1.081-1.097; cabinet shelf plate above
+the bottom drawer z 0.983-0.985 from y 0.236. Bowl: 10.8 cm rim diameter, 5.2 cm tall, origin at
+the bottom centre; level on the drawer floor its rim top is 0.978 (5 mm under the shelf plate).
+Panda hand (clearance model): palm 21.8 cm along the closing axis, 7.4 cm thick, from 3.1 to
+12.3 cm above the fingertips. Consequences: (a) only the front panel/handle of the bottom drawer
+is accessible at the closed position; anything of the robot in the slab y in [0.197, 0.233] must
+stay below z 1.007; (b) the palm can never be below the drawer's wall tops (0.982) inside the
+cavity, so the fingertips reach at most 3.1 cm below the walls; (c) a level bowl needs its origin
+at y >= inner wall + 0.054, i.e. the cavity in front of the (world-fixed) middle handle bar must
+be at least 10.8 cm + the hand's thickness: 10.1 cm at q = -0.146 but 11.6 cm at q = -0.16.
+
+### 14.4 Decomposition search (lab probes, every verdict from Intrinsic `ComputeIk`/`PlanTrajectory`)
+`scripts/t3_lab.py` (development only) runs the real skills to a stage and probes candidates
+WITHOUT the box-model pre-filter; records in `evidence/dev_task3_lab_success` and `runs/t3lab`.
+1. Closing contact (family E): pitched push on the handle bar, 30/40/50 deg, bar height and +1.2 cm,
+   lateral 0/-6 cm (12 candidates). 30 and 40 deg: the pre-contact pose has no collision-free IK
+   (`robot0_link5`/`link6` vs `wine_rack_1_main`, kinematic). 50 deg: IK at pre/contact/mid/END
+   (drawer closed) and both LINEAR dry-runs feasible for all four; executed on the un-levelled
+   bowl: -0.145 -> -0.061 (xo 0), the bowl's raised rim against the middle drawer front.
+2. Reposition the bowl inside the drawer (family C): fingertips in the cavity against the far
+   inner wall, 50/60 deg: rejected at the end pose, `gripper0_right_gripper` vs the drawer (the
+   palm is wider than the cavity and cannot be below the wall tops; geometry (b)).
+3. Regrasp the bowl's exposed near rim and carry it deeper (family D/B): closing axis along the
+   drawer axis puts the 21.8 cm palm along the drawer: IK rejected, gripper vs `cabinet_top` /
+   `cabinet_middle`; closing axis across the drawer at the +x rim (hand pitched 30/40 deg,
+   partial finger opening 4.9 cm): grasp feasible and executed (4 pad contacts), but the carry
+   was rejected by Intrinsic for the ATTACHED bowl vs `cabinet_middle` (the tilted bowl's lateral
+   rim at 1.00-1.02 under the handle bar at 1.007); the geometric window for any hand-held deeper
+   placement is 5-8 mm (14.3 c).
+4. Push the bowl's near rim deeper (family C/F): top-down fingertip push executed 4/4; the drawer
+   slid closed by the same 4 cm (viscous joint damping only) and the bowl did not move relative
+   to it.
+5. Drawer configuration first (family A): pull the drawer to its joint limit by pushing the inner
+   face of its inner front wall from inside the empty cavity (vertical hand, palm above the walls):
+   executed on states 0 and 1 (-0.146/-0.153 -> -0.160, 20-30 steps); the standard pick and place
+   then landed the bowl LEVEL (origin z 0.924, 6-9 cm behind the region front) and the 50 deg
+   handle push closed the drawer to +0.002: LIBERO's success predicate true on both (lab).
+The data behind 5: in the C4/held-out records the landing is level exactly on the states whose
+drawer started within 5 mm of -0.16 or whose release search found a lateral-hand rotation; the
+tilted landings are the states with q0 >= -0.155, and the states at q0 = -0.16 whose rotated
+options were rejected because the grasp's 22 deg yaw let the palm corner reach 3.8 cm further
+toward the cabinet (`place_spot_rejected`, rotation options 2/3/5, hand vs `cabinet_top`/`base`).
+
+### 14.5 Retained chain (C5) and development results
+`open_drawer_fully` (best-effort inside push to the joint limit) -> pick -> place (with two extra
+carried-object rotation options for drawer regions that put the closing axis exactly across the
+drawer) -> `close_drawer`: stage A = 50 deg pitched push on the handle bar, stage B and the
+bottle relocation unchanged as fallbacks. All executed motions remain Intrinsic `PlanTrajectory`
+results (17-20 plans per episode), every IK/plan collision-checked, the world re-synchronised per
+segment, the bowl attached/detached through `ReparentObject`. Official development episodes
+(`scripts/run_task.py`, genuine resets, LIBERO's predicate): states 0-4 all succeed at steps
+299-359 (drawer +0.0017, bowl origin level inside, both goal atoms true); state 0 re-run from a
+clean reset: identical success (353 steps). Records with videos and Intrinsic request logs:
+`evidence/dev_task3_success_c5`. Regression (dev states 0-1, tasks 0, 1, 2, 4-9): 18/18
+(`evidence/regression_c5`); unit tests 15/15; FK/IK validation unchanged. Frozen as d5fca8d
+(tag `candidate-c5`) for the protocol run (14.6).

@@ -228,3 +228,11 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
   evidence/heldout_episodes_fbabe38, report 13.7, failure table 14. States 30-39 are consumed.
 - Final state: recommended fbabe38 (C4) 83/100 protocol; fallbacks 5e236de 80/100, ce7685b 76/100; task 3 unsolved.
 - Unit tests 15/15, FK/IK validation (evidence/milestone0_kinematics/validation_c4_2026-10-03.log), tree clean, pushed.
+
+### 2026-10-03 09:35 UTC (session 8, task 3 pass; branch claude/youthful-galileo-0wtslh-task3): C5 frozen (d5fca8d, tag candidate-c5), protocol run launched
+- C4 (fbabe38, 83/100; held-out 85/100) untouched on the designated branch.
+- Task 3 solved on dev states 0-4 (5/5 official + reproduction): open the drawer to its limit from inside, standard pick/place
+  (bowl lands level), 50-deg pitched push on the handle bar. Evidence evidence/dev_task3_success_c5, lab evidence/dev_task3_lab_success.
+- Regression 18/18 (evidence/regression_c5), unit tests 15/15, FK/IK unchanged.
+- Protocol run: runs/eval_c5/A|B launched 09:31 UTC. Resume if interrupted: missing (task, init) pairs only, same protocol,
+  report as resumed; then report/compare vs evaluations/candidate_fbabe38, archive evaluations/candidate_d5fca8d, docs 14.6.

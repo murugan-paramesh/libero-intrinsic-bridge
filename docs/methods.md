@@ -70,6 +70,15 @@ T9 pre-grasp after relocation at the joint-2 limit (4/10 protocol, 2/5 dev) | st
 T9 door after the staging | start-state recovery before the pre-contact plan; ANY fallback for the first push segment after a completed approach | (1) PlanTrajectory ANY/JOINT | `runs/dev3/t9_door5` | dev states 1, 3 succeed | retain (C4) |
 T9 pre-grasp error (alternatives) | re-validation LINEAR correction loop; longer joint settle; approach creep | (1) | `runs/dev3/t9_reval`, `t9_settle`, `creep_A/B` | 2/3, 0/2, no gain (tasks 1/7 unchanged) | reject (reverted) |
 
+Session 8 (task 3 pass) additions:
+
+Failure | Candidate method | Intrinsic support | Experiment | Outcome | Retain/reject
+---|---|---|---|---|---
+T3 closure blocked at -0.05 m (link5 vs cabinet top; stage B link5/6 vs wine rack) | pitched push on the handle bar, 30-50 deg forward-down, probed directly with Intrinsic at the closed end pose (no box pre-filter) | (1) ComputeIk at pre/contact/mid/end, PlanTrajectory LINEAR dry-runs | `scripts/t3_lab.py --probe handle` (dev state 0) | 30/40 deg: pre-contact IK rejected; 50 deg: fully feasible and executed | retain (C5 stage A) |
+T3 bowl tilted on the inner wall | fingertips in the cavity pushing the far inner wall; near-rim regrasp; lateral rim regrasp + carry; near-rim fingertip push | (1) ComputeIk, PlanTrajectory with the attached bowl | `--probe chain/insert` | hand vs drawer; palm vs cabinet; attached bowl vs middle drawer; drawer slides instead of the bowl | reject (recorded) |
+T3 bowl tilted on the inner wall | drawer configuration first: inside push to the joint limit (+1-2 cm of cavity in front of the handle bars) before the place | (1) PlanTrajectory LINEAR/ANY, ComputeIk | `--probe open` dev 0, 1; `run_task.py` dev 0-4 | level landing 7/7, official success 5/5 + reproduction | retain (C5) |
+T3 place rejected the across-the-drawer rotation (22 deg grasp yaw) | exact-lateral carried-object rotation options for drawer regions | (2) geometry; (1) ComputeIk in the rotation assessment | dev 0-4 | chosen on 1/5 states (drop 1.5 cm), landing level on all | retain (drawer regions only) |
+
 ## 3. Catalogue of families considered (and why not pursued further)
 
 | family | relevant failure | assessment |
