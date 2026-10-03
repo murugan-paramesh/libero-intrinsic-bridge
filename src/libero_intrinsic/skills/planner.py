@@ -197,9 +197,16 @@ def build_skill_sequence(spec: TaskSpec, env, ctx) -> List:
             # two-stage closing (contact-constrained push along the prismatic axis): stage A pushes
             # from above as far as the geometry allows (partial progress is a success), stage B
             # finishes with a horizontal hand chosen by Intrinsic IK feasibility of the whole travel
-            stage_a = PushSkill(drawer_body, *drawer_push_topdown_geometry(env, drawer_body, joint), label="close_drawer_a",
+            # C5: stage A = pitched push on the handle bar (closes the whole travel on the development
+            # states when the bowl lies level); the earlier top-down stage A is kept in
+            # drawer_push_topdown_geometry for reference
+            stage_a = PushSkill(drawer_body, *drawer_push_handle_geometry(env, drawer_body, joint), label="close_drawer_a",
                                 extra_contact_bodies=[f"{cab}_base"], partial_ok=True,
                                 progress_fn=lambda joint=joint: float(env.joint_qpos(joint)), time_scale=2.0)
+            # C5: before anything else, pull the drawer to its open limit (best effort)
+            skills.insert(0, BestEffortPush(drawer_body, *drawer_open_geometry(env, drawer_body, joint), label="open_drawer_fully",
+                                            extra_contact_bodies=[f"{cab}_base"], partial_ok=True,
+                                            progress_fn=lambda joint=joint: -float(env.joint_qpos(joint)), time_scale=1.5))
             geom_b, check_b = drawer_close_geometry(env, drawer_body, joint)
             stage_b = PushSkill(drawer_body, geom_b, check_b, label="close_drawer_b", extra_contact_bodies=[f"{cab}_base"])
             goal_bodies = [root_body(env, a.args[0]) for a in manip]
@@ -480,6 +487,73 @@ def drawer_push_topdown_geometry(env, drawer_body: str, joint: str):
     def check_fn():
         return env.joint_qpos(joint) > 0.0
     return contact_fn, check_fn
+
+
+def drawer_open_geometry(env, drawer_body: str, joint: str):
+    """Pull the drawer fully open (to its joint limit) by pushing the inner face of its inner
+    front wall from INSIDE the empty cavity with the closed fingertips: hand vertical, closing
+    axis across the drawer, palm above the side walls. LIBERO samples the initial opening of the
+    drawer in [-0.16, -0.14] m; measured on the protocol states, the bowl lands level only when
+    the cavity in front of the upper drawers' handle bars (world-fixed) is long enough, i.e. when
+    the drawer is open to within ~5 mm of its limit (states at -0.16: level; -0.147: tilted on the
+    inner wall, which then jams the closing). The extra 1-2 cm are gained here before the place."""
+    m = env.model
+    lim_lo = float(m.jnt_range[m.joint_name2id(joint)][0])
+    region = joint.replace("_level", "_region")
+
+    def contact_fn(ctx=None):
+        axis, _ = joint_world_axis_and_anchor(env, joint)
+        q = env.joint_qpos(joint)
+        c_r, rot_r, half_r = geo.site_box_world(env, region)
+        half_along = max(abs(float(np.dot(rot_r[:, i], axis))) * float(half_r[i]) for i in range(3))
+        box = geo.object_box(env, drawer_body)
+        contact = c_r - axis * half_along + axis * 0.010      # 1 cm behind the inner front wall's inner face
+        contact[2] = box.top_z - 0.028                        # fingertips 2.8 cm below the wall top (palm above it)
+        pre = contact + np.array([0.0, 0.0, 0.08])
+        rot = geo.top_down_rotation(np.arctan2(axis[1], axis[0]))
+        travel = max(float(q - lim_lo), 0.0) + 0.004
+        return pre, rot, [contact, contact - axis * travel]
+
+    def check_fn():
+        return env.joint_qpos(joint) <= lim_lo + 0.003
+    return contact_fn, check_fn
+
+
+def drawer_push_handle_geometry(env, drawer_body: str, joint: str, tilt_deg: float = 50.0):
+    """Closing push on the drawer's HANDLE BAR with the hand pitched `tilt_deg` below horizontal
+    (fingers pointing forward-down along the drawer axis). Established with Intrinsic on the
+    development states (scripts/t3_lab.py): the near-vertical stage-A hand is blocked for the last
+    5 cm by robot0_link5 against the cabinet's top drawer front, the horizontal stage-B hand by
+    link5/link6 against the wine rack and the table; at 50 deg the wrist stays back and low and
+    the collision-checked IK and LINEAR plans exist for the whole travel to the closed position."""
+    def contact_fn(ctx=None):
+        axis, _ = joint_world_axis_and_anchor(env, joint)
+        q = env.joint_qpos(joint)
+        box = geo.object_box(env, drawer_body)
+        pts = geo.body_collision_points_local(env.model, drawer_body) @ box.rot.T + box.pos
+        proj = pts @ axis
+        front = pts[proj < proj.min() + 0.006]                 # the handle bar's front face
+        contact = front.mean(0) - axis * 0.015                 # fingertips 1.5 cm in front of the bar
+        yaw = np.arctan2(axis[1], axis[0])
+        rot = geo.side_rotation(yaw, 0.0)
+        ta = rot[:, 0] if abs(rot[2, 0]) < 0.5 else rot[:, 1]
+        sign = 1.0 if np.dot(np.cross(ta, rot[:, 2]), np.array([0.0, 0.0, -1.0])) > 0 else -1.0
+        rot = R.from_rotvec(ta * sign * np.radians(tilt_deg)).as_matrix() @ rot
+        pre = contact - rot[:, 2] * 0.08
+        return pre, rot, [contact, contact + axis * (abs(q) + 0.02)]
+
+    def check_fn():
+        return env.joint_qpos(joint) > 0.0
+    return contact_fn, check_fn
+
+
+class BestEffortPush(PushSkill):
+    """A push whose failure must not end the episode (the following skills can still succeed)."""
+
+    def run(self, ctx):
+        r = super().run(ctx)
+        ctx.record(event="best_effort_push", label=self.label, ok=bool(r.ok), reason=r.reason[:120])
+        return SkillResult(self.name, True, "" if r.ok else "best_effort:" + r.reason)
 
 
 def drawer_close_geometry(env, drawer_body: str, joint: str):

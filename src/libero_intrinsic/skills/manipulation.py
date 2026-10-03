@@ -525,6 +525,22 @@ class PlaceSkill(Skill):
             fits = placement.fit_rotations(env, self.region, self.body)
             best_cost = fits[0][1]
             angles = [a for a, cost in fits if cost <= best_cost + 0.005][:6]
+            # Drawer regions (owner body on a slide joint): add the rotations that put the hand's
+            # closing axis EXACTLY across the drawer, so that the 21.8 cm wide palm lies parallel to
+            # the drawer front and its 7.4 cm thickness along the drawer axis. Observed (task 3,
+            # protocol states with the drawer open to its limit): the quarter-turn options kept the
+            # grasp's 22 deg yaw, the palm corner reached 3.8 cm further toward the cabinet and
+            # every deep release spot was rejected (hand vs the cabinet / upper drawer fronts).
+            d_axis = placement.drawer_axis_of_region(env, self.region)
+            if d_axis is not None:
+                lateral = np.cross(np.array([0.0, 0.0, 1.0]), d_axis)
+                closing_yaw = float(np.arctan2(R_tcp[1, 0], R_tcp[0, 0]))
+                lat_yaw = float(np.arctan2(lateral[1], lateral[0]))
+                for k in (0.0, np.pi):
+                    a = (lat_yaw + k - closing_yaw + np.pi) % (2 * np.pi) - np.pi
+                    if abs(a) < np.radians(100) and not any(abs(a - b) < np.radians(3) for b in angles):
+                        angles.append(float(a))
+                ctx.record(event="place_lateral_rotation_options", yaw_deg=[float(np.degrees(a)) for a in angles])
             if any(abs(a) > 1e-6 for a in angles):
                 rot_options = [R.from_euler("z", a).as_matrix() @ R_tcp for a in angles]
                 ctx.record(event="place_fit_rotation", yaw_deg=[float(np.degrees(a)) for a in angles], overhang_m=float(best_cost))

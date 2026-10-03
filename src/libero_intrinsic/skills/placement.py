@@ -175,6 +175,24 @@ def free_spots(env, region: str, body: str, preferred_local_xy: np.ndarray, all_
     return [(w, mb) for _, w, mb in ranked[:n + 24]]
 
 
+def drawer_axis_of_region(env, region: str):
+    """Slide-joint axis (world, unit) of the body that owns a region site, or None when the owner
+    has no prismatic joint (baskets, plates, the microwave's hinged cavity)."""
+    m = env.model
+    try:
+        sid = m.site_name2id(region)
+    except Exception:
+        return None
+    bid = int(m.site_bodyid[sid])
+    for j in range(m.njnt):
+        if int(m.jnt_bodyid[j]) == bid and int(m.jnt_type[j]) == 2:      # mjJNT_SLIDE
+            jname = m.joint_id2name(j)
+            from libero_intrinsic.skills.articulation import joint_world_axis_and_anchor
+            axis, _ = joint_world_axis_and_anchor(env, jname)
+            return axis
+    return None
+
+
 def fit_rotations(env, region: str, body: str) -> List[Tuple[float, float]]:
     """Candidate yaws (about world z) for the carried object so that its footprint fits the
     container region, as (angle, overhang_cost) sorted by cost. Candidates: the identity and
