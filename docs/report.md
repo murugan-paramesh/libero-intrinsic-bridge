@@ -1056,3 +1056,21 @@ episodes are now 300-370 steps (5 min of wall time instead of 6-13). **d5fca8d (
 recommended candidate; fbabe38 (83/100, held-out 85/100), 5e236de and ce7685b stay preserved.**
 No held-out evaluation was run for C5 (states 30-39 are consumed; 40-49 remain untouched and
 were not used).
+
+### 14.7 Candidate C6 (15512d6): the state-18 failure is run-to-run variation, not geometry
+The only task 3 failure of C5 (state 18, 14.6) was re-examined with the lab on that consumed
+protocol state (`runs/t3lab/open_i18`): after the open-to-limit push (-0.1545 -> -0.1576) and the
+standard place (level landing), the 50 deg handle-push pre-contact pose and four variants (50 deg
+with a 5 cm pre-offset, 55, 58, 62 deg) all have collision-free Intrinsic IK and feasible LINEAR
+dry-runs, and the executed 50 deg push closed the drawer (+0.002, predicate true). In the
+protocol episode the same pose had been rejected from the arm's post-place configuration in all
+three posture families (`robot0_link6` vs `wine_rack_1_main`): the numerical IK is seeded, and
+from that seed only colliding branches were returned. C6 adds two safety nets that run only when
+the existing path fails: (a) `PushSkill` re-seeds the pre-contact IK from two fixed elbow postures
+when the current configuration yields no collision-free solution (recorded as
+`precontact_seed_fallback`); (b) the handle push varies its pre-contact offset (5 cm) and pitch
+(+8 deg) on the second and third attempts (`handle_push_variant`). Official development episodes
+under C6: task 3 states 0-4 and state 18 all succeed at the first attempt without either fallback
+(the state-18 failure did not reproduce), tasks 2 and 9 (the other pushes) 4/4 on development
+states 0-1 (`evidence/dev_task3_success_c6`). C6 was frozen (tag `candidate-c6`) and evaluated
+under the same protocol (14.8); C5 remains the recommended candidate unless C6 is better overall.
