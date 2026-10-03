@@ -199,3 +199,13 @@ insertion, door closed; goal at step 986).
 | 5 | 1/10 | REACH | no reachable grasp (18), as in every candidate |
 | 7 | 1/10 | REACH | cream cheese after a failed first attempt (10), as in C3/C4 |
 | 9 | 3/10 | PLAN (1), ARTIC (1), TRACK (1) | states 11, 18, 19: identical to C4 |
+
+## 17. Candidate 15512d6 (C6), repeated evaluation (100 episodes, evaluations/candidate_15512d6, 93/100)
+
+| task | failures | stage | observed evidence |
+|---|---|---|---|
+| 1 | 2/10 | GRASP then REACH | butter pick, states 10, 11: identical to C3-C5 |
+| 3 | 0/10 | - | state 18 needed the third handle-push attempt (58 deg, 6 cm pre-offset) after two pre-contact IK rejections |
+| 5 | 1/10 | REACH | no reachable grasp (18) |
+| 7 | 1/10 | REACH | cream cheese after a failed first attempt (10) |
+| 9 | 3/10 | PLAN (1), ARTIC (1), TRACK (1) | states 11, 18, 19: identical to C4/C5 |

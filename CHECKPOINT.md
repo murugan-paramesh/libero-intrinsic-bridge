@@ -241,3 +241,9 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
 - Protocol run 09:31-11:30 UTC, uninterrupted, all 100 records d5fca8d clean: 10, 8, 10, 9, 10, 9, 10, 9, 10, 7 = 92/100 (CI 85-96%).
 - vs C4: +9 on task 3, every other task identical (docs/comparison_fbabe38_to_d5fca8d.md). Task 3 state 18: 50-deg pre-contact IK rejected (link6 vs wine rack).
 - Archives evaluations/candidate_d5fca8d, evidence/eval_episodes_d5fca8d; report 14.6, failure table 16, README, walkthrough 12.1.
+
+### 2026-10-03 13:55 UTC (session 8): FINAL. C6 = 15512d6 evaluated 93/100 (task 3 10/10) and recommended; C5 (92) and C4 (83) preserved
+- Protocol run 11:46-13:45 UTC, uninterrupted, all 100 records 15512d6 clean: 10, 8, 10, 10, 10, 9, 10, 9, 10, 7 = 93/100 (CI 86-97%).
+- vs C5: +1 (task 3 state 18, third attempt at 58 deg); every other task identical. Remaining failures: 1 (10, 11), 5 (18), 7 (10), 9 (11, 18, 19).
+- Archives evaluations/candidate_15512d6, evidence/eval_episodes_15512d6; report 14.8, failure table 17, README, walkthrough.
+- Branch claude/youthful-galileo-0wtslh fast-forwarded to the task-3 branch; tags candidate-c5 / candidate-c6 local.

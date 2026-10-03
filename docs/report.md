@@ -1074,3 +1074,36 @@ under C6: task 3 states 0-4 and state 18 all succeed at the first attempt withou
 (the state-18 failure did not reproduce), tasks 2 and 9 (the other pushes) 4/4 on development
 states 0-1 (`evidence/dev_task3_success_c6`). C6 was frozen (tag `candidate-c6`) and evaluated
 under the same protocol (14.8); C5 remains the recommended candidate unless C6 is better overall.
+
+### 14.8 Protocol result of candidate C6 (15512d6): 93/100, task 3 10/10, recommended
+Same frozen protocol; uninterrupted run 11:46-13:45 UTC, 2026-10-03; all 100 records name revision
+15512d6 with a clean tree, Intrinsic Core c61bf07, LIBERO 8f1084e. Records
+`evaluations/candidate_15512d6`; tables `docs/results_15512d6.md`; comparisons
+`docs/comparison_15512d6.md` (vs baseline) and `docs/comparison_d5fca8d_to_15512d6.md`.
+Evidence episodes with video: `evidence/eval_episodes_15512d6`.
+
+| task | C5 d5fca8d | C6 15512d6 | changed episodes (init) | C6 failure stages |
+|---|---|---|---|---|
+| 0, 2, 4, 6, 8 | 10/10 | 10/10 | - | |
+| 1 | 8/10 | 8/10 | - | butter pick, states 10, 11 (unchanged since C3) |
+| 3 | 9/10 | **10/10** | gained 18 | - |
+| 5 | 9/10 | 9/10 | - | no reachable grasp (18) |
+| 7 | 9/10 | 9/10 | - | no reachable grasp (10) |
+| 9 | 7/10 | 7/10 | - | 11, 18, 19 (unchanged since C4) |
+| all | **92/100** (CI 85-96%) | **93/100** (CI 86-97%) | +1, no episode lost | |
+
+On state 18 the first two handle-push attempts (50 deg, pre-offset 8 and 5 cm) again had no
+collision-free pre-contact IK, from the current configuration and from the two extra seeds; the
+third attempt (58 deg, 6 cm) was feasible and closed the drawer at step 358 (`handle_push_variant`
+events in the record). Task 3 successes end at steps 297-372. Integration: 1,343 `PlanTrajectory`
+calls (mean 22 ms, max 127 ms, 0 timeouts), 40 of 1,260 executed-path audits report a collision,
+86 of the 93 successes within 600 steps, goal atoms true for all 93, `success_at_end` equal to
+`success` for all 100.
+
+Candidate decision: same protocol and provenance; 93 vs 92 overall, +1 on task 3 and no change on
+any other task (episode by episode identical to C5 and C4 outside task 3), development
+generalization unchanged (task 3 6/6 incl. state 18, tasks 2/9 4/4). **15512d6 (C6) is the
+recommended candidate; d5fca8d (92), fbabe38 (83; held-out 85), 5e236de (80) and ce7685b (76)
+stay preserved.** The seven remaining failures are the same seven episodes as under C4/C5
+(tasks 1: 10, 11; 5: 18; 7: 10; 9: 11, 18, 19), none of them on task 3. No held-out states were
+used in this pass (30-39 consumed by C4's one-time run, 40-49 untouched).

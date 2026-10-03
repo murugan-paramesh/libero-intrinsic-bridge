@@ -78,6 +78,7 @@ T3 closure blocked at -0.05 m (link5 vs cabinet top; stage B link5/6 vs wine rac
 T3 bowl tilted on the inner wall | fingertips in the cavity pushing the far inner wall; near-rim regrasp; lateral rim regrasp + carry; near-rim fingertip push | (1) ComputeIk, PlanTrajectory with the attached bowl | `--probe chain/insert` | hand vs drawer; palm vs cabinet; attached bowl vs middle drawer; drawer slides instead of the bowl | reject (recorded) |
 T3 bowl tilted on the inner wall | drawer configuration first: inside push to the joint limit (+1-2 cm of cavity in front of the handle bars) before the place | (1) PlanTrajectory LINEAR/ANY, ComputeIk | `--probe open` dev 0, 1; `run_task.py` dev 0-4 | level landing 7/7, official success 5/5 + reproduction | retain (C5) |
 T3 place rejected the across-the-drawer rotation (22 deg grasp yaw) | exact-lateral carried-object rotation options for drawer regions | (2) geometry; (1) ComputeIk in the rotation assessment | dev 0-4 | chosen on 1/5 states (drop 1.5 cm), landing level on all | retain (drawer regions only) |
+T3 state 18: pre-contact IK rejected from the post-place configuration (link6 vs wine rack) though the pose is feasible from other seeds | PushSkill re-seeds the pre-contact IK from two fixed elbow postures when the current one yields nothing; handle push varies pre-offset/pitch on retries | (1) ComputeIk seeds and posture limits | lab on state 18 (5/5 variants feasible), C6 protocol run | protocol: state 18 closed on the third attempt (58 deg); seed fallback never triggered | retain (C6) |
 
 ## 3. Catalogue of families considered (and why not pursued further)
 
@@ -105,7 +106,8 @@ T3 place rejected the across-the-drawer rotation (22 deg grasp yaw) | exact-late
 | 9b02207 | 74/100 | 1,388 | 22 / 92 ms | 30 / 1,175 | run interrupted after 26 episodes and resumed under the protocol (report 11.6); task 3 episodes 6.6 min on average (max 10.5); loses one episode each on tasks 1 and 4, no gains; task 9 now fails at the insertion (hand vs microwave body in Intrinsic's IK) instead of before it |
 | 5e236de (C3, verified fallback) | 80/100 | 1,296 | 26 / 135 ms | 44 / 1,220 | official done-at-any-step accounting; task 9 4/10, tasks 5/6 +1, task 1 -2; 937 rejected task-3 probe requests (13 min per task 3 episode) |
 | fbabe38 (C4, verified fallback; held-out states 30-39 once: 85/100) | 83/100 | 1,387 | 22 / 88 ms | 58 / 1,314 | staging regrasp + door fixes; task 9 7/10, no other task changed; 984 rejected probe requests (task 3: 46, task 9: 44 per episode); task 3 episodes 6-12 min |
-| d5fca8d (C5, recommended) | 92/100 | 1,346 | 21 / 111 ms | 40 / 1,265 | task 3 9/10 (open-to-limit push, level landing, 50-deg handle push), every other task identical to C4; task 3 episodes 300-370 steps, 5 min |
+| d5fca8d (C5, verified fallback) | 92/100 | 1,346 | 21 / 111 ms | 40 / 1,265 | task 3 9/10 (open-to-limit push, level landing, 50-deg handle push), every other task identical to C4; task 3 episodes 300-370 steps, 5 min |
+| 15512d6 (C6, recommended) | 93/100 | 1,343 | 22 / 127 ms | 40 / 1,260 | C5 + pre-contact seed fallback and handle-push retry variants; task 3 10/10 (state 18 closed on the third attempt, 58 deg), every other task identical to C5 |
 
 Unresolved feasibility questions: (a) task 3: is any single-contact push able to close the last
 3-6 cm with the bowl against the panel, or must the bowl be held back (two contacts) or placed
