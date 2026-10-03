@@ -774,3 +774,69 @@ reason recorded (12.2). Held-out states 20-29 were used once (5b713c6) and inspe
 states 30-49 remain untouched but were not run in this pass (time reserved for the frozen
 evaluation), so no held-out claim is made for 5e236de.
 
+
+## 13. Third pass (session 7): Task 3 steep-push search, Task 9 staging regrasp, candidate C4 (fbabe38)
+
+Starting point: the protected candidate 5e236de (80/100, section 12.6), re-verified from the
+committed records at the start of the pass (100 records, every one stamped 5e236de with a clean
+tree, per-task 10/8/10/0/10/9/10/9/10/4). Pinned dependencies unchanged (section 12). Candidate
+C4 = fbabe38 differs from 5e236de in two files only (`skills/planner.py` +62 lines,
+`skills/articulation.py` +24/-5) plus one development-only parameter of the stage lab.
+
+### 13.1 Task 3 (0/10): steep pitched push family, rejected by the hand model
+Hypothesis from section 12.2: a top-down push cannot finish the drawer travel (the hand above the
+panel reaches the handles of the drawers above) and a horizontal push has no collision-free
+contact pose (forearm vs the wine rack, wrist vs table). The untested family in between was a
+steeply pitched hand (45-70 deg from vertical, fingertips on the panel at 60-80 % of its height,
+lateral offsets 0/+-2/+-3/+-4/+-5 cm, overshoot 2-3 cm beyond the closed position), evaluated by
+the stage lab on development state 0 after the real pick and place
+(`evidence/dev_task3_lab_pitched`, 19 candidates in two runs). Every candidate is rejected by
+the geometric hand model before any Intrinsic request: at the end of the travel the hand body
+intersects the cabinet's middle drawer front (12 candidates), the cabinet top (2) or the cabinet
+base (3), and the two laterally offset candidates intersect the wine bottle at mid travel (2);
+two top-down-lateral controls are rejected at mid travel (base, top). The reason is dimensional:
+the drawer is open by 14.5 cm (joint -0.145 m); the fingertip contact starts at y = 0.028 and
+ends at y = 0.193-0.203, inside the handle zone of the drawers above (points at y >= 0.188,
+z 1.007-1.097), so any hand that is still on the panel at the closed position occupies that
+zone unless it is below the handles (horizontal, blocked by the wine rack and the table) or
+beside them (lateral, blocked by the relocated bottle). No further family was executed. Task 3 remains
+unsolved within the tested classical search (placement families x push families x posture
+families on development states 0-1); the exhaustive rejection list is in `docs/failure_table.md`
+section 12.
+
+### 13.2 Task 9 (4/10): staging regrasp for the side pick after the relocation (retained)
+Measured first divergence of the 6 protocol failures (section 12.6): on states 10, 12, 14, 19 (and
+development states 0, 2) the pre-grasp of the level side grasp was reached 2-4.5 cm / 5-10 deg off
+because every IK solution for that pose lies at the joint-2 limit; on the other states the same
+grasp succeeds. The IK joint-limit margin at the pre-grasp was measured on all five development
+states (`side_grasp_posture_check`): 0.76-0.92 rad on failing and succeeding states alike, so it
+does not discriminate and cannot be used as a trigger. The retained fix is a physically executed
+staging regrasp inside `PickWithRelocation`: after the porcelain mug is relocated, the target mug
+is picked top-down (the robust family of tasks 0-8), placed on the opening-normal line through
+the heating region at a reach-comfortable distance (0.60-0.70 m from the base, at least 12 cm
+from every other movable body, Intrinsic-planned pick and place with the usual verification), and
+then side-picked from that spot. With the threshold set to "always stage", all five development
+states succeed under the official metric (`evidence/dev_task9_success_c4`, steps 910-1,065 of the
+1,200 budget), compared with 3/5 for 5e236de. Two door-push fixes were needed along the way,
+found on development state 3 after the staging: (a) the pre-contact ANY plan was rejected with
+"Invalid initial joint configuration" because the arm still touched the door after a failed
+attempt; the push now runs the bounded start-state recovery before re-planning; (b) the first
+push segment after a completed approach failed FinePathIK at the wrist limit, and the
+configuration-space fallback was only allowed once the door had moved; it is now also allowed when
+the previous segment executed (the hand is at the contact). Cost: the staging adds one pick and
+one place (about 150 control steps), which is why every task 9 success now ends at step 880-1,065
+and none within LIBERO's 600-step default horizon.
+
+### 13.3 Experiments of this pass that were rejected (source reverted to 5e236de)
+| experiment | states | outcome |
+|---|---|---|
+| re-validation loop: after the pre-grasp, re-plan a short LINEAR correction when the reached pose is > 1.5 cm off | 9: 0-2 | 2/3 (state 2 tracking error exceeded during the re-plan) |
+| longer joint settle (60 steps, 8 mm tolerance) before the approach | 9: 0, 2 | 0/2 (approach 2.5 cm off, tracking error) |
+| approach creep (slower last 3 cm of the approach) | 1, 7: 0-4; 9: 0-3 | tasks 1/7 10/10 unchanged, task 9 2/4 (no gain), reverted |
+| IK-margin trigger for the staging (stage only when the best margin < 0.85 rad) | 9: 0-4 | margins 0.76-0.92 rad do not separate failing from succeeding states; replaced by "always stage" |
+
+### 13.4 Regression gate before freezing C4
+Unit tests 15/15; tasks 0, 1, 2, 4, 5, 6, 7, 8 on development states 0-1: 16/16
+(`evidence/regression_c4/results.md`); task 9 development states 0-4: 5/5; FK/IK validation
+unchanged (`runs/validate_kinematics_final.log`, 5e-9 m). The tree was committed as fbabe38 and
+tagged `candidate-c4` before the protocol run; no source file was touched during the run.

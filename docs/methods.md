@@ -61,6 +61,15 @@ T3 bowl against the panel | Placement-depth term in the grasp ranking | (2) | `t
 | T9 insertion: Intrinsic IK rejects release/pre-place poses the adapter's box model accepted (hand vs microwave_1_main, 7/10 protocol states) | Intrinsic collision verdict inside the release search: collision-checked `ComputeIk` at each geometrically valid release (support excluded) and pre-place (full transport settings) pose, rejected candidates skipped (budget 12) | (1) ComputeIk with CollisionSettings | dev inits 0-4 (`runs/dev2/task9_verdict*`, records in `evidence/dev_task9_verdict`), patch `experiments/task9_intrinsic_verdict_hook.patch` | never triggered: on inits 0-2 the grasp after relocation fails (TRACK, as on the protocol); on inits 3-4 the verdict accepted the same candidate as the box model, the transport to the pre-place pose executed but ended 8 cm short (`place_slip_compensation` xy_correction 0.079-0.081 m with 1 mm attachment drift), and the LINEAR correction was rejected: invalid initial configuration, `robot0_link6` vs `microwave_1_microdoorroot` at the reached posture; after the failed correction the mug slipped 6-8 cm in the fingers and the second attempt found no collision-free hand pose | reject (no effect in 5 dev episodes; source reverted to 9b02207, patch kept as a record) |
 Provenance | Revision captured at process start + dirty flag | - | all runs | removes the per-episode mislabelling (report 10.7) | retain |
 
+Session 7 (third pass) additions:
+
+Failure | Candidate method | Intrinsic support | Experiment | Outcome | Retain/reject
+---|---|---|---|---|---
+T3 push: no contact pose (top-down cannot finish, horizontal has no IK) | steeply pitched hand family (45-70 deg, 60-80 % panel height, lateral offsets, overshoot 2-3 cm) through the stage lab's geometry -> IK -> LINEAR dry-run funnel | (1) ComputeIk, PlanTrajectory LINEAR (never reached) | `evidence/dev_task3_lab_pitched` (state 0, 19 candidates) | all rejected at the end pose by the hand model (hand vs cabinet middle/top/base; lateral ones vs the bottle at mid travel) | reject (no feasible candidate); task 3 unsolved |
+T9 pre-grasp after relocation at the joint-2 limit (4/10 protocol, 2/5 dev) | staging regrasp: top-down pick + place on the opening-normal line at 0.60-0.70 m from the base, then the level side pick | (1) ComputeIk margins (measured, not discriminating), PlanTrajectory for the extra pick/place | `runs/dev3/t9_stage*`, `t9_door5`, `t9_c4` (records in `evidence/dev_task9_success_c4`) | dev 5/5 (vs 3/5); +150 steps per episode | retain (C4) |
+T9 door after the staging | start-state recovery before the pre-contact plan; ANY fallback for the first push segment after a completed approach | (1) PlanTrajectory ANY/JOINT | `runs/dev3/t9_door5` | dev states 1, 3 succeed | retain (C4) |
+T9 pre-grasp error (alternatives) | re-validation LINEAR correction loop; longer joint settle; approach creep | (1) | `runs/dev3/t9_reval`, `t9_settle`, `creep_A/B` | 2/3, 0/2, no gain (tasks 1/7 unchanged) | reject (reverted) |
+
 ## 3. Catalogue of families considered (and why not pursued further)
 
 | family | relevant failure | assessment |

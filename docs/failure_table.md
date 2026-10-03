@@ -147,3 +147,12 @@ task 1 regression 17, task 6 slip 19). The other 94 episodes exist only as recor
 Successes with video: `evidence/eval_episodes_5e236de` (task 9 state 13: goal at step 740, door
 qpos +0.003 rad, mug origin inside the heating region).
 
+
+## 12. Third pass diagnostics (development states; records in evidence/dev_task3_lab_pitched, evidence/dev_task9_success_c4, runs/dev3)
+
+| task | stage | observed evidence | classification |
+|---|---|---|---|
+| 3 | ARTIC stage B, pitched family (state 0, after the real pick/place: bowl at the drawer front tilted 25 deg) | 19/19 candidates rejected by the hand model before any IK request: end pose hand vs cabinet middle drawer front (tilt 45-60 deg, h 0.6-0.8, xo 0/+-0.02/-0.03: 12), hand vs cabinet top (tilt 70: 2), hand vs cabinet base (xo -0.03/-0.05: 3), mid travel hand vs wine bottle (xo +0.04: 2); top-down-lateral controls (tilt 35/45): mid travel hand vs base/top | PLANNING (geometry): the closed panel face lies in the handle plane of the drawer above |
+| 9 | TRACK (fixed by staging) | pre-grasp of the level side grasp 3.2-3.4 cm off at the joint-2 limit on states 0, 2 (`runs/dev3/t9_stage`, `creep_B`); best IK joint-limit margin 0.76-0.92 rad on all five states (no separation) | EXECUTION (OSC posture) |
+| 9 | ARTIC (fixed) | after the staging on state 3: pre-contact ANY plan rejected, "Invalid initial joint configuration" (arm touching the door after a failed attempt); first push segment after the approach FinePathIK at the wrist limit (`runs/dev3/t9_stage3`) | EXECUTION (contact state, OSC branch) |
+| 9 | - | with C4 (staging + both door fixes) states 0-4 all succeed under the official metric, steps 910-1,065 | - |
