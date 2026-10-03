@@ -206,3 +206,18 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
 - Task 3 unsolved: report 12.2 / failure table 10-11; experiments/task3_sidepush_family.patch not merged.
 - Unit tests 15/15, FK validation 5e-9 m (runs/validate_kinematics_final.log), git tree clean, pushed.
 
+
+### 2026-10-03 05:50 UTC (session 7, third pass): C4 = fbabe38 evaluated 83/100 and recommended; 5e236de (80) and ce7685b (76) preserved
+- Task 3: steep pitched push family (19 candidates, state 0) all rejected by the hand model at the end of the travel
+  (evidence/dev_task3_lab_pitched; report 13.1). Task 3 stays 0/10; no feasible candidate within the tested search.
+- Task 9: staging regrasp (top-down pick + place on the opening-normal line, then side pick), start-state recovery
+  before the pre-contact plan, ANY fallback for the first push segment after a completed approach. Dev 5/5
+  (evidence/dev_task9_success_c4). Rejected: re-validation loop, longer settle, approach creep, IK-margin trigger.
+- Regression 16/16 (evidence/regression_c4), unit tests 15/15; frozen as fbabe38 (tag candidate-c4).
+- Protocol run (03:39-05:33 UTC, uninterrupted, all 100 records fbabe38 clean): 10, 8, 10, 0, 10, 9, 10, 9, 10, 7 = 83/100
+  (CI 74-89%); vs 5e236de: +3 on task 9 (states 10, 12, 14), no episode lost (docs/comparison_5e236de_to_fbabe38.md).
+- Held-out one-time run on untouched states 30-39 declared (evaluations/heldout_fbabe38/MANIFEST.json, committed before
+  the run) and launched 05:46 UTC: runs/heldout_fbabe38/A|B (code = fbabe38; nothing is tuned afterwards).
+- Resume if interrupted: finish only the missing (task, init) pairs of runs/heldout_fbabe38 with the same command and
+  report the run as resumed; then `python -m libero_intrinsic.eval.report runs/heldout_fbabe38 --out docs/heldout_fbabe38.json`,
+  archive to evaluations/heldout_fbabe38, add report 13.7, commit, push.

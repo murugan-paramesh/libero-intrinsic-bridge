@@ -1,0 +1,508 @@
+{
+ "run_id": "t5_i18_b605e5cb",
+ "task_index": 5,
+ "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+ "language": "pick up the book and place it in the back compartment of the caddy",
+ "init_state_index": 18,
+ "seed": 0,
+ "revisions": {
+  "libero_intrinsic_bridge": "fbabe38bb92b0ef9a2ecfe8be5093b9c326ce635",
+  "working_tree_dirty_at_start": false,
+  "intrinsic_core": "c61bf075f2335371c6367b61117e8a62bb960c3b",
+  "LIBERO": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+  "robosuite": "1.4.0",
+  "mujoco": "2.3.7",
+  "numpy": "1.23.5"
+ },
+ "observation_mode": "privileged_state",
+ "controller": "OSC_POSE (robosuite 1.4.0 default osc_pose.json, 20 Hz)",
+ "step_budget": 1200,
+ "intrinsic": {
+  "component": "MotionPlannerServiceInProcess + FakeWorldService (intrinsic-core, in-process gRPC)",
+  "binary": "/home/user/bazel_out/execroot/_main/bazel-out/haswell-opt/bin/libero_bridge/libero_planner_server",
+  "world_id": "libero10_task5",
+  "sdf": "runs/eval_c4/B/task5/world/task5.sdf",
+  "addresses": {
+   "world_service": "127.0.0.1:43909",
+   "motion_planner_service": "dns:///localhost:37583",
+   "credentials": "local_tcp"
+  },
+  "n_requests": 224,
+  "requests_by_rpc": {
+   "CheckCollisions": 3,
+   "ComputeFk": 94,
+   "ComputeIk": 10,
+   "GetObject": 1,
+   "GetTransform": 4,
+   "ListObjects": 2,
+   "PlanTrajectory": 7,
+   "ReparentObject": 6,
+   "UpdateObjectJoints": 13,
+   "UpdateTransform": 81,
+   "note": 3
+  },
+  "plan_latency_s": [
+   0.028892795000047045,
+   0.014618574999985867,
+   0.026287078999757796,
+   0.02797959899999114,
+   0.015693036999891774,
+   0.036917362000167486,
+   0.02394081400007053
+  ],
+  "plan_failures": 3,
+  "plan_timeouts": 0,
+  "linear_replans": 3
+ },
+ "t_start": 1790998871.0730953,
+ "success": false,
+ "error": null,
+ "skills": [
+  {
+   "skill": "pick",
+   "ok": false,
+   "reason": "no_reachable_grasp",
+   "attempts": 3,
+   "recoveries": 2,
+   "steps": 148,
+   "details": {}
+  }
+ ],
+ "events": [
+  {
+   "event": "grasp_candidates",
+   "n_total": 3,
+   "n_cleared": 3,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790998874.1336753,
+   "env_step": 0
+  },
+  {
+   "event": "grasp_placement_filter",
+   "n_checked": 3,
+   "n_compatible": 3,
+   "first": "pinch_z0.999_yaw135",
+   "first_drop_m": 0.022224173634474497,
+   "incompatible_examples": [],
+   "ranked": [
+    [
+     "pinch_z0.999_yaw135",
+     0.022
+    ],
+    [
+     "pinch_z0.999_yaw0",
+     0.051
+    ],
+    [
+     "pinch_z0.999_yaw158",
+     0.051
+    ]
+   ],
+   "t_wall": 1790998875.6249533,
+   "env_step": 0
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.999_yaw135",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-2e69feb5ea",
+   "latency_s": 0.022247106000122585,
+   "t_wall": 1790998876.4734771,
+   "env_step": 16
+  },
+  {
+   "event": "ik",
+   "label": "grasp",
+   "grasp": "pinch_z0.999_yaw135",
+   "n_solutions": 4,
+   "request_id": "ComputeIk-37242c1d53",
+   "latency_s": 0.03285587099981058,
+   "t_wall": 1790998876.5069592,
+   "env_step": 16
+  },
+  {
+   "event": "pregrasp_path_check",
+   "grasp": "pinch_z0.999_yaw135",
+   "n_solutions": 4,
+   "n_tested": 1,
+   "feasible": true,
+   "t_wall": 1790998876.5747812,
+   "env_step": 16
+  },
+  {
+   "event": "ik",
+   "label": "pick_pregrasp_goal",
+   "n_solutions": 8,
+   "request_id": "ComputeIk-a31b0341f6",
+   "latency_s": 0.020870109000043158,
+   "t_wall": 1790998876.5967083,
+   "env_step": 16
+  },
+  {
+   "event": "plan",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-48050aad98",
+   "motion_type": "ANY",
+   "n_states": 219,
+   "duration_s": 0.994784042,
+   "latency_s": 0.026287078999757796,
+   "target_pos": [
+    -0.22161604615726332,
+    0.13035556407324567,
+    1.0993696874767405
+   ],
+   "t_wall": 1790998876.6243541,
+   "env_step": 16
+  },
+  {
+   "event": "execute",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-48050aad98",
+   "ok": false,
+   "reason": "tracking_error_exceeded(0.418m)",
+   "steps": 1,
+   "pos_err_max": 0.41753679369216673,
+   "pos_err_mean": 0.41753679369216673,
+   "rot_err_max_deg": 23.857330194755725,
+   "joint_err_max": 0.6520223880327247,
+   "joint_err_final": 1.787418585001674,
+   "final_pos_err": 0.5441548051068535,
+   "final_rot_err_deg": 125.24074106909141,
+   "planned_duration_s": 0.994784042,
+   "planning_latency_s": 0.026287078999757796,
+   "n_states": 219,
+   "time_scale": 1.3681873453178608,
+   "t_wall": 1790998876.911585,
+   "env_step": 17
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_pregrasp",
+   "trajectory_id": "PlanTrajectory-48050aad98",
+   "n_checked": 1,
+   "collision": false,
+   "msg": "OK",
+   "request_id": "CheckCollisions-3852cf4d28",
+   "t_wall": 1790998876.917672,
+   "env_step": 17
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 0,
+   "ok": false,
+   "reason": "pregrasp_exec:tracking_error_exceeded(0.418m)",
+   "details": {
+    "grasp": "pinch_z0.999_yaw135"
+   },
+   "t_wall": 1790998876.9177926,
+   "env_step": 17
+  },
+  {
+   "event": "plan",
+   "label": "pick_recover_retreat",
+   "trajectory_id": "PlanTrajectory-ba80235195",
+   "motion_type": "LINEAR",
+   "n_states": 51,
+   "duration_s": 0.37811108600000004,
+   "latency_s": 0.015693036999891774,
+   "target_pos": [
+    -0.422667886319904,
+    -0.05818001427012096,
+    1.6024810291829075
+   ],
+   "t_wall": 1790998877.2832267,
+   "env_step": 24
+  },
+  {
+   "event": "execute",
+   "label": "pick_recover_retreat",
+   "trajectory_id": "PlanTrajectory-ba80235195",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.012707462185728644,
+   "pos_err_mean": 0.005803618529756559,
+   "rot_err_max_deg": 1.8807325895070437,
+   "joint_err_max": 0.08022683682193077,
+   "joint_err_final": 0.016788985742275216,
+   "final_pos_err": 0.0009161919426922315,
+   "final_rot_err_deg": 0.4292902073283806,
+   "planned_duration_s": 0.37811108600000004,
+   "planning_latency_s": 0.015693036999891774,
+   "n_states": 51,
+   "time_scale": 1.422862267066152,
+   "t_wall": 1790998877.9711673,
+   "env_step": 36
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_recover_retreat",
+   "trajectory_id": "PlanTrajectory-ba80235195",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-f4a189041a",
+   "t_wall": 1790998877.977063,
+   "env_step": 36
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 3,
+   "n_cleared": 3,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790998878.0276637,
+   "env_step": 36
+  },
+  {
+   "event": "grasp_placement_filter",
+   "n_checked": 3,
+   "n_compatible": 3,
+   "first": "pinch_z0.134_yaw68",
+   "first_drop_m": 0.021927125667249588,
+   "incompatible_examples": [],
+   "ranked": [
+    [
+     "pinch_z0.134_yaw68",
+     0.022
+    ],
+    [
+     "pinch_z0.134_yaw90",
+     0.052
+    ],
+    [
+     "pinch_z0.134_yaw112",
+     0.052
+    ]
+   ],
+   "t_wall": 1790998880.9394286,
+   "env_step": 36
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.134_yaw68",
+   "n_solutions": 0,
+   "request_id": "ComputeIk-58f6aad799",
+   "error": "ComputeIk failed [NOT_FOUND] IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region was either ou",
+   "t_wall": 1790998886.5837953,
+   "env_step": 52
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.134_yaw90",
+   "n_solutions": 0,
+   "request_id": "ComputeIk-32db46b8c4",
+   "error": "ComputeIk failed [NOT_FOUND] IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region was either ou",
+   "t_wall": 1790998892.2404587,
+   "env_step": 67
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.134_yaw112",
+   "n_solutions": 0,
+   "request_id": "ComputeIk-d955abf7f8",
+   "error": "ComputeIk failed [NOT_FOUND] IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region was either ou",
+   "t_wall": 1790998897.8318148,
+   "env_step": 82
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 1,
+   "ok": false,
+   "reason": "no_reachable_grasp",
+   "details": {},
+   "t_wall": 1790998897.8318703,
+   "env_step": 82
+  },
+  {
+   "event": "plan",
+   "label": "pick_recover_retreat",
+   "trajectory_id": "PlanTrajectory-cfbb7141e9",
+   "motion_type": "LINEAR",
+   "n_states": 85,
+   "duration_s": 0.5080919700000001,
+   "latency_s": 0.02394081400007053,
+   "target_pos": [
+    -0.4163979145462356,
+    -0.05888444627871457,
+    1.6923411246666487
+   ],
+   "t_wall": 1790998898.2254245,
+   "env_step": 89
+  },
+  {
+   "event": "execute",
+   "label": "pick_recover_retreat",
+   "trajectory_id": "PlanTrajectory-cfbb7141e9",
+   "ok": true,
+   "reason": "completed",
+   "steps": 12,
+   "pos_err_max": 0.014022129390464658,
+   "pos_err_mean": 0.007575830028622219,
+   "rot_err_max_deg": 3.289972299649525,
+   "joint_err_max": 0.20628246658306415,
+   "joint_err_final": 0.10368466234348606,
+   "final_pos_err": 0.0054743856820224325,
+   "final_rot_err_deg": 1.2099825734285357,
+   "planned_duration_s": 0.5080919700000001,
+   "planning_latency_s": 0.02394081400007053,
+   "n_states": 85,
+   "time_scale": 1.0,
+   "t_wall": 1790998898.80246,
+   "env_step": 101
+  },
+  {
+   "event": "executed_path_audit",
+   "label": "pick_recover_retreat",
+   "trajectory_id": "PlanTrajectory-cfbb7141e9",
+   "n_checked": 12,
+   "collision": false,
+   "msg": "",
+   "request_id": "CheckCollisions-4543dcfd94",
+   "t_wall": 1790998898.813667,
+   "env_step": 101
+  },
+  {
+   "event": "grasp_candidates",
+   "n_total": 3,
+   "n_cleared": 3,
+   "n_tilted": 0,
+   "blockers": {},
+   "t_wall": 1790998898.890576,
+   "env_step": 101
+  },
+  {
+   "event": "grasp_placement_filter",
+   "n_checked": 3,
+   "n_compatible": 3,
+   "first": "pinch_z0.140_yaw135",
+   "first_drop_m": 0.02082267482026995,
+   "incompatible_examples": [],
+   "ranked": [
+    [
+     "pinch_z0.140_yaw135",
+     0.021
+    ],
+    [
+     "pinch_z0.140_yaw90",
+     0.051
+    ],
+    [
+     "pinch_z0.140_yaw112",
+     0.051
+    ]
+   ],
+   "t_wall": 1790998900.2423103,
+   "env_step": 101
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.140_yaw135",
+   "n_solutions": 0,
+   "request_id": "ComputeIk-16c338f5c8",
+   "error": "ComputeIk failed [NOT_FOUND] IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region was either ou",
+   "t_wall": 1790998905.903962,
+   "env_step": 118
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.140_yaw90",
+   "n_solutions": 0,
+   "request_id": "ComputeIk-43f84b49eb",
+   "error": "ComputeIk failed [NOT_FOUND] IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region was either ou",
+   "t_wall": 1790998911.524976,
+   "env_step": 133
+  },
+  {
+   "event": "ik",
+   "label": "pregrasp",
+   "grasp": "pinch_z0.140_yaw112",
+   "n_solutions": 0,
+   "request_id": "ComputeIk-d2609b0eea",
+   "error": "ComputeIk failed [NOT_FOUND] IK solver couldn't find any solutions for the given constraints. Typically this means the Cartesian constraint region was either ou",
+   "t_wall": 1790998917.0854523,
+   "env_step": 148
+  },
+  {
+   "event": "skill_attempt",
+   "skill": "pick",
+   "attempt": 2,
+   "ok": false,
+   "reason": "no_reachable_grasp",
+   "details": {},
+   "t_wall": 1790998917.0855217,
+   "env_step": 148
+  },
+  {
+   "event": "skill",
+   "skill": "pick",
+   "ok": false,
+   "reason": "no_reachable_grasp",
+   "attempts": 3,
+   "steps": 148,
+   "t_wall": 1790998917.0855246,
+   "env_step": 148
+  }
+ ],
+ "world_sync": {
+  "n_objects": 4,
+  "max_pose_error_m": 0.0,
+  "max_rot_error_deg": 0.0
+ },
+ "goal": [
+  {
+   "predicate": "in",
+   "args": [
+    "black_book_1",
+    "desk_caddy_1_back_contain_region"
+   ],
+   "subgoal_index": 0
+  }
+ ],
+ "plan": [
+  "pick:black_book_1_main",
+  "place:black_book_1_main"
+ ],
+ "failure_stage": "pick:black_book_1_main",
+ "failure_reason": "no_reachable_grasp",
+ "success_at_end": false,
+ "first_done_step": null,
+ "final_state": {
+  "objects": {
+   "black_book_1": [
+    -0.008058219510477613,
+    -0.01433934114354987,
+    0.027169670791782476
+   ],
+   "white_yellow_mug_1": [
+    -4.163431821408131e-05,
+    -0.000480023041397229,
+    8.889498769755183e-05
+   ]
+  },
+  "articulations": {},
+  "goal_atoms": [
+   {
+    "atom": [
+     "in",
+     "black_book_1",
+     "desk_caddy_1_back_contain_region"
+    ],
+    "true": false
+   }
+  ]
+ },
+ "video": "runs/eval_c4/B/task5/episodes/t5_i18_b605e5cb/agentview.mp4",
+ "steps": 148,
+ "t_end": 1790998917.1269574,
+ "wall_time_s": 46.05386209487915
+}

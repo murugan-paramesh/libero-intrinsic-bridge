@@ -141,12 +141,12 @@ unchanged in the tables. Totals are generated from episode records (`eval/report
 
 ## 15. Final results
 See `README.md` (headline table) and `docs/results_*.md`; the per-task before/after tables are
-`docs/comparison_*.md`. The recommended candidate and the reasons for the choice are stated in
-`docs/report.md` section 12.
+`docs/comparison_*.md`. Recommended: fbabe38 (C4, 83/100; task 9 7/10); fallbacks 5e236de (80) and
+ce7685b (76). The reasons for the choice are stated in `docs/report.md` sections 12.6 and 13.5.
 
 ## 16. Limitations
 Privileged object poses; OSC_POSE null-space drift; task 3 unsolved; task 9 partially solved
-(pick posture on some states); planner randomness makes individual episodes vary between runs
+(7/10: one release IK rejection, one door segment, one approach error after the staging); planner randomness makes individual episodes vary between runs
 (documented flips on tasks 6 and 7); runtime of task 3 episodes (IK probe matrix with 5 s solver
 timeouts).
 

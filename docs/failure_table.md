@@ -156,3 +156,16 @@ qpos +0.003 rad, mug origin inside the heating region).
 | 9 | TRACK (fixed by staging) | pre-grasp of the level side grasp 3.2-3.4 cm off at the joint-2 limit on states 0, 2 (`runs/dev3/t9_stage`, `creep_B`); best IK joint-limit margin 0.76-0.92 rad on all five states (no separation) | EXECUTION (OSC posture) |
 | 9 | ARTIC (fixed) | after the staging on state 3: pre-contact ANY plan rejected, "Invalid initial joint configuration" (arm touching the door after a failed attempt); first push segment after the approach FinePathIK at the wrist limit (`runs/dev3/t9_stage3`) | EXECUTION (contact state, OSC branch) |
 | 9 | - | with C4 (staging + both door fixes) states 0-4 all succeed under the official metric, steps 910-1,065 | - |
+
+## 13. Candidate fbabe38 (C4), repeated evaluation (100 episodes, evaluations/candidate_fbabe38, 83/100)
+
+| task | failures | stage | observed evidence |
+|---|---|---|---|
+| 1 | 2/10 | GRASP then REACH | butter pick after the cream cheese place: fingers close to 7 mm with 0 pad contacts (10) / 2 contacts then 10 cm lift drift (11); retry candidates blocked (basket 9x, milk 5x) - identical states and mechanism as 5e236de |
+| 3 | 10/10 | ARTIC (stage B 7, relocation pick 3) | stage B after relocating the wine bottle: every probed contact pose rejected (10, 11, 12, 13, 15, 16, 17); relocation pick pre-grasp tracking error 8.2-8.9 cm (14, 18, 19) |
+| 5 | 1/10 | REACH | no reachable grasp (18), as in every candidate (book against the shelf wall) |
+| 7 | 1/10 | REACH | cream cheese: no reachable grasp after a failed first attempt (10), as in 5e236de |
+| 9 | 3/10 | PLAN (1), ARTIC (1), TRACK (1) | staging executed on 10/10 states; release/pre-place ComputeIk NOT_FOUND, hand vs microwave (11); door push segment 0 NOT_FOUND after the approach (18); side-grasp approach after the staging 2.7 cm / 7.4 deg off (19) |
+
+Successes with video: `evidence/eval_episodes_fbabe38` (task 9 state 10: staging, side pick,
+insertion, door closed; goal at step 986).

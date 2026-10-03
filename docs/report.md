@@ -840,3 +840,58 @@ Unit tests 15/15; tasks 0, 1, 2, 4, 5, 6, 7, 8 on development states 0-1: 16/16
 (`evidence/regression_c4/results.md`); task 9 development states 0-4: 5/5; FK/IK validation
 unchanged (`runs/validate_kinematics_final.log`, 5e-9 m). The tree was committed as fbabe38 and
 tagged `candidate-c4` before the protocol run; no source file was touched during the run.
+
+### 13.5 Protocol result of candidate C4 (fbabe38): 83/100, recommended
+Same protocol as every table above (tasks 0-9, official init states 10-19, seed 0, budget 1,200,
+bounded retries, no re-runs); uninterrupted run (half A tasks 0-4, half B tasks 5-9, 03:39-05:33
+UTC, 2026-10-03); every one of the 100 records names revision fbabe38 with a clean tree, Intrinsic
+Core c61bf07 and LIBERO 8f1084e. Records: `evaluations/candidate_fbabe38`; tables
+`docs/results_fbabe38.md`; comparisons `docs/comparison_fbabe38.md` (vs baseline) and
+`docs/comparison_5e236de_to_fbabe38.md`. Evidence episodes with video:
+`evidence/eval_episodes_fbabe38`.
+
+| task | 5e236de (C3) | C4 fbabe38 | changed episodes (init) | C4 failure stages |
+|---|---|---|---|---|
+| 0 | 10/10 | 10/10 | - | |
+| 1 | 8/10 | 8/10 | - | butter pick: fingers close with 0 pad contacts (10) / 10 cm lift drift (11); remaining candidates without collision-free IK (basket, milk) - same states and mechanism as C3 |
+| 2 | 10/10 | 10/10 | - | |
+| 3 | 0/10 | 0/10 | - | stage B after relocation: no collision-free contact pose (7); relocation pick tracking error 8-9 cm (14, 18, 19) |
+| 4 | 10/10 | 10/10 | - | |
+| 5 | 9/10 | 9/10 | - | no reachable grasp (18), as in every candidate |
+| 6 | 10/10 | 10/10 | - | |
+| 7 | 9/10 | 9/10 | - | cream cheese: no reachable grasp after a failed first attempt (10), as in C3 |
+| 8 | 10/10 | 10/10 | - | |
+| 9 | 4/10 | 7/10 | gained 10, 12, 14 | release/pre-place IK hand vs microwave (11); door push segment 0 NOT_FOUND (18); approach after the staging 2.7 cm / 7.4 deg off (19) |
+| all | **80/100** (CI 71-87%) | **83/100** (CI 74-89%) | +3, no episode lost | |
+
+The staging regrasp executed on all 10 task 9 states (`side_grasp_staging_done` ok on 10/10;
+measured best IK margins 0.78-0.93 rad, again without separation between the states that then
+succeed and the three that fail). Its effect is exactly the one predicted from the development
+states: the four C3 failures at the pre-grasp after relocation (10, 12, 14, 19) became three
+successes and one failure now located at the approach (19, 2.7 cm off); the two other C3
+failures (11: release IK, 18: door segment 0) are unchanged and are the next open items.
+
+Integration numbers: 1,387 `PlanTrajectory` calls (mean 22 ms, max 88 ms, 0 timeouts); 58 of
+1,314 executed-path audits report a collision; 76 of the 83 successes are within 600 steps (the
+seven task 9 successes end at steps 865-989 of the 1,200 budget because the staging adds a pick
+and a place); 984 rejected IK/plan requests, all logged with their reason (task 3 contact-search
+probes 46 per episode, task 9 release/door probes 44 per episode). Task 3 episodes take 6-12 min
+of wall time. For every success the goal atoms evaluated by LIBERO's predicate functions at
+termination are stored and are all true (83/83); `success_at_end` equals `success` for all 100.
+
+Candidate decision by the declared criteria ("a new candidate replaces 5e236de only if it is
+objectively better under the same frozen protocol"): same protocol, same states, same seed and
+budget, uninterrupted run with clean provenance; overall 83 vs 80 (intervals overlap); per task:
+no regression on any task, +3 on task 9, tasks 0, 2, 4, 6, 8 still 10/10; development
+generalization: task 9 5/5 development states (vs 3/5); cost: +150 steps on task 9, no change
+elsewhere. **fbabe38 (C4) is the recommended candidate; 5e236de (80/100) and ce7685b (76/100)
+stay preserved as verified fallbacks, unchanged.**
+
+### 13.6 Status after the third pass
+Strong reproducible partial solution: 8 tasks at 8-10/10, task 9 at 7/10 under the protocol
+and 5/5 on development states, task 3 unsolved with the search space and the geometric reason
+recorded (12.2, 13.1). Open items with measured first divergences: task 9 release IK (state 11)
+and door segment 0 (state 18); task 1 butter pick on states 10-11 (fingers close without
+contact); task 5 state 18 and task 7 state 10 (no reachable grasp). The one-time held-out
+evaluation on untouched states 30-39 is declared in `evaluations/heldout_fbabe38/MANIFEST.json`
+and reported in 13.7 when complete.
