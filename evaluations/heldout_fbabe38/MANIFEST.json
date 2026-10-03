@@ -1,0 +1,38 @@
+{
+ "purpose": "One-time final generalization evaluation on untouched official init states, declared BEFORE the run. Results are reported separately from the protocol result (states 10-19) and are not used for tuning.",
+ "candidate_revision": "fbabe38bb92b0ef9a2ecfe8be5093b9c326ce635",
+ "code_identity": "the run executes HEAD of branch claude/youthful-galileo-0wtslh, whose src/, configs/, scripts/ and intrinsic_stack/ are byte-identical to fbabe38 (git diff fbabe38 HEAD -- src configs scripts intrinsic_stack is empty); later commits are documentation and evidence only",
+ "selected_by": "overall official count on protocol states 10-19: fbabe38 83/100 vs 5e236de 80/100, no per-task regression (docs/comparison_5e236de_to_fbabe38.md)",
+ "tasks": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
+ ],
+ "init_states": [
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+  36,
+  37,
+  38,
+  39
+ ],
+ "prior_use_of_these_states": "none: no run directory, record or script of this repository ever used an init_state_index >= 30 (states 0-4 development, 10-19 protocol, 20-29 consumed once by 5b713c6)",
+ "protocol": "configs/eval_frozen.yaml with eval_init_states overridden to 30-39 (scripts/evaluate.py --inits), seed 0, step budget 1200, bounded per-skill retries, no episode re-runs, privileged object poses, video on",
+ "rule": "the implementation is frozen at fbabe38; nothing is changed after this run; states 30-39 are considered consumed afterwards whatever the result",
+ "commands": [
+  "python scripts/evaluate.py --tasks 0 1 2 3 4 --inits 30 31 32 33 34 35 36 37 38 39 --out runs/heldout_fbabe38/A",
+  "python scripts/evaluate.py --tasks 5 6 7 8 9 --inits 30 31 32 33 34 35 36 37 38 39 --out runs/heldout_fbabe38/B"
+ ],
+ "declared_at_utc": "2026-10-03 05:46:03"
+}
