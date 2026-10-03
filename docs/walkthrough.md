@@ -132,7 +132,7 @@ for the first push segment after a completed approach: development states 0-4 al
 
 ## 14. Evaluation methodology
 `configs/eval_frozen.yaml`: tasks 0-9 in order, official init states 10-19 (development states
-0-4, held-out 20-29 used once for 5b713c6), seed 0, budget 1,200 control steps, bounded per-skill
+0-4, held-out 20-29 used once for 5b713c6, held-out 30-39 used once for fbabe38), seed 0, budget 1,200 control steps, bounded per-skill
 retries, no episode re-runs, privileged object poses. Success = LIBERO's own metric semantics
 (`libero/lifelong/metric.py`: an episode counts when `done` is reported at any step; the runner
 terminates at that step and also records `success_at_end` and the goal atoms). Candidates before
@@ -141,8 +141,8 @@ unchanged in the tables. Totals are generated from episode records (`eval/report
 
 ## 15. Final results
 See `README.md` (headline table) and `docs/results_*.md`; the per-task before/after tables are
-`docs/comparison_*.md`. Recommended: fbabe38 (C4, 83/100; task 9 7/10); fallbacks 5e236de (80) and
-ce7685b (76). The reasons for the choice are stated in `docs/report.md` sections 12.6 and 13.5.
+`docs/comparison_*.md`. Recommended: fbabe38 (C4, 83/100; task 9 7/10; one-time held-out states 30-39: 85/100);
+fallbacks 5e236de (80) and ce7685b (76). The reasons for the choice are stated in `docs/report.md` sections 12.6 and 13.5.
 
 ## 16. Limitations
 Privileged object poses; OSC_POSE null-space drift; task 3 unsolved; task 9 partially solved

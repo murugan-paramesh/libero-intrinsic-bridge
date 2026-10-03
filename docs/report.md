@@ -895,3 +895,31 @@ and door segment 0 (state 18); task 1 butter pick on states 10-11 (fingers close
 contact); task 5 state 18 and task 7 state 10 (no reachable grasp). The one-time held-out
 evaluation on untouched states 30-39 is declared in `evaluations/heldout_fbabe38/MANIFEST.json`
 and reported in 13.7 when complete.
+
+### 13.7 One-time held-out evaluation of fbabe38 on untouched states 30-39: 85/100
+Declared before the run in `evaluations/heldout_fbabe38/MANIFEST.json` (committed as 5108243 at
+05:46 UTC, launched immediately after); states 30-39 had never been used by any run of this
+repository; the code is byte-identical to fbabe38 (the records name revision 5108243, the
+manifest commit, with a clean tree; `git diff fbabe38 5108243 -- src configs scripts
+intrinsic_stack` is empty). Same protocol otherwise (seed 0, budget 1,200, bounded retries, no
+re-runs); uninterrupted run 05:46-07:19 UTC. Nothing was changed after this run and these
+states are now consumed. Records: `evaluations/heldout_fbabe38`; table
+`docs/heldout_fbabe38.md`; episodes with video: `evidence/heldout_episodes_fbabe38`.
+
+| task | protocol states 10-19 | held-out states 30-39 | held-out failure stages |
+|---|---|---|---|
+| 0 | 10/10 | 10/10 | |
+| 1 | 8/10 | 9/10 | no reachable grasp for the butter after the first pick failed (33) |
+| 2 | 10/10 | 10/10 | |
+| 3 | 0/10 | 0/10 | stage B: no collision-free contact pose (31, 32, 33, 37, 39); relocation pick tracking error 8.3-9.0 cm (30, 34, 36, 38); place: LINEAR lowering FinePathIK (35) |
+| 4 | 10/10 | 10/10 | |
+| 5 | 9/10 | 10/10 | |
+| 6 | 10/10 | 10/10 | |
+| 7 | 9/10 | 10/10 | |
+| 8 | 10/10 | 10/10 | |
+| 9 | 7/10 | 6/10 | release/pre-place IK hand vs microwave (36, 37); side-grasp approach/pre-grasp after the staging 1.9 cm off (32, 39) |
+| all | **83/100** (CI 74-89%) | **85/100** (CI 77-91%) | |
+
+The held-out result is consistent with the protocol result (overlapping intervals, same failure
+families on tasks 1, 3 and 9, 79 of the 85 successes within 600 steps, goal atoms true for all
+85). It is reported here as a separate number and was not used for any decision.

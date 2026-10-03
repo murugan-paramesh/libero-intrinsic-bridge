@@ -169,3 +169,11 @@ qpos +0.003 rad, mug origin inside the heating region).
 
 Successes with video: `evidence/eval_episodes_fbabe38` (task 9 state 10: staging, side pick,
 insertion, door closed; goal at step 986).
+
+## 14. Candidate fbabe38, one-time held-out evaluation (states 30-39, evaluations/heldout_fbabe38, 85/100)
+
+| task | failures | stage | observed evidence |
+|---|---|---|---|
+| 1 | 1/10 | REACH | butter: no reachable grasp after a failed first attempt (33) |
+| 3 | 10/10 | ARTIC (stage B 5, relocation pick 4), PLACE (1) | stage B after relocation: every probed contact pose rejected (31, 32, 33, 37, 39); relocation pick pre-grasp tracking error 8.3-9.0 cm (30, 34, 36, 38); place lowering LINEAR FinePathIK (35) |
+| 9 | 4/10 | PLAN (2), TRACK (2) | staging executed; release/pre-place ComputeIk NOT_FOUND hand vs microwave (36, 37); approach 1.9 cm off (32), pre-grasp 1.9 cm / 5.5 deg off (39) |

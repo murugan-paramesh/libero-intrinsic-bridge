@@ -30,9 +30,10 @@ record carries the goal atoms evaluated by LIBERO's predicate functions (83/83 t
 planned motions of that run (mean 22 ms, max 88 ms, no timeouts) are all Intrinsic
 `PlanTrajectory` results; the 984 "plan failures" counted are rejected IK/plan probes of the task 3
 contact search and the task 9 release/door probes (every one logged with its reason). A one-time
-held-out evaluation on untouched official states 30-39 was declared before it ran
-(`evaluations/heldout_fbabe38/MANIFEST.json`); its result is reported separately in
-docs/report.md 13.7 and never used for tuning.
+held-out evaluation on untouched official states 30-39, declared before it ran
+(`evaluations/heldout_fbabe38/MANIFEST.json`) and never used for tuning, gave **85/100**
+(CI 77-91%; per task 10, 9, 10, 0, 10, 10, 10, 10, 10, 6; `docs/heldout_fbabe38.md`,
+docs/report.md 13.7); those states are now consumed.
 Per-task before/after with the episodes that changed: `docs/comparison_fbabe38.md`,
 `docs/comparison_5e236de_to_fbabe38.md`, `docs/comparison_5e236de.md`,
 `docs/comparison_ce7685b_to_5e236de.md`, `docs/comparison_ce7685b.md`,
@@ -101,9 +102,9 @@ python scripts/archive_evaluation.py runs/eval_<rev> evaluations/candidate_<rev>
 | what | where |
 |---|---|
 | 100 episode records per evaluated revision (success flag, steps, every Intrinsic request id, skill events, final goal atoms for 5e236de and fbabe38) | `evaluations/baseline_76267bf`, `evaluations/candidate_5b713c6`, `evaluations/heldout_5b713c6`, `evaluations/candidate_ce7685b`, `evaluations/candidate_9b02207`, `evaluations/candidate_5e236de`, `evaluations/candidate_fbabe38`, `evaluations/heldout_fbabe38` (manifest + records of the one-time states 30-39 run) |
-| results tables and per-task comparisons | `docs/results*.md`, `docs/comparison_*.md`, `docs/heldout_5b713c6.md` |
+| results tables and per-task comparisons | `docs/results*.md`, `docs/comparison_*.md`, `docs/heldout_5b713c6.md`, `docs/heldout_fbabe38.md` |
 | videos + records + Intrinsic request logs for the recommended candidate fbabe38 (one success per solved task incl. task 9, failures for tasks 1, 3, 5, 7, 9) | `evidence/eval_episodes_fbabe38` (`MANIFEST.json` maps task -> episode dir) |
-| same for the fallback candidates 5e236de and ce7685b | `evidence/eval_episodes_5e236de`, `evidence/eval_episodes_ce7685b` |
+| same for the fallback candidates 5e236de and ce7685b; same for the held-out states 30-39 run of fbabe38 | `evidence/eval_episodes_5e236de`, `evidence/eval_episodes_ce7685b`, `evidence/heldout_episodes_fbabe38` |
 | task 9 complete development successes with video and RPC log (C3: states 1, 3, 4; C4: states 0-4); task 3 stage-lab traces (incl. the third-pass pitched family); matched ce7685b comparisons; C4 regression summary | `evidence/dev_task9_success`, `evidence/dev_task9_success_c4`, `evidence/dev_task3_lab`, `evidence/dev_task3_lab_pitched`, `evidence/dev_matched_ce7685b`, `evidence/regression_c4` |
 | partial/experimental protocol runs of this pass (labelled, not recommended) | `evaluations/partial_4c20556`, `evaluations/partial_c2` |
 | videos + records for the later candidate's new failure modes (task 9 insertion, task 3 stages, task 1/6 regressions) | `evidence/eval_episodes_9b02207` |
