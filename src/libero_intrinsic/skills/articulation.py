@@ -156,13 +156,24 @@ class PushSkill(Skill):
                     (np.maximum(lim[:, 0] + 0.05, [-9, 0.3, -9, -9, -9, -9, -9]), lim[:, 1] - 0.05),
                     (lim[:, 0] + 0.05, np.minimum(lim[:, 1] - 0.05, [9, 9, 9, -1.9, 9, 9, 9]))]
         sols = []
-        for fam in families:
-            try:
-                sols, rid, lat = client.ik(pre, rot, rs.q, max_solutions=8, collision_settings=free_cs, joint_limits=fam)
-            except IntrinsicRequestError:
-                sols = []
-            ctx.record(event="ik", label=f"{self.label}_pre", n_solutions=len(sols), request_id=rid if sols else "", latency_s=lat if sols else 0.0)
+        # C6: the numerical IK is seeded; from the configuration the arm is in after the previous
+        # skill, every posture family returned only colliding branches on one protocol state
+        # (task 3 state 18: link6 vs the wine rack), while the same pose was feasible from other
+        # seeds. Extra seeds are tried only when the current configuration yields nothing.
+        extra_seeds = [np.array([0.0, -0.3, 0.0, -2.2, 0.0, 2.0, 0.8]), np.array([0.0, 0.6, 0.0, -1.6, 0.0, 2.2, 0.8])]
+        for seed_i, seed in enumerate([rs.q] + extra_seeds):
+            for fam in families:
+                try:
+                    sols, rid, lat = client.ik(pre, rot, seed, max_solutions=8, collision_settings=free_cs, joint_limits=fam)
+                except IntrinsicRequestError:
+                    sols = []
+                ctx.record(event="ik", label=f"{self.label}_pre", n_solutions=len(sols), request_id=rid if sols else "", latency_s=lat if sols else 0.0,
+                           seed=seed_i)
+                if sols:
+                    break
             if sols:
+                if seed_i:
+                    ctx.record(event="precontact_seed_fallback", label=self.label, seed=seed_i)
                 break
         if not sols:
             return SkillResult(self.name, False, "precontact_unreachable")

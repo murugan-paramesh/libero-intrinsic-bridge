@@ -526,7 +526,12 @@ def drawer_push_handle_geometry(env, drawer_body: str, joint: str, tilt_deg: flo
     5 cm by robot0_link5 against the cabinet's top drawer front, the horizontal stage-B hand by
     link5/link6 against the wine rack and the table; at 50 deg the wrist stays back and low and
     the collision-checked IK and LINEAR plans exist for the whole travel to the closed position."""
+    calls = {"n": 0}
+    variants = [(tilt_deg, 0.08), (tilt_deg, 0.05), (tilt_deg + 8.0, 0.06)]   # per attempt (all lab-verified on dev/state-18 geometry)
+
     def contact_fn(ctx=None):
+        tilt, pre_off = variants[calls["n"] % len(variants)]
+        calls["n"] += 1
         axis, _ = joint_world_axis_and_anchor(env, joint)
         q = env.joint_qpos(joint)
         box = geo.object_box(env, drawer_body)
@@ -538,8 +543,10 @@ def drawer_push_handle_geometry(env, drawer_body: str, joint: str, tilt_deg: flo
         rot = geo.side_rotation(yaw, 0.0)
         ta = rot[:, 0] if abs(rot[2, 0]) < 0.5 else rot[:, 1]
         sign = 1.0 if np.dot(np.cross(ta, rot[:, 2]), np.array([0.0, 0.0, -1.0])) > 0 else -1.0
-        rot = R.from_rotvec(ta * sign * np.radians(tilt_deg)).as_matrix() @ rot
-        pre = contact - rot[:, 2] * 0.08
+        rot = R.from_rotvec(ta * sign * np.radians(tilt)).as_matrix() @ rot
+        pre = contact - rot[:, 2] * pre_off
+        if ctx is not None:
+            ctx.record(event="handle_push_variant", tilt_deg=float(tilt), pre_offset_m=float(pre_off))
         return pre, rot, [contact, contact + axis * (abs(q) + 0.02)]
 
     def check_fn():
