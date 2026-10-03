@@ -187,7 +187,7 @@ def drawer_push_candidates(env, drawer_body, joint, families):
             ta = rot[:, 0] if abs(rot[2, 0]) < 0.5 else rot[:, 1]
             sign = 1.0 if np.dot(np.cross(ta, rot[:, 2]), np.array([0, 0, -1.0])) > 0 else -1.0
             rot = R.from_rotvec(ta * sign * np.radians(tilt)).as_matrix() @ rot
-            pre = contact - rot[:, 2] * 0.08
+            pre = contact - rot[:, 2] * fam.get("pre", 0.08)
         else:
             raise ValueError(mode)
         path = [contact, contact + axis * travel]
