@@ -1018,3 +1018,41 @@ clean reset: identical success (353 steps). Records with videos and Intrinsic re
 `evidence/dev_task3_success_c5`. Regression (dev states 0-1, tasks 0, 1, 2, 4-9): 18/18
 (`evidence/regression_c5`); unit tests 15/15; FK/IK validation unchanged. Frozen as d5fca8d
 (tag `candidate-c5`) for the protocol run (14.6).
+
+### 14.6 Protocol result of candidate C5 (d5fca8d): 92/100, recommended
+Same frozen protocol (tasks 0-9, official init states 10-19, seed 0, budget 1,200, bounded
+retries, no re-runs); uninterrupted run 09:31-11:30 UTC, 2026-10-03; all 100 records name revision
+d5fca8d with a clean tree, Intrinsic Core c61bf07, LIBERO 8f1084e. Records
+`evaluations/candidate_d5fca8d`; tables `docs/results_d5fca8d.md`; comparisons
+`docs/comparison_d5fca8d.md` (vs baseline) and `docs/comparison_fbabe38_to_d5fca8d.md`.
+Evidence episodes with video: `evidence/eval_episodes_d5fca8d` (task 3 success state 10 and the
+failure state 18 included).
+
+| task | C4 fbabe38 | C5 d5fca8d | changed episodes (init) | C5 failure stages |
+|---|---|---|---|---|
+| 0 | 10/10 | 10/10 | - | |
+| 1 | 8/10 | 8/10 | - | butter pick, states 10, 11 (as in C3/C4) |
+| 2 | 10/10 | 10/10 | - | |
+| 3 | 0/10 | **9/10** | gained 10-17, 19 | state 18: the 50 deg pre-contact pose has no collision-free IK (`robot0_link6` vs `wine_rack_1_main` in all three posture families, one kinematic); stage B and the bottle relocation then fail as before; the bowl was level inside the drawer (origin z 0.924) |
+| 4 | 10/10 | 10/10 | - | |
+| 5 | 9/10 | 9/10 | - | no reachable grasp (18) |
+| 6 | 10/10 | 10/10 | - | |
+| 7 | 9/10 | 9/10 | - | no reachable grasp (10) |
+| 8 | 10/10 | 10/10 | - | |
+| 9 | 7/10 | 7/10 | - | 11, 18, 19 as in C4 |
+| all | **83/100** (CI 74-89%) | **92/100** (CI 85-96%) | +9, no episode lost | |
+
+Task 3 successes end at steps 297-372 (drawer +0.0017 m on every success, bowl origin level on
+the drawer floor, both goal atoms true at termination); every one of the 100 episodes has
+`success_at_end` equal to `success`. Integration: 1,346 `PlanTrajectory` calls (mean 21 ms, max
+111 ms, 0 timeouts), 40 of 1,265 executed-path audits report a collision, 85 of the 92 successes
+within 600 steps; 963 rejected IK/plan requests, all logged with their reason (the task 3 probe
+matrix now runs only on state 18).
+
+Candidate decision by the declared criteria: same protocol and provenance; overall 92 vs 83 (the
+intervals barely overlap); per task: +9 on task 3, every other task identical episode by episode;
+development generalization: task 3 5/5 development states plus a reproduction; cost: task 3
+episodes are now 300-370 steps (5 min of wall time instead of 6-13). **d5fca8d (C5) is the
+recommended candidate; fbabe38 (83/100, held-out 85/100), 5e236de and ce7685b stay preserved.**
+No held-out evaluation was run for C5 (states 30-39 are consumed; 40-49 remain untouched and
+were not used).

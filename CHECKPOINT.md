@@ -236,3 +236,8 @@ Resume steps if interrupted: check runs/eval_5b713c6/*.log for 50 run_id lines e
 - Regression 18/18 (evidence/regression_c5), unit tests 15/15, FK/IK unchanged.
 - Protocol run: runs/eval_c5/A|B launched 09:31 UTC. Resume if interrupted: missing (task, init) pairs only, same protocol,
   report as resumed; then report/compare vs evaluations/candidate_fbabe38, archive evaluations/candidate_d5fca8d, docs 14.6.
+
+### 2026-10-03 11:45 UTC (session 8): C5 = d5fca8d evaluated 92/100 and recommended; task 3 9/10; C4 (83) preserved
+- Protocol run 09:31-11:30 UTC, uninterrupted, all 100 records d5fca8d clean: 10, 8, 10, 9, 10, 9, 10, 9, 10, 7 = 92/100 (CI 85-96%).
+- vs C4: +9 on task 3, every other task identical (docs/comparison_fbabe38_to_d5fca8d.md). Task 3 state 18: 50-deg pre-contact IK rejected (link6 vs wine rack).
+- Archives evaluations/candidate_d5fca8d, evidence/eval_episodes_d5fca8d; report 14.6, failure table 16, README, walkthrough 12.1.

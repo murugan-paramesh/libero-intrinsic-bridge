@@ -95,7 +95,7 @@ from the measured configuration, LINEAR failures from a drifted branch fall back
 collision-checked ANY plan to the same pose (recorded), start-state collisions trigger a bounded
 retreat. Documented limit: report 11.2.
 
-## 12. Task 3 strategy and outcome (unsolved)
+## 12. Task 3 strategy and outcome (solved 9/10 by candidate C5; the history below is kept)
 Backward chain: closed drawer <- flat bowl deep in the drawer <- release/retreat <- grasp <-
 push posture. Measured first divergence (`runs/lab/t3_*`, stage lab): the bowl was released
 3-4 cm above a spot whose footprint overlapped the drawer's inner front wall and landed tilted
@@ -112,6 +112,22 @@ pass) is rejected at the end of the travel because the closed panel face lies in
 of the drawers above (`evidence/dev_task3_lab_pitched`). No feasible solution was found within
 the tested classical search; the search space, rejection reasons and geometry are in
 `docs/failure_table.md` sections 10 and 12 and `docs/report.md` sections 12.2 and 13.1.
+
+### 12.1 Task 3 solution (C5, docs/report.md 14)
+What the predicate needs: the bowl's body origin inside the drawer's region box and the drawer joint
+above 0.0 (range to +0.01). Measured: the cavity in front of the middle drawer's handle bar is
+10.1 cm at the sampled opening (-0.146) and 11.6 cm at the joint limit (-0.16); a level 10.8 cm
+bowl needs the latter, and only the drawer's front panel/handle is reachable at the closed position.
+Chain: (1) pull the drawer to its limit by pushing the inner face of its front wall from inside
+(fingertips 2.8 cm below the wall top, palm above the walls); (2) the standard pick and place, with
+two extra carried-object rotations that put the hand exactly across the drawer: the bowl lands
+level; (3) close with the fingertips on the handle bar and the hand pitched 50 deg forward-down:
+Intrinsic's collision-checked IK and LINEAR plans exist for the whole travel (the near-vertical hand
+is blocked by the forearm against the top drawer front, the horizontal hand by the forearm/wrist
+against the wine rack). Development states 0-4: 5/5 official successes plus a reproduction
+(`evidence/dev_task3_success_c5`); protocol 9/10 (state 18: the pre-contact pose has no IK, wrist
+vs the wine rack). Rejected on the way, with Intrinsic's verdicts: in-cavity bowl pushes, near-rim
+and lateral-rim regrasps with a hand-held deeper placement, near-rim fingertip pushes (section 14.4).
 
 ## 13. Task 9 strategy and outcome
 Backward chain: door closed <- hand withdrawn <- mug released on the cavity floor inside the
@@ -141,12 +157,13 @@ unchanged in the tables. Totals are generated from episode records (`eval/report
 
 ## 15. Final results
 See `README.md` (headline table) and `docs/results_*.md`; the per-task before/after tables are
-`docs/comparison_*.md`. Recommended: fbabe38 (C4, 83/100; task 9 7/10; one-time held-out states 30-39: 85/100);
-fallbacks 5e236de (80) and ce7685b (76). The reasons for the choice are stated in `docs/report.md` sections 12.6 and 13.5.
+`docs/comparison_*.md`. Recommended: d5fca8d (C5, 92/100; task 3 9/10, task 9 7/10); fallbacks fbabe38 (83; one-time
+held-out states 30-39: 85/100), 5e236de (80) and ce7685b (76). The reasons for the choice are stated in `docs/report.md` sections 12.6 and 13.5.
 
 ## 16. Limitations
-Privileged object poses; OSC_POSE null-space drift; task 3 unsolved; task 9 partially solved
-(7/10: one release IK rejection, one door segment, one approach error after the staging); planner randomness makes individual episodes vary between runs
+Privileged object poses; OSC_POSE null-space drift; task 3 at 9/10 (one state without a collision-free
+pre-contact for the handle push); task 9 partially solved (7/10: one release IK rejection, one door
+segment, one approach error after the staging); planner randomness makes individual episodes vary between runs
 (documented flips on tasks 6 and 7); runtime of task 3 episodes (IK probe matrix with 5 s solver
 timeouts).
 
@@ -159,6 +176,7 @@ python scripts/demo_motion.py --task 0 --init 0         # one Intrinsic-planned 
 python scripts/run_task.py --task 9 --inits 3            # task 9 complete episode (dev state)
 python scripts/evaluate.py --tasks 0 1 2 3 4 --out runs/review/A & python scripts/evaluate.py --tasks 5 6 7 8 9 --out runs/review/B; wait
 python -m libero_intrinsic.eval.report runs/review --out runs/review/results.json
-python scripts/compare_evaluations.py evaluations/candidate_ce7685b runs/review --labels ce7685b rerun
+python scripts/compare_evaluations.py evaluations/candidate_d5fca8d runs/review --labels d5fca8d rerun
+python scripts/t3_lab.py --init 0 --probe open --out runs/lab/t3_open    # task 3 lab chain with Intrinsic verdicts (dev only)
 python scripts/stage_lab.py --task 3 --init 0 --until place --execute 4 --out runs/lab/t3   # task 3 diagnosis (dev only)
 ```

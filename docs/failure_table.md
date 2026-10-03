@@ -189,3 +189,13 @@ insertion, door closed; goal at step 986).
 | lateral (+x) rim regrasp, 30/40 deg pitch | GRASP ok (4 pad contacts), PLAN (carry) | attached bowl vs cabinet_middle (lateral rim under the handle bar) | GEOMETRY (5-8 mm window) |
 | near-rim fingertip push | EXEC | 4/4 executed; drawer slid 4 cm, bowl unchanged relative to it | CONTACT DYNAMICS (viscous drawer) |
 | open-fully inside push + standard place + 50 deg push | EXEC | 2/2 lab successes, 5/5 official dev successes + 1 reproduction | - |
+
+## 16. Candidate d5fca8d (C5), repeated evaluation (100 episodes, evaluations/candidate_d5fca8d, 92/100)
+
+| task | failures | stage | observed evidence |
+|---|---|---|---|
+| 1 | 2/10 | GRASP then REACH | butter pick, states 10, 11: identical to C4 |
+| 3 | 1/10 | PLAN (pre-contact IK) | state 18: 50 deg handle push pre-contact pose rejected, robot0_link6 vs wine_rack_1_main (free, shoulder-forward and elbow-bent families) + kinematic; stage B rejected as before; bowl level inside the drawer |
+| 5 | 1/10 | REACH | no reachable grasp (18), as in every candidate |
+| 7 | 1/10 | REACH | cream cheese after a failed first attempt (10), as in C3/C4 |
+| 9 | 3/10 | PLAN (1), ARTIC (1), TRACK (1) | states 11, 18, 19: identical to C4 |
