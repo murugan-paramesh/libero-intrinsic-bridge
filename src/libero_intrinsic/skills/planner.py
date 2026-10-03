@@ -22,6 +22,9 @@ from scipy.spatial.transform import Rotation as R
 from libero_intrinsic.skills import geometry as geo
 from libero_intrinsic.skills import placement
 from libero_intrinsic.intrinsic.client import IntrinsicRequestError
+
+# side-grasp staging: stage when the best pre-grasp IK margin is below this (experiment: 9.0 = always)
+STAGE_MARGIN_THRESHOLD = 9.0
 from libero_intrinsic.skills.base import Skill, SkillResult
 from libero_intrinsic.skills.articulation import PushSkill, TurnKnobSkill, joint_world_axis_and_anchor
 from libero_intrinsic.skills.manipulation import PickParams, PickSkill, PlaceParams, PlaceSkill
@@ -309,8 +312,67 @@ class PickWithRelocation(Skill):
         if not rpl.ok:
             return SkillResult(self.name, False, "relocate_place:" + rpl.reason)
         self.pick._tried = []
+        self._stage_for_side_grasp(ctx)
         r2 = self.pick.run(ctx)
         return SkillResult(self.name, r2.ok, "" if r2.ok else "pick_after_relocation:" + r2.reason, details=r2.details)
+
+    def _stage_for_side_grasp(self, ctx):
+        """Temporary placement + regrasp (physically executed): a level side grasp along a
+        container's opening normal needs a comfortable arm posture (observed on task 9: on some
+        states every pre-grasp configuration lies at the joint-2 limit and the controller reaches
+        the pose 3-5 cm off; on the others the same grasp succeeds). If Intrinsic IK finds no
+        pre-grasp configuration with a joint-limit margin, the object is first picked top-down and
+        placed on the opening-normal line at a reach-comfortable distance, then side-picked."""
+        p = self.pick.p
+        if not p.side_grasp or p.approach_dir is None:
+            return
+        env, client, sync = ctx.env, ctx.client, ctx.sync
+        body = self.pick.body
+        cands = geo.side_grasp_candidates(env, body, approach_dir=p.approach_dir)
+        if not cands:
+            return
+        rs = env.robot_state()
+        lim = env.joint_limits()
+        best_margin = -1.0
+        for c in cands[:6]:
+            pre = c.pos - c.approach * p.pregrasp_clearance
+            try:
+                sols, _, _ = client.ik(pre, c.rot, rs.q, max_solutions=8, collision_settings=sync.free_collision_settings())
+            except IntrinsicRequestError:
+                continue
+            for q in sols:
+                best_margin = max(best_margin, float(min(np.min(np.asarray(q) - lim[:, 0]), np.min(lim[:, 1] - np.asarray(q)))))
+        ctx.record(event="side_grasp_posture_check", best_margin_rad=float(best_margin), n_candidates=len(cands))
+        if best_margin >= STAGE_MARGIN_THRESHOLD:
+            return
+        # staging spot: on the opening-normal line through the region centre, in front of the opening
+        region_c = self.keep_away_xy_fn()[1]
+        n = np.asarray(p.approach_dir[:2]); n = n / (np.linalg.norm(n) + 1e-9)
+        base = env.robot_state().base_pos[:2]
+        obj_xy = env.body_pose(body)[0][:2]
+        spot = None
+        for d in np.arange(0.28, 0.46, 0.02):
+            xy = np.asarray(region_c[:2]) - n * d
+            if 0.60 <= np.linalg.norm(xy - base) <= 0.70 and np.linalg.norm(xy - obj_xy) > 0.03:
+                blocked = False
+                for b in self.all_movable:
+                    if b != body and np.linalg.norm(env.body_pose(b)[0][:2] - xy) < 0.12:
+                        blocked = True
+                if not blocked:
+                    spot = xy
+                    break
+        ctx.record(event="side_grasp_staging", spot=None if spot is None else [float(v) for v in spot], margin=float(best_margin))
+        if spot is None:
+            return
+        top = geo.object_box(env, self.table_body).top_z
+        rp = PickSkill(body, self.pick_params).run(ctx)
+        if not rp.ok:
+            ctx.record(event="side_grasp_staging_failed", stage="pick", reason=rp.reason[:100])
+            return
+        rpl = PlaceSkill(body, lambda closing_axis, spot=spot, top=top: (np.array([spot[0], spot[1], top]), top), [self.table_body]).run(ctx)
+        ctx.record(event="side_grasp_staging_done", ok=bool(rpl.ok), reason=rpl.reason[:100], obj_xy=[float(v) for v in env.body_pose(body)[0][:2]])
+        sync.sync()
+        self.pick._tried = []
 
 
 class DrawerCloseComposite(Skill):

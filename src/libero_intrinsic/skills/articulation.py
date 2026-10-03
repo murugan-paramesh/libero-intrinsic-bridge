@@ -16,7 +16,7 @@ from libero_intrinsic.intrinsic.client import IntrinsicRequestError
 from libero_intrinsic.model import transforms as tf
 from libero_intrinsic.skills import geometry as geo
 from libero_intrinsic.skills.base import Skill, SkillContext, SkillResult
-from libero_intrinsic.skills.manipulation import _plan_and_execute
+from libero_intrinsic.skills.manipulation import _recover_start_state, _plan_and_execute
 
 
 def joint_world_axis_and_anchor(env, joint: str) -> Tuple[np.ndarray, np.ndarray]:
@@ -203,8 +203,16 @@ class PushSkill(Skill):
                 continue
         ctx.record(event="precontact_path_check", n_solutions=len(pool), n_tested=n_tested, feasible=q_goal is not None)
         if q_goal is not None:
-            traj = client.plan_to_joints(rs.q, q_goal, collision_settings=free_cs, motion_type="ANY", timeout_s=15.0,
-                                         caller_id=f"{self.label}_precontact")
+            try:
+                traj = client.plan_to_joints(rs.q, q_goal, collision_settings=free_cs, motion_type="ANY", timeout_s=15.0,
+                                             caller_id=f"{self.label}_precontact")
+            except IntrinsicRequestError as e_pc:
+                # the arm may still touch the pushed body after a failed attempt: bounded retreat first
+                if "Invalid initial joint configuration" not in str(e_pc) or not _recover_start_state(ctx, f"{self.label}_precontact", e_pc, push_cs):
+                    raise
+                rs = env.robot_state()
+                traj = client.plan_to_joints(rs.q, q_goal, collision_settings=free_cs, motion_type="ANY", timeout_s=15.0,
+                                             caller_id=f"{self.label}_precontact")
             ctx.record(event="plan", label=f"{self.label}_precontact", trajectory_id=traj.request_id, motion_type="ANY",
                        n_states=int(len(traj.t)), duration_s=traj.duration, latency_s=traj.planning_latency_s, target_pos=[float(v) for v in pre])
             res = ctx.execute(traj, ExecutionConfig(gripper=+1.0), f"{self.label}_precontact")
@@ -237,6 +245,7 @@ class PushSkill(Skill):
             expanded.append((p_k, rot_k))
             prev = p_k
         path = expanded
+        prev_ok = False
         for k, p in enumerate(path):
             rs = env.robot_state()
             sync.sync()
@@ -248,7 +257,10 @@ class PushSkill(Skill):
                 except IntrinsicRequestError as e0:
                     if "FinePathIK" not in str(e0):
                         raise
-                    if k != 0 and not (self.progress_fn is not None and self.progress_fn() > progress0 + 0.005):
+                    # later segments: allowed once the previous segment executed (the hand is at the
+                    # contact) or the articulation has moved; observed on the microwave door: the
+                    # first push segment after the approach fails FinePathIK at the wrist limit
+                    if k != 0 and not (prev_ok or (self.progress_fn is not None and self.progress_fn() > progress0 + 0.005)):
                         raise
                     # The benchmark's OSC_POSE controller tracks the TCP pose only; its null space
                     # drifts, so the posture Intrinsic validated for the LINEAR segment is not the
@@ -268,7 +280,9 @@ class PushSkill(Skill):
                     ctx.record(event="push_partial", segment=k, progress=float(self.progress_fn() - progress0), reason=e.code)
                     break
                 return SkillResult(self.name, False, f"segment{k}_plan_failed:{e.code}")
-            ctx.record(event="push_progress", segment=k, satisfied=bool(self.check_fn()))
+            prev_ok = bool(res.ok)
+            ctx.record(event="push_progress", segment=k, satisfied=bool(self.check_fn()),
+                       progress=float(self.progress_fn()) if self.progress_fn is not None else None)
             if self.check_fn():
                 break
         ok = bool(self.check_fn())

@@ -167,10 +167,10 @@ def drawer_push_candidates(env, drawer_body, joint, families):
     front = box.center_world - axis * (proj.max() - proj.min()) / 2     # front face centre line
     lateral = np.cross(np.array([0.0, 0.0, 1.0]), axis)
     yaw = np.arctan2(axis[1], axis[0])
-    travel = abs(q) + 0.03
     out = []
     for fam in families:
         mode, tilt, h, xo = fam["mode"], fam["tilt"], fam["h"], fam["xo"]
+        travel = abs(q) + fam.get("over", 0.03)      # overshoot beyond the closed position (fingertips start 1.5 cm out)
         z = box.bottom_z + h * (box.top_z - box.bottom_z)
         contact = np.array([front[0], front[1], z]) + lateral * xo - axis * 0.015
         if mode in ("topdown_along", "topdown_lateral"):
