@@ -107,9 +107,11 @@ covers. Pushing: a top-down push cannot finish the travel (hand above the panel 
 handles); a horizontal push has no collision-free contact pose on the tested states (forearm vs the
 wine rack fixture, wrist vs table, no IK), with or without relocating the wine bottle, in three
 posture families; a side-push family (hand pointing along the reach direction) was blocked by the
-relocated bottle in the arm corridor. No feasible solution was found within the tested classical
-search; the search space, rejection reasons and geometry are in `docs/failure_table.md` section 10
-and `docs/report.md` section 12.
+relocated bottle in the arm corridor; a steeply pitched family (45-70 deg, 19 candidates, third
+pass) is rejected at the end of the travel because the closed panel face lies in the handle plane
+of the drawers above (`evidence/dev_task3_lab_pitched`). No feasible solution was found within
+the tested classical search; the search space, rejection reasons and geometry are in
+`docs/failure_table.md` sections 10 and 12 and `docs/report.md` sections 12.2 and 13.1.
 
 ## 13. Task 9 strategy and outcome
 Backward chain: door closed <- hand withdrawn <- mug released on the cavity floor inside the
@@ -120,9 +122,13 @@ approach for grasp slip and drove the hand 8 cm deeper into the microwave (fixed
 door push: the pre-contact configuration 2.3 rad from the current one (fixed by same-branch
 ordering), LINEAR segments failing near the wrist limit (configuration-space fallback for later
 segments), the door rebounding after the retreat (the goal is re-checked after the retreat and
-the push repeated). Complete official successes on development states 1, 3, 4; states 0 and 2
-fail at the pick after relocation (pre-grasp posture at the joint-2 limit). Protocol result:
-section 15.
+the push repeated). Under 5e236de: complete official successes on development states 1, 3, 4;
+states 0 and 2 fail at the pick after relocation (pre-grasp posture at the joint-2 limit).
+Candidate C4 (fbabe38, third pass) adds a physically executed staging regrasp before the side
+pick (top-down pick, place on the opening-normal line 0.60-0.70 m from the base, side pick from
+there), start-state recovery before the door pre-contact plan and a configuration-space fallback
+for the first push segment after a completed approach: development states 0-4 all succeed
+(`evidence/dev_task9_success_c4`). Protocol results of both: section 15.
 
 ## 14. Evaluation methodology
 `configs/eval_frozen.yaml`: tasks 0-9 in order, official init states 10-19 (development states
